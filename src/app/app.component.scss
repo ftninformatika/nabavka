@@ -1,0 +1,10 @@
+header { height: auto !important; }
+
+@media screen and (max-width: 992px) {
+  .full-library-name { display: none; }
+  .short-library-name { display: block; }
+}
+@media not screen and (max-width: 992px) {
+  .full-library-name { display: block; }
+  .short-library-name { display: none; }
+}
