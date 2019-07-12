@@ -12,6 +12,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DesideratumListComponent } from './components/desideratum-list/desideratum-list.component';
 import { GroupByPipe } from './pipes/group-by.pipe';
+import {FormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { GroupByPipe } from './pipes/group-by.pipe';
     AppRoutingModule,
     MDBBootstrapModulesPro.forRoot(),
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    FormsModule
   ],
   providers: [
     MDBSpinningPreloader,

@@ -1,5 +1,5 @@
 export class Location {
-  location: string;
-  sublocation: string;
-  amount: number;
+  location?: string;
+  sublocation?: string;
+  amount?: number;
 }

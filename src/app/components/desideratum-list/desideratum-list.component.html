@@ -19,22 +19,22 @@
           <th class="text-center">Količina</th>
           <th class="text-center"></th>
         </tr>
-        <tbody *ngFor="let desiderat of desideratList; let id = index">
+        <tbody *ngFor="let desiderat of desiderataList; let id = index">
 
 
         <tr>
           <td><a (click)="toggle(id)"><i class="far" [ngClass]="{'fa-plus-square': !hide[id], 'fa-minus-square': hide[id]}" ></i></a></td>
           <td>
-            <span  (blur)="updateList(desiderat.isbn, 'isbn', $event)" contenteditable="true">{{desiderat.isbn}}</span>
+            <span  (blur)="updateList(desiderat.id, 'isbn', $event)" contenteditable="true">{{desiderat.isbn}}</span>
           </td>
           <td>
-            <span contenteditable="true"  (blur)="updateList(desiderat.isbn, 'title', $event)">{{desiderat.title}}</span>
+            <span contenteditable="true"  (blur)="updateList(desiderat.id, 'title', $event)">{{desiderat.title}}</span>
           </td>
           <td>
-            <span contenteditable="true"  (blur)="updateList(desiderat.isbn, 'author', $event)">{{desiderat.author}}</span>
+            <span contenteditable="true"  (blur)="updateList(desiderat.id, 'author', $event)">{{desiderat.author}}</span>
           </td>
           <td>
-            <span contenteditable="true"  (blur)="updateList(desiderat.isbn, 'publisher', $event)">{{desiderat.publisher}}</span>
+            <span contenteditable="true"  (blur)="updateList(desiderat.id, 'publisher', $event)">{{desiderat.publisher}}</span>
           </td>
           <td>
 
@@ -45,13 +45,13 @@
 
           <td>
             <span class="table-remove">
-               <a class="text-danger" (click)="remove(desiderat.isbn)">
+               <a class="text-danger" (click)="remove(desiderat.id)">
           <mdb-icon far icon="trash-alt"></mdb-icon>
         </a>
             </span>
             <span class="table-add float-right mb-3 mr-2">
-                 <a class="text-success" (click)="addLoc(desiderat.isbn,id)">
-          <mdb-icon far icon="file-alt"></mdb-icon>
+                 <a class="text-success" (click)="showFrame(desiderat.id)">
+          <mdb-icon fas icon="plus"></mdb-icon>
         </a>
 
       </span>
@@ -77,7 +77,10 @@
                 <td></td>
                 <td></td>
                 <td>{{v.sublocation}}</td>
-                <td><span contenteditable="true" ></span>
+                <td>
+                  <span contenteditable="true" (blur)="updateAmount(desiderat.id, v.sublocation, $event)">
+                    {{v.amount}}
+                  </span>
                 </td>
                 <td></td>
               </tr>
@@ -90,3 +93,82 @@
   </div>
 </div>
 <!-- Editable table -->
+
+<!--Modal-->
+<div
+  mdbModal
+  #frame="mdbModal"
+  class="modal fade top"
+  id="frameModalTop"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+  style="overflow-y: auto"
+>
+  <!--Dialog-->
+  <div class="modal-dialog modal-notify modal-info" role="document">
+    <!--Content-->
+    <div class="modal-content">
+      <!--Header-->
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Potrebe na lokaciji
+        </h4>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          (click)="frame.hide()"
+        >
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+
+      <!--Body-->
+      <div class="modal-body">
+        <div class="md-form mb-5">
+          <mdb-icon fas icon="map-marker-alt"></mdb-icon>
+          <input [(ngModel)]="location.sublocation" #ctrl="ngModel"
+            type="text"
+            class="form-control"
+            id="sublocation"
+            mdbInput
+          />
+          <label for="sublocation">Lokacija</label>
+        </div>
+
+        <div class="md-form">
+          <mdb-icon fas icon="layer-group"></mdb-icon>
+          <input [(ngModel)]="location.amount" #ctrl="ngModel"
+            type="number"
+            class="form-control"
+            id="amount"
+            mdbInput
+          />
+          <label for="amount">Količina</label>
+        </div>
+      </div>
+      <!--/.Body-->
+
+      <!--Footer-->
+      <div class="modal-footer justify-content-center">
+        <button
+          type="button"
+          mdbBtn
+          color="info"
+          class="waves-effect"
+          (click)="addLocation()"
+          mdbWavesEffect
+        >
+          Add
+        </button>
+      </div>
+      <!--Footer-->
+    </div>
+    <!--/.Content-->
+  </div>
+  <!--/.Dialog-->
+</div>
+<!--/.Modal-->
