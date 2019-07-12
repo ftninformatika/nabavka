@@ -58,7 +58,7 @@
           </td>
         </tr>
         <ng-container *ngIf="hide[id]">
-          <ng-container *ngFor="let l of desiderat.locations|groupBy:'locationOgr';let locId = index">
+          <ng-container *ngFor="let l of desiderat.locations|groupBy:'location';let locId = index">
             <tr [ngStyle]="{'color': 'green',  'font-weight': 'bold'}">
               <td><a (click)="toggleInner(locId)"><i class="far" [ngClass]="{'fa-plus-square': !hideInner[locId], 'fa-minus-square': hideInner[locId]}" ></i></a></td>
               <td></td>
@@ -76,7 +76,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td>{{v.location}}</td>
+                <td>{{v.sublocation}}</td>
                 <td><span contenteditable="true" ></span>
                 </td>
                 <td></td>

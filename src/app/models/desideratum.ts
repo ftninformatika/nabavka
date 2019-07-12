@@ -5,5 +5,5 @@ export class Desideratum {
   author: string;
   title: string;
   publisher: string;
-  locations: Location[];
+  locations?: Location[];
 }
