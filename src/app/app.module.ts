@@ -10,10 +10,14 @@ import {FirebaseService} from './services/firebase.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { DesideratumListComponent } from './components/desideratum-list/desideratum-list.component';
+import { GroupByPipe } from './pipes/group-by.pipe';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    DesideratumListComponent,
+    GroupByPipe
   ],
   imports: [
     BrowserModule,

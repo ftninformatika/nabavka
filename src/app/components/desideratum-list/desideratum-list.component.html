@@ -1,0 +1,92 @@
+<!-- Editable table -->
+<div class="card">
+  <h3 class="card-header text-center font-weight-bold text-uppercase py-4">Lista deziderata</h3>
+  <div class="card-body">
+    <div id="table" class="table-editable">
+      <span class="table-add float-right mb-3 mr-2">
+        <a class="text-success" (click)="add()">
+          <mdb-icon fas icon="plus" size="2x"></mdb-icon>
+        </a>
+      </span>
+      <table class="table table-bordered table-responsive-md table-striped text-center">
+        <tr>
+          <th class="text-center"></th>
+          <th class="text-center">ISBN</th>
+          <th class="text-center">Naslov</th>
+          <th class="text-center">Autor</th>
+          <th class="text-center">Izdavač</th>
+          <th class="text-center">Lokacija</th>
+          <th class="text-center">Količina</th>
+          <th class="text-center"></th>
+        </tr>
+        <tbody *ngFor="let desiderat of desideratList; let id = index">
+
+
+        <tr>
+          <td><a (click)="toggle(id)"><i class="far" [ngClass]="{'fa-plus-square': !hide[id], 'fa-minus-square': hide[id]}" ></i></a></td>
+          <td>
+            <span  (blur)="updateList(desiderat.isbn, 'isbn', $event)" contenteditable="true">{{desiderat.isbn}}</span>
+          </td>
+          <td>
+            <span contenteditable="true"  (blur)="updateList(desiderat.isbn, 'title', $event)">{{desiderat.title}}</span>
+          </td>
+          <td>
+            <span contenteditable="true"  (blur)="updateList(desiderat.isbn, 'author', $event)">{{desiderat.author}}</span>
+          </td>
+          <td>
+            <span contenteditable="true"  (blur)="updateList(desiderat.isbn, 'publisher', $event)">{{desiderat.publisher}}</span>
+          </td>
+          <td>
+
+          </td>
+          <td>
+
+          </td>
+
+          <td>
+            <span class="table-remove">
+               <a class="text-danger" (click)="remove(desiderat.isbn)">
+          <mdb-icon far icon="trash-alt"></mdb-icon>
+        </a>
+            </span>
+            <span class="table-add float-right mb-3 mr-2">
+                 <a class="text-success" (click)="addLoc(desiderat.isbn,id)">
+          <mdb-icon far icon="file-alt"></mdb-icon>
+        </a>
+
+      </span>
+          </td>
+        </tr>
+        <ng-container *ngIf="hide[id]">
+          <ng-container *ngFor="let l of desiderat.locations|groupBy:'locationOgr';let locId = index">
+            <tr [ngStyle]="{'color': 'green',  'font-weight': 'bold'}">
+              <td><a (click)="toggleInner(locId)"><i class="far" [ngClass]="{'fa-plus-square': !hideInner[locId], 'fa-minus-square': hideInner[locId]}" ></i></a></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{{l.key}}</td>
+              <td></td>
+              <td> </td>
+            </tr>
+            <ng-container *ngIf="hideInner[locId]">
+              <tr *ngFor="let v of l.value" >
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>{{v.location}}</td>
+                <td><span contenteditable="true" ></span>
+                </td>
+                <td></td>
+              </tr>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<!-- Editable table -->
