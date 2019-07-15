@@ -10,26 +10,25 @@ import 'firebase/firestore';
 })
 
 export class FirebaseService {
-  items: AngularFirestoreCollection<Desideratum>;
 
   constructor(private firestore: AngularFirestore) {
   }
 
-  addItem(item: Desideratum) {
+  addDesideratum(item: Desideratum) {
     return this.firestore.collection('Desiderata').add(item);
   }
 
-  updateItem(item: Desideratum) {
+  updateDesideratum(item: Desideratum) {
     const id = item.id;
     this.firestore.collection('Desiderata').doc(id).update(item);
     this.firestore.collection('Desiderata').doc(id).update({id: firebase.firestore.FieldValue.delete()});
   }
 
-  deleteItem(id: string) {
+  deleteDesideratum(id: string) {
     this.firestore.collection('Desiderata').doc(id).delete();
   }
 
-  getData() {
+  getDesiderataData() {
     return this.firestore.collection('Desiderata').snapshotChanges();
   }
 }

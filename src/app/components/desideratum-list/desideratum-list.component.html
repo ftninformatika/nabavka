@@ -22,19 +22,25 @@
         <tbody *ngFor="let desiderat of desiderataList; let id = index">
 
 
-        <tr>
+        <tr (click)="onSelect(id)">
           <td><a (click)="toggle(id)"><i class="far" [ngClass]="{'fa-plus-square': !hide[id], 'fa-minus-square': hide[id]}" ></i></a></td>
           <td>
             <span  (blur)="updateList(desiderat.id, 'isbn', $event)" contenteditable="true">{{desiderat.isbn}}</span>
           </td>
           <td>
-            <span contenteditable="true"  (blur)="updateList(desiderat.id, 'title', $event)">{{desiderat.title}}</span>
+            <ng-container *ngIf="id !== rowIndex">
+              {{desiderat.title}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input type="text" class="form-control" [value]="desiderat.title">
+            </ng-container>
+            <span (blur)="updateList(desiderat.id, 'title', $event)">{{desiderat.title}}</span>
           </td>
           <td>
-            <span contenteditable="true"  (blur)="updateList(desiderat.id, 'author', $event)">{{desiderat.author}}</span>
+            <span (blur)="updateList(desiderat.id, 'author', $event)">{{desiderat.author}}</span>
           </td>
           <td>
-            <span contenteditable="true"  (blur)="updateList(desiderat.id, 'publisher', $event)">{{desiderat.publisher}}</span>
+            <span (blur)="updateList(desiderat.id, 'publisher', $event)">{{desiderat.publisher}}</span>
           </td>
           <td>
 
