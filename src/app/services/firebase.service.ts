@@ -3,6 +3,7 @@ import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firest
 import {Desideratum} from '../models/desideratum';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+import {Distributer} from '../models/distributer';
 
 
 @Injectable({
@@ -30,5 +31,19 @@ export class FirebaseService {
 
   getDesiderataData() {
     return this.firestore.collection('Desiderata').snapshotChanges();
+  }
+
+  getDistributers() {
+    return this.firestore.collection('Distributer').snapshotChanges();
+  }
+  updateDistributer(distributer: Distributer) {
+      this.firestore.collection('Distributer').doc(distributer.id).update(distributer);
+      this.firestore.collection('Distributer').doc(distributer.id).update({id: firebase.firestore.FieldValue.delete()});
+  }
+  removeDistributer(id: string) {
+    this.firestore.collection('Distributer').doc(id).delete();
+  }
+  addDistributer(item: Distributer) {
+    return this.firestore.collection('Distributer').add(item);
   }
 }

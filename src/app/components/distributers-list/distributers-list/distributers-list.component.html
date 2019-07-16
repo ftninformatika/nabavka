@@ -1,1 +1,205 @@
-<p>distributers-list works!</p>
+<!-- Editable table -->
+<div class="card">
+  <h3 class="card-header text-center font-weight-bold text-uppercase py-4">Lista distributera</h3>
+  <div class="card-body">
+    <div id="table" class="table-editable">
+      <span class="table-add float-right mb-3 mr-2">
+        <a class="text-success" (click)="showFrame()">
+          <mdb-icon fas icon="plus" size="2x"></mdb-icon>
+        </a>
+      </span>
+      <table class="table table-bordered table-responsive-md table-striped text-center">
+        <tr>
+          <th class="text-center">PIB</th>
+          <th class="text-center">Naziv</th>
+          <th class="text-center">Telefon</th>
+          <th class="text-center">Email</th>
+          <th class="text-center">Kontakt osoba</th>
+          <th class="text-center">Link</th>
+          <th class="text-center"></th>
+        </tr>
+        <tbody *ngFor="let distributer of distributersList; let id = index">
+
+
+        <tr>
+         <td>
+           <ng-container *ngIf="id !== rowIndex">
+             {{distributer.pib}}
+           </ng-container>
+           <ng-container *ngIf="id == rowIndex">
+             <input type="text" class="form-control" [value]="distributer.pib">
+           </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              {{distributer.name}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input type="text" class="form-control" [value]="distributer.name">
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              {{distributer.phone}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input type="text" class="form-control" [value]="distributer.phone">
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              {{distributer.email}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input type="text" class="form-control" [value]="distributer.email">
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              {{distributer.contactPerson}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input type="text" class="form-control" [value]="distributer.contactPerson">
+            </ng-container>
+          </td>
+          <td>
+              {{distributer.link}}
+          </td>
+
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+
+              <span class="table-add float-right mb-3 mr-2">
+                 <a class="text-success" (click)="edit(id)">
+                  <mdb-icon far icon="edit"></mdb-icon>
+                  </a>
+              </span>
+              <span class="table-add">
+                 <a class="text-success" [routerLink]="['/offers/'+distributer.pib]">
+                  <mdb-icon far icon="eye"></mdb-icon>
+                  </a>
+              </span>
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <span class="table-add float-right mb-3 mr-2">
+                 <a class="text-success" (click)="update(distributer)">
+                  <mdb-icon far icon="check-circle"></mdb-icon>
+                  </a>
+              </span>
+              <span class="table-remove">
+               <a class="text-danger" (click)="remove(distributer)">
+                 <mdb-icon far icon="trash-alt"></mdb-icon>
+                </a>
+              </span>
+            </ng-container>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<!-- Editable table -->
+<!--Modal-->
+<div
+  mdbModal
+  #frame="mdbModal"
+  class="modal fade top"
+  id="frameModalTop"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+  style="overflow-y: auto"
+>
+  <!--Dialog-->
+  <div class="modal-dialog modal-notify modal-info" role="document">
+    <!--Content-->
+    <div class="modal-content">
+      <!--Header-->
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+         Podaci o distributeru
+        </h4>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          (click)="frame.hide()"
+        >
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+
+      <!--Body-->
+      <div class="modal-body">
+        <div class="md-form mb-5">
+          <input [(ngModel)]="distributer.pib" #ctrl="ngModel"
+                 type="text"
+                 class="form-control"
+                 id="pib"
+                 mdbInput
+          />
+          <label for="pib">PIB</label>
+        </div>
+        <div class="md-form mb-5">
+          <input [(ngModel)]="distributer.name" #ctrl="ngModel"
+                 type="text"
+                 class="form-control"
+                 id="name"
+                 mdbInput
+          />
+          <label for="name">Naziv</label>
+        </div>
+        <div class="md-form mb-5">
+          <input [(ngModel)]="distributer.phone" #ctrl="ngModel"
+                 type="text"
+                 class="form-control"
+                 id="phone"
+                 mdbInput
+          />
+          <label for="phone">Telefon</label>
+        </div>
+        <div class="md-form mb-5">
+          <input [(ngModel)]="distributer.email" #ctrl="ngModel"
+                 type="text"
+                 class="form-control"
+                 id="email"
+                 mdbInput
+          />
+          <label for="email">Email</label>
+        </div>
+        <div class="md-form mb-5">
+          <input [(ngModel)]="distributer.contactPerson" #ctrl="ngModel"
+                 type="text"
+                 class="form-control"
+                 id="contactPerson"
+                 mdbInput
+          />
+          <label for="contactPerson">Kontakt osoba</label>
+        </div>
+
+      </div>
+      <!--/.Body-->
+
+      <!--Footer-->
+      <div class="modal-footer justify-content-center">
+        <button
+          type="button"
+          mdbBtn
+          color="info"
+          class="waves-effect"
+          (click)="add()"
+          mdbWavesEffect
+        >
+          Add
+        </button>
+      </div>
+      <!--Footer-->
+    </div>
+    <!--/.Content-->
+  </div>
+  <!--/.Dialog-->
+</div>
+<!--/.Modal-->
