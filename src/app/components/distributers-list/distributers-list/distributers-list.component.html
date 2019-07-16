@@ -27,7 +27,7 @@
              {{distributer.pib}}
            </ng-container>
            <ng-container *ngIf="id == rowIndex">
-             <input type="text" class="form-control" [value]="distributer.pib">
+             <input mdbInput type="text" name="text" [(ngModel)]="distributer.pib"  class="form-control">
            </ng-container>
           </td>
           <td>
@@ -35,7 +35,7 @@
               {{distributer.name}}
             </ng-container>
             <ng-container *ngIf="id == rowIndex">
-              <input type="text" class="form-control" [value]="distributer.name">
+              <input mdbInput type="text" name="text" [(ngModel)]="distributer.name"  class="form-control">
             </ng-container>
           </td>
           <td>
@@ -43,7 +43,7 @@
               {{distributer.phone}}
             </ng-container>
             <ng-container *ngIf="id == rowIndex">
-              <input type="text" class="form-control" [value]="distributer.phone">
+              <input mdbInput type="text" name="text" [(ngModel)]="distributer.phone"  class="form-control">
             </ng-container>
           </td>
           <td>
@@ -51,7 +51,7 @@
               {{distributer.email}}
             </ng-container>
             <ng-container *ngIf="id == rowIndex">
-              <input type="text" class="form-control" [value]="distributer.email">
+              <input mdbInput type="text" name="text" [(ngModel)]="distributer.email"  class="form-control">
             </ng-container>
           </td>
           <td>
@@ -59,7 +59,7 @@
               {{distributer.contactPerson}}
             </ng-container>
             <ng-container *ngIf="id == rowIndex">
-              <input type="text" class="form-control" [value]="distributer.contactPerson">
+              <input mdbInput type="text" name="text" [(ngModel)]="distributer.contactPerson"  class="form-control">
             </ng-container>
           </td>
           <td>
