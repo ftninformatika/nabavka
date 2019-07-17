@@ -29,16 +29,11 @@
             <a class="dropdown-item waves-light" mdbWavesEffect>Опција 2</a>
           </div>
         </li>
-        <li class="nav-item dropdown" dropdown>
-          <a dropdownToggle mdbWavesEffect type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
-            <mdb-icon fas icon="file-invoice-dollar"></mdb-icon> Понуде<span class="caret"></span></a>
-          <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
-            <a class="dropdown-item waves-light" mdbWavesEffect>Опција 1</a>
-            <a class="dropdown-item waves-light" mdbWavesEffect>Опција 2</a>
-            <div class="divider dropdown-divider"></div>
-            <a class="dropdown-item waves-light" mdbWavesEffect>Опција 2</a>
-          </div>
+        <li class="nav-item" >
+          <a  mdbWavesEffect type="button" class="nav-link  waves-light" mdbWavesEffect [routerLink]="['/distributers']">
+            <mdb-icon far icon="address-book"></mdb-icon> Понуде<span class="caret"></span></a>
         </li>
+
         <li class="nav-item dropdown" dropdown>
           <a dropdownToggle mdbWavesEffect type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
             <mdb-icon fas icon="file-invoice-dollar"></mdb-icon> Припрема<span class="caret"></span></a>
@@ -53,10 +48,6 @@
           <a dropdownToggle mdbWavesEffect type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
             <mdb-icon fas icon="file-invoice-dollar"></mdb-icon> Расподела<span class="caret"></span></a>
           <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
-            <a class="dropdown-item waves-light" mdbWavesEffect>Опција 1</a>
-            <a class="dropdown-item waves-light" mdbWavesEffect>Опција 2</a>
-            <div class="divider dropdown-divider"></div>
-            <a class="dropdown-item waves-light" mdbWavesEffect>Опција 2</a>
           </div>
         </li>
       </ul>
@@ -80,6 +71,6 @@
 
 <main>
   <div class="container-fluid py-4">
-    <router-outlet><app-desideratum-list></app-desideratum-list></router-outlet>
+    <router-outlet></router-outlet>
   </div>
 </main>

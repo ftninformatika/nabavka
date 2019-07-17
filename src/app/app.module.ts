@@ -13,12 +13,16 @@ import { AppComponent } from './app.component';
 import { DesideratumListComponent } from './components/desideratum-list/desideratum-list.component';
 import { GroupByPipe } from './pipes/group-by.pipe';
 import {FormsModule} from '@angular/forms';
+import { DistributersListComponent } from './components/distributers-list/distributers-list/distributers-list.component';
+import { OfferComponent } from './components/offer/offer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DesideratumListComponent,
-    GroupByPipe
+    GroupByPipe,
+    DistributersListComponent,
+    OfferComponent
   ],
   imports: [
     BrowserModule,
