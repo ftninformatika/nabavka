@@ -17,7 +17,6 @@ export class GroupByPipe implements PipeTransform {
       } else {
         previous[current[property]].push(current);
       }
-      console.log(previous);
       return previous;
     }, {});
 

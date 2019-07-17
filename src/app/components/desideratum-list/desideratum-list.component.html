@@ -1,94 +1,167 @@
 <!-- Editable table -->
-<div class="card">
-  <h3 class="card-header text-center font-weight-bold text-uppercase py-4">Lista deziderata</h3>
+<mdb-card cascade="true" narrower="true">
+
+  <div class="card-header">
+    <h3 class="py-2">Дезидерати</h3>
+  </div>
+
   <div class="card-body">
     <div id="table" class="table-editable">
-      <span class="table-add float-right mb-3 mr-2">
-        <a class="text-success" (click)="add()">
-          <mdb-icon fas icon="plus" size="2x"></mdb-icon>
+      <div class="narrower d-flex justify-content-between align-items-center">
+        <div>
+          <div class="md-form">
+            <input mdbInput type="text" class="form-control" [(ngModel)]="searchText" id="search-input">
+            <label for="search-input">Претражи</label>
+          </div>
+        </div>
+        <a mdbBtn floating="true" color="primary" size="sm" (click)="modalAddDesideratum.show()" mdbWavesEffect>
+          <mdb-icon fas icon="plus"></mdb-icon>
         </a>
-      </span>
-      <table class="table table-bordered table-responsive-md table-striped text-center">
+      </div>
+      <table mdbTable small="true" class="table table-bordered table-responsive-md table-striped text-center">
+        <thead>
         <tr>
-          <th class="text-center"></th>
-          <th class="text-center">ISBN</th>
-          <th class="text-center">Naslov</th>
-          <th class="text-center">Autor</th>
-          <th class="text-center">Izdavač</th>
-          <th class="text-center">Lokacija</th>
-          <th class="text-center">Količina</th>
-          <th class="text-center"></th>
+          <th></th>
+          <th [mdbTableSort]="desiderataList" sortBy="isbn">
+            ИСБН
+            <mdb-icon fas icon="sort"></mdb-icon>
+          </th>
+          <th [mdbTableSort]="desiderataList" sortBy="title">
+            Наслов
+            <mdb-icon fas icon="sort"></mdb-icon>
+          </th>
+          <th [mdbTableSort]="desiderataList" sortBy="author">
+            Аутор
+            <mdb-icon fas icon="sort"></mdb-icon>
+          </th>
+          <th [mdbTableSort]="desiderataList" sortBy="publisher">
+            Издавач
+            <mdb-icon fas icon="sort"></mdb-icon>
+          </th>
+          <th>
+            Локација
+          </th>
+          <th>
+            Количина
+          </th>
+          <th></th>
         </tr>
+        </thead>
+
         <tbody *ngFor="let desiderat of desiderataList; let id = index">
-
-
-        <tr (click)="onSelect(id)">
-          <td><a (click)="toggle(id)"><i class="far" [ngClass]="{'fa-plus-square': !hide[id], 'fa-minus-square': hide[id]}" ></i></a></td>
+        <tr >
           <td>
-            <span  (blur)="updateList(desiderat.id, 'isbn', $event)" contenteditable="true">{{desiderat.isbn}}</span>
+            <a (click)="toggle(id)">
+              <i class="far" [ngClass]="{'fa-plus-square': !hide[id], 'fa-minus-square': hide[id]}"></i></a>
+          </td>
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              {{desiderat.isbn}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input [(ngModel)]="selectedDesideratum.isbn" #ctrl="ngModel" type="text" class="form-control" mdbInput
+                     (keyup.enter)="saveEditedDesideratum()">
+            </ng-container>
           </td>
           <td>
             <ng-container *ngIf="id !== rowIndex">
               {{desiderat.title}}
             </ng-container>
             <ng-container *ngIf="id == rowIndex">
-              <input type="text" class="form-control" [value]="desiderat.title">
+              <input [(ngModel)]="selectedDesideratum.title" #ctrl="ngModel" type="text" class="form-control" mdbInput
+                     (keyup.enter)="saveEditedDesideratum()">
             </ng-container>
-            <span (blur)="updateList(desiderat.id, 'title', $event)">{{desiderat.title}}</span>
           </td>
           <td>
-            <span (blur)="updateList(desiderat.id, 'author', $event)">{{desiderat.author}}</span>
+            <ng-container *ngIf="id !== rowIndex">
+              {{desiderat.author}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input [(ngModel)]="selectedDesideratum.author" #ctrl="ngModel" type="text" class="form-control" mdbInput
+                     (keyup.enter)="saveEditedDesideratum()">
+            </ng-container>
           </td>
           <td>
-            <span (blur)="updateList(desiderat.id, 'publisher', $event)">{{desiderat.publisher}}</span>
+            <ng-container *ngIf="id !== rowIndex">
+              {{desiderat.publisher}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input [(ngModel)]="selectedDesideratum.publisher" #ctrl="ngModel" type="text" class="form-control" mdbInput
+                     (keyup.enter)="saveEditedDesideratum()">
+            </ng-container>
           </td>
+          <td></td>
+          <td></td>
           <td>
+            <div class="d-flex flex-column justify-content-end">
+              <div class="d-flex justify-content-end">
+                <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="showEditIcons(id, desiderat.id)">
+                  <mdb-icon far icon="edit"></mdb-icon>
+                </button>
+                <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="showAddLocationModal(desiderat.id)">
+                  <mdb-icon fas icon="plus"></mdb-icon>
+                </button>
+              </div>
 
-          </td>
-          <td>
-
-          </td>
-
-          <td>
-            <span class="table-remove">
-               <a class="text-danger" (click)="remove(desiderat.id)">
-          <mdb-icon far icon="trash-alt"></mdb-icon>
-        </a>
-            </span>
-            <span class="table-add float-right mb-3 mr-2">
-                 <a class="text-success" (click)="showFrame(desiderat.id)">
-          <mdb-icon fas icon="plus"></mdb-icon>
-        </a>
-
-      </span>
+              <div *ngIf="visibleEditIcons && id == rowIndex" class="d-flex justify-content-end">
+                <button mdbBtn color="info" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="saveEditedDesideratum()">
+                  <mdb-icon fas icon="check"></mdb-icon>
+                </button>
+                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="showRemoveDesideratumModal(desiderat.id)">
+                  <mdb-icon far icon="trash-alt"></mdb-icon>
+                </button>
+              </div>
+            </div>
           </td>
         </tr>
         <ng-container *ngIf="hide[id]">
-          <ng-container *ngFor="let l of desiderat.locations|groupBy:'location';let locId = index">
+          <ng-container *ngFor="let l of desiderat.locations|groupBy:'location'; let locId = index">
             <tr [ngStyle]="{'color': 'green',  'font-weight': 'bold'}">
-              <td><a (click)="toggleInner(locId)"><i class="far" [ngClass]="{'fa-plus-square': !hideInner[locId], 'fa-minus-square': hideInner[locId]}" ></i></a></td>
-              <td></td>
+              <td><a (click)="toggleInner(locId)">
+                  <i class="far" [ngClass]="{'fa-plus-square': !hideInner[locId], 'fa-minus-square': hideInner[locId]}"></i></a>
+              </td>
+              <td>{{locId}}</td>
               <td></td>
               <td></td>
               <td></td>
               <td>{{l.key}}</td>
               <td></td>
-              <td> </td>
+              <td></td>
             </tr>
             <ng-container *ngIf="hideInner[locId]">
-              <tr *ngFor="let v of l.value" >
+              <tr *ngFor="let v of l.value; let sublocId = index">
                 <td></td>
-                <td></td>
+                <td>{{sublocId}}</td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td>{{v.sublocation}}</td>
                 <td>
-                  <span contenteditable="true" (blur)="updateAmount(desiderat.id, v.sublocation, $event)">
+                  <ng-container *ngIf="sublocId !== rowIndexLocation">
                     {{v.amount}}
-                  </span>
+                  </ng-container>
+                  <ng-container *ngIf="sublocId == rowIndexLocation">
+                    <input [(ngModel)]="inputAmount" type="number" class="form-control" mdbInput
+                           (keyup.enter)="updateAmount(desiderat.id, v.sublocation)">
+                  </ng-container>
+
                 </td>
-                <td></td>
+                <td>
+                  <div class="d-flex justify-content-end">
+                    <div class="mr-2 ml-2">
+                    <a (click)="showEditIconsForLocation(sublocId, v.amount)">
+                      <mdb-icon far class="orange-text" icon="edit"></mdb-icon></a></div>
+
+                    <div *ngIf="visibleEditIconsLocation && sublocId == rowIndexLocation" class="d-flex">
+                      <div class="mr-2 ml-2">
+                      <a (click)="updateAmount(desiderat.id, v.sublocation)">
+                        <mdb-icon fas class="blue-text" icon="check"></mdb-icon></a></div>
+                      <div class="mr-2 ml-2">
+                      <a (click)="deleteLocation(desiderat.id, v.sublocation)">
+                        <mdb-icon far class="red-text" icon="trash-alt"></mdb-icon></a></div>
+                    </div>
+                  </div>
+                </td>
               </tr>
             </ng-container>
           </ng-container>
@@ -97,37 +170,20 @@
       </table>
     </div>
   </div>
-</div>
+</mdb-card>
 <!-- Editable table -->
 
-<!--Modal-->
-<div
-  mdbModal
-  #frame="mdbModal"
-  class="modal fade top"
-  id="frameModalTop"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="myModalLabel"
-  aria-hidden="true"
-  style="overflow-y: auto"
->
-  <!--Dialog-->
+<!--Modal addLocation-->
+<div mdbModal #addLocationModal="mdbModal" class="modal fade top" id="modalAddLocation" tabindex="-1" role="dialog"
+     aria-labelledby="addLocationModal" aria-hidden="true" style="overflow-y: auto">
   <div class="modal-dialog modal-notify modal-info" role="document">
-    <!--Content-->
     <div class="modal-content">
-      <!--Header-->
       <div class="modal-header text-center">
         <h4 class="modal-title white-text w-100 font-weight-bold py-2">
-          Potrebe na lokaciji
+          Потребе на локацији
         </h4>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-          (click)="frame.hide()"
-        >
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="addLocationModal.hide()">
           <span aria-hidden="true" class="white-text">&times;</span>
         </button>
       </div>
@@ -137,44 +193,116 @@
         <div class="md-form mb-5">
           <mdb-icon fas icon="map-marker-alt"></mdb-icon>
           <input [(ngModel)]="location.sublocation" #ctrl="ngModel"
-            type="text"
-            class="form-control"
-            id="sublocation"
-            mdbInput
+                 type="text"
+                 class="form-control"
+                 id="sublocation"
+                 mdbInput
           />
-          <label for="sublocation">Lokacija</label>
+          <label for="sublocation">Локација</label>
         </div>
 
         <div class="md-form">
           <mdb-icon fas icon="layer-group"></mdb-icon>
           <input [(ngModel)]="location.amount" #ctrl="ngModel"
-            type="number"
-            class="form-control"
-            id="amount"
-            mdbInput
+                 type="number"
+                 class="form-control"
+                 id="amount"
+                 mdbInput
           />
-          <label for="amount">Količina</label>
+          <label for="amount">Количина</label>
         </div>
       </div>
-      <!--/.Body-->
 
-      <!--Footer-->
       <div class="modal-footer justify-content-center">
-        <button
-          type="button"
-          mdbBtn
-          color="info"
-          class="waves-effect"
-          (click)="addLocation()"
-          mdbWavesEffect
-        >
-          Add
+        <button type="button" mdbBtn color="info" class="waves-effect" mdbWavesEffect
+                (click)="addLocation()">
+          Додај
         </button>
       </div>
-      <!--Footer-->
     </div>
-    <!--/.Content-->
   </div>
-  <!--/.Dialog-->
 </div>
-<!--/.Modal-->
+<!--Modal addLocation-->
+
+<!--Modal addDesideratum-->
+<div mdbModal #modalAddDesideratum="mdbModal" class="modal fade top" id="modalAddDesideratum" tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalAdd" aria-hidden="true" style="overflow-y: auto">
+  <div class="modal-dialog modal-notify modal-info" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Нови дезидерат
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modalAddDesideratum.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <form #addForm>
+          <div class="md-form mb-5">
+            <input type="text" id="inputIsbn" class="form-control validate" mdbInput>
+            <label data-error="wrong" data-success="right" for="inputIsbn">ИСБН</label>
+          </div>
+
+          <div class="md-form mb-5">
+            <input type="text" id="inputTitle" class="form-control validate" mdbInput>
+            <label data-error="wrong" data-success="right" for="inputTitle">Наслов</label>
+          </div>
+
+          <div class="md-form mb-5">
+            <input type="text" id="inputAuthor" class="form-control validate" mdbInput>
+            <label data-error="wrong" data-success="right" for="inputAuthor">Аутор</label>
+          </div>
+
+          <div class="md-form mb-5">
+            <input type="text" id="inputPublisher" class="form-control validate" mdbInput>
+            <label data-error="wrong" data-success="right" for="inputPublisher">Издавач</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" mdbBtn color="info" class="waves-effect" mdbWavesEffect
+                (click)="addDesideratum(addForm, modalAddDesideratum)">Додај
+        </button>
+        Modal
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal addDesideratum-->
+
+<!--Modal deleteDesideratum-->
+<div mdbModal #modalDeleteDesideratum="mdbModal" class="modal fade" id="modalDeleteDesideratum" tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalDelete"
+     aria-hidden="true">
+  <div class="modal-dialog modal-notify modal-info" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Брисање дезидерата
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modalDeleteDesideratum.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <p class="text-center h4">Да ли сте сигурни да желите да обришете дезидерат?</p>
+      </div>
+      <div class="modal-footer d-flex justify-content-center deleteButtonsWrapper">
+        <button mdbBtn color="danger" type="button" class="btnYesClass" id="btnYes" data-dismiss="modal" mdbWavesEffect
+                (click)="removeSelectedDesideratum()">
+          Да
+        </button>
+        <button mdbBtn color="primary" type="button" class="btnNoClass" id="btnNo" data-dismiss="modal" mdbWavesEffect
+                (click)="modalDeleteDesideratum.hide()">
+          Не
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal deleteDesideratum-->
