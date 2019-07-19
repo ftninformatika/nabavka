@@ -5,5 +5,4 @@ export class Distributer {
   phone?: string;
   email?: string;
   contactPerson?: string;
-  link?: string;
 }

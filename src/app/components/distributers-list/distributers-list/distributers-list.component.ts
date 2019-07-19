@@ -2,6 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {FirebaseService} from '../../../services/firebase.service';
 import {Distributer} from '../../../models/distributer';
 import {ModalDirective} from 'ng-uikit-pro-standard';
+import {Offer} from '../../../models/offer';
 
 @Component({
   selector: 'app-distributers-list',
@@ -34,6 +35,10 @@ export class DistributersListComponent implements OnInit {
   }
   add() {
     this.firebaseService.addDistributer(this.distributer);
+    const offer: Offer = {};
+    offer.distributer = this.distributer.pib;
+    offer.permalink = 'neki permlink';
+    this.firebaseService.addOffer(offer);
     this.modal.hide();
   }
   remove(distributer: Distributer) {
@@ -42,9 +47,8 @@ export class DistributersListComponent implements OnInit {
   update(distributer: Distributer) {
     this.firebaseService.updateDistributer(distributer);
     this.rowIndex = -1;
-    console.log(distributer);
   }
-  showFrame() {
+  addNewDistributer() {
     this.modal.show();
   }
 }

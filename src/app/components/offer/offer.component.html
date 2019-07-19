@@ -1,1 +1,235 @@
-<p>offer works!</p>
+
+<!-- Editable table -->
+<div class="card">
+  <h3 class="card-header text-center font-weight-bold text-uppercase py-4">Листа понуђених књига</h3>
+  <div class="card-body">
+    <div id="table" class="table-editable">
+           <span >
+           Дистрибутер: {{distributer.name}}
+      </span>
+      <span class="table-add float-right mb-3 mr-2">
+        <a mdbBtn floating="true" color="primary" size="sm" (click)="addNewOffer()">
+          <mdb-icon fas icon="plus"></mdb-icon>
+        </a>
+      </span>
+      <table class="table table-bordered table-responsive-md table-striped text-center">
+        <tr>
+          <th class="text-center">ИСБН</th>
+          <th class="text-center">Наслов</th>
+          <th class="text-center">Аутор</th>
+          <th class="text-center">Издавач</th>
+          <th class="text-center">Цена</th>
+          <th class="text-center">Рабат</th>
+          <th class="text-center">ПДВ</th>
+          <th></th>
+        </tr>
+        <tbody *ngFor="let offer of offeredBooks; let id = index">
+
+
+        <tr>
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              {{offer.isbn}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input mdbInput type="text" name="text" [(ngModel)]="offer.isbn"  class="form-control">
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              {{offer.title}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input mdbInput type="text" name="text" [(ngModel)]="offer.title"  class="form-control">
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              {{offer.author}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input mdbInput type="text" name="text" [(ngModel)]="offer.author"  class="form-control">
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              {{offer.publisher}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input mdbInput type="text" name="text" [(ngModel)]="offer.publisher"  class="form-control">
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              {{offer.price}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input mdbInput type="number" name="text" [(ngModel)]="offer.price"  class="form-control">
+            </ng-container>
+          </td>
+
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              {{offer.rebate}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input mdbInput type="number" name="text" [(ngModel)]="offer.rebate"  class="form-control">
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              {{offer.vat}}
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <input mdbInput type="number" name="text" [(ngModel)]="offer.vat"  class="form-control">
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngIf="id !== rowIndex">
+              <div class="d-flex justify-content-end">
+                <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="edit(id)">
+                  <mdb-icon fas icon="edit"></mdb-icon>
+                </button>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="id == rowIndex">
+              <div class="d-flex justify-content-end">
+                <button mdbBtn color="success" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="update()">
+                  <mdb-icon fas icon="check-circle"></mdb-icon>
+                </button>
+
+                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="remove(offer)">
+                  <mdb-icon fas icon="trash-alt"></mdb-icon>
+                </button>
+              </div>
+            </ng-container>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<!-- Editable table -->
+<!--Modal-->
+<div
+  mdbModal
+  #frame="mdbModal"
+  class="modal fade top"
+  id="frameModalTop"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+  style="overflow-y: auto"
+>
+  <!--Dialog-->
+  <div class="modal-dialog modal-notify modal-info" role="document">
+    <!--Content-->
+    <div class="modal-content">
+      <!--Header-->
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Нова књига
+        </h4>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          (click)="frame.hide()"
+        >
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+
+      <!--Body-->
+      <div class="modal-body">
+        <div class="md-form mb-5">
+          <input [(ngModel)]="book.isbn" #ctrl="ngModel"
+                 type="text"
+                 class="form-control"
+                 id="isbn"
+                 mdbInput
+          />
+          <label for="isbn">ИСБН</label>
+        </div>
+        <div class="md-form mb-5">
+          <input [(ngModel)]="book.title" #ctrl="ngModel"
+                 type="text"
+                 class="form-control"
+                 id="title"
+                 mdbInput
+          />
+          <label for="title">Наслов</label>
+        </div>
+        <div class="md-form mb-5">
+          <input [(ngModel)]="book.author" #ctrl="ngModel"
+                 type="text"
+                 class="form-control"
+                 id="author"
+                 mdbInput
+          />
+          <label for="author">Аутор</label>
+        </div>
+        <div class="md-form mb-5">
+          <input [(ngModel)]="book.publisher" #ctrl="ngModel"
+                 type="text"
+                 class="form-control"
+                 id="publisher"
+                 mdbInput
+          />
+          <label for="publisher">Издавач</label>
+        </div>
+        <div class="md-form mb-5">
+          <input [(ngModel)]="book.price" #ctrl="ngModel"
+                 type="number"
+                 class="form-control"
+                 id="price"
+                 mdbInput
+          />
+          <label for="price">Цена</label>
+        </div>
+        <div class="md-form mb-5">
+          <input [(ngModel)]="book.rebate" #ctrl="ngModel"
+                 type="number"
+                 class="form-control"
+                 id="rebate"
+                 mdbInput
+          />
+          <label for="rebate">Рабат</label>
+        </div>
+        <div class="md-form mb-5">
+          <input [(ngModel)]="book.vat" #ctrl="ngModel"
+                 type="number"
+                 class="form-control"
+                 id="vat"
+                 mdbInput
+          />
+          <label for="vat">ПДВ</label>
+        </div>
+
+      </div>
+      <!--/.Body-->
+
+      <!--Footer-->
+      <div class="modal-footer justify-content-center">
+        <button
+          type="button"
+          mdbBtn
+          color="info"
+          class="waves-effect"
+          (click)="add()"
+          mdbWavesEffect
+        >
+          Додај
+        </button>
+      </div>
+      <!--Footer-->
+    </div>
+    <!--/.Content-->
+  </div>
+  <!--/.Dialog-->
+</div>
+<!--/.Modal-->
+

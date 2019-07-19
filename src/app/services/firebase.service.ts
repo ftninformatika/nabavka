@@ -4,6 +4,7 @@ import {Desideratum} from '../models/desideratum';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import {Distributer} from '../models/distributer';
+import {Offer} from '../models/offer';
 
 
 @Injectable({
@@ -46,4 +47,24 @@ export class FirebaseService {
   addDistributer(item: Distributer) {
     return this.firestore.collection('Distributer').add(item);
   }
+  addOffer(item: Offer) {
+    return this.firestore.collection('Offer').add(item);
+  }
+  updateOffer(item: Offer) {
+    this.firestore.collection('Offer').doc(item.id).update(item);
+    this.firestore.collection('Offer').doc(item.id).update({id: firebase.firestore.FieldValue.delete()});
+
+  }
+  removeOffer(id: string) {
+    this.firestore.collection('Offer').doc(id).delete();
+  }
+  getOffers(pib: string) {
+    return this.firestore.collection('Offer', ref =>
+      ref.where('distributer', '==', pib)).snapshotChanges();
+  }
+  getDistributer(pib: string) {
+    return this.firestore.collection('Distributer', ref =>
+      ref.where('pib', '==', pib)).snapshotChanges();
+  }
+
 }
