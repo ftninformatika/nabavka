@@ -1,5 +1,5 @@
 <!-- Editable table -->
-<mdb-card cascade="true" narrower="true">
+<mdb-card>
 
   <div class="card-header">
     <h3 class="py-2">Дезидерати</h3>
@@ -7,10 +7,10 @@
 
   <div class="card-body">
     <div id="table" class="table-editable">
-      <div class="narrower d-flex justify-content-between align-items-center">
-        <div>
-          <div class="md-form">
-            <input mdbInput type="text" class="form-control" [(ngModel)]="searchText" id="search-input">
+      <div class="d-flex">
+        <div class="d-flex flex-grow-1">
+          <div class="md-form mt-0">
+            <input mdbInput type="text" class="form-control ml-0" [(ngModel)]="searchText" id="search-input">
             <label for="search-input">Претражи</label>
           </div>
         </div>
@@ -48,50 +48,50 @@
         </tr>
         </thead>
 
-        <tbody *ngFor="let desiderat of desiderataList; let id = index">
+        <tbody *ngFor="let desiderat of desiderataList; let id = index;">
         <tr >
           <td>
             <a (click)="toggle(id)">
               <i class="far" [ngClass]="{'fa-plus-square': !hide[id], 'fa-minus-square': hide[id]}"></i></a>
           </td>
           <td>
-            <ng-container *ngIf="id !== rowIndex">
-              {{desiderat.isbn}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
+            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else isbn">
               <input [(ngModel)]="selectedDesideratum.isbn" #ctrl="ngModel" type="text" class="form-control" mdbInput
                      (keyup.enter)="saveEditedDesideratum()">
             </ng-container>
+            <ng-template #isbn>
+              {{desiderat.isbn}}
+            </ng-template>
           </td>
           <td>
-            <ng-container *ngIf="id !== rowIndex">
-              {{desiderat.title}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
+            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else title">
               <input [(ngModel)]="selectedDesideratum.title" #ctrl="ngModel" type="text" class="form-control" mdbInput
                      (keyup.enter)="saveEditedDesideratum()">
             </ng-container>
+            <ng-template #title>
+              {{desiderat.title}}
+            </ng-template>
           </td>
           <td>
-            <ng-container *ngIf="id !== rowIndex">
-              {{desiderat.author}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
+            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else author">
               <input [(ngModel)]="selectedDesideratum.author" #ctrl="ngModel" type="text" class="form-control" mdbInput
                      (keyup.enter)="saveEditedDesideratum()">
             </ng-container>
+            <ng-template #author>
+              {{desiderat.author}}
+            </ng-template>
           </td>
           <td>
-            <ng-container *ngIf="id !== rowIndex">
-              {{desiderat.publisher}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
+            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else publisher">
               <input [(ngModel)]="selectedDesideratum.publisher" #ctrl="ngModel" type="text" class="form-control" mdbInput
                      (keyup.enter)="saveEditedDesideratum()">
             </ng-container>
+            <ng-template #publisher>
+              {{desiderat.publisher}}
+            </ng-template>
           </td>
           <td></td>
-          <td></td>
+          <td class="font-italic font-weight-bold">{{calculateAmountForDesideratum(desiderat.id)}}</td>
           <td>
             <div class="d-flex flex-column justify-content-end">
               <div class="d-flex justify-content-end">
@@ -103,7 +103,7 @@
                 </button>
               </div>
 
-              <div *ngIf="visibleEditIcons && id == rowIndex" class="d-flex justify-content-end">
+              <div *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null" class="d-flex justify-content-end">
                 <button mdbBtn color="info" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="saveEditedDesideratum()">
                   <mdb-icon fas icon="check"></mdb-icon>
                 </button>
@@ -116,43 +116,42 @@
         </tr>
         <ng-container *ngIf="hide[id]">
           <ng-container *ngFor="let l of desiderat.locations|groupBy:'location'; let locId = index">
-            <tr [ngStyle]="{'color': 'green',  'font-weight': 'bold'}">
-              <td><a (click)="toggleInner(locId)">
-                  <i class="far" [ngClass]="{'fa-plus-square': !hideInner[locId], 'fa-minus-square': hideInner[locId]}"></i></a>
+            <tr class="font-weight-bold teal-text">
+              <td><a (click)="toggleInner(id, locId)">
+                  <i class="far" [ngClass]="{'fa-plus-square': !hideInner[id][locId], 'fa-minus-square': hideInner[id][locId]}"></i></a>
               </td>
-              <td>{{locId}}</td>
               <td></td>
               <td></td>
               <td></td>
-              <td>{{l.key}}</td>
               <td></td>
+              <td class="font-italic">{{l.key}}</td>
+              <td class="font-italic">{{calculateAmountForLocation(desiderat.id, l.key)}}</td>
               <td></td>
             </tr>
-            <ng-container *ngIf="hideInner[locId]">
+            <ng-container *ngIf="hideInner[id][locId]">
               <tr *ngFor="let v of l.value; let sublocId = index">
                 <td></td>
-                <td>{{sublocId}}</td>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td>{{v.sublocation}}</td>
                 <td>
-                  <ng-container *ngIf="sublocId !== rowIndexLocation">
-                    {{v.amount}}
-                  </ng-container>
-                  <ng-container *ngIf="sublocId == rowIndexLocation">
+                  <ng-container *ngIf="id == index1stLevel && locId == index2ndLevel && sublocId == index3rdLevel; else sublocation">
                     <input [(ngModel)]="inputAmount" type="number" class="form-control" mdbInput
                            (keyup.enter)="updateAmount(desiderat.id, v.sublocation)">
                   </ng-container>
-
+                  <ng-template #sublocation>
+                    {{v.amount}}
+                  </ng-template>
                 </td>
                 <td>
                   <div class="d-flex justify-content-end">
                     <div class="mr-2 ml-2">
-                    <a (click)="showEditIconsForLocation(sublocId, v.amount)">
+                    <a (click)="showEditIconsForLocation(id, locId, sublocId, v.amount)">
                       <mdb-icon far class="orange-text" icon="edit"></mdb-icon></a></div>
 
-                    <div *ngIf="visibleEditIconsLocation && sublocId == rowIndexLocation" class="d-flex">
+                    <div *ngIf="id == index1stLevel && locId == index2ndLevel && sublocId == index3rdLevel" class="d-flex">
                       <div class="mr-2 ml-2">
                       <a (click)="updateAmount(desiderat.id, v.sublocation)">
                         <mdb-icon fas class="blue-text" icon="check"></mdb-icon></a></div>
@@ -174,7 +173,7 @@
 <!-- Editable table -->
 
 <!--Modal addLocation-->
-<div mdbModal #addLocationModal="mdbModal" class="modal fade top" id="modalAddLocation" tabindex="-1" role="dialog"
+<div mdbModal #addLocationModal class="modal fade top" id="modalAddLocation" tabindex="-1" role="dialog"
      aria-labelledby="addLocationModal" aria-hidden="true" style="overflow-y: auto">
   <div class="modal-dialog modal-notify modal-info" role="document">
     <div class="modal-content">
@@ -225,7 +224,7 @@
 <!--Modal addLocation-->
 
 <!--Modal addDesideratum-->
-<div mdbModal #modalAddDesideratum="mdbModal" class="modal fade top" id="modalAddDesideratum" tabindex="-1"
+<div mdbModal #modalAddDesideratum class="modal fade top" id="modalAddDesideratum" tabindex="-1"
      role="dialog"
      aria-labelledby="modalAdd" aria-hidden="true" style="overflow-y: auto">
   <div class="modal-dialog modal-notify modal-info" role="document">
@@ -266,7 +265,6 @@
         <button type="button" mdbBtn color="info" class="waves-effect" mdbWavesEffect
                 (click)="addDesideratum(addForm, modalAddDesideratum)">Додај
         </button>
-        Modal
       </div>
     </div>
   </div>
@@ -274,7 +272,7 @@
 <!--Modal addDesideratum-->
 
 <!--Modal deleteDesideratum-->
-<div mdbModal #modalDeleteDesideratum="mdbModal" class="modal fade" id="modalDeleteDesideratum" tabindex="-1"
+<div mdbModal #modalDeleteDesideratum class="modal fade" id="modalDeleteDesideratum" tabindex="-1"
      role="dialog"
      aria-labelledby="modalDelete"
      aria-hidden="true">

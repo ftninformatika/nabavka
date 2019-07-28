@@ -14,20 +14,19 @@ export class DesideratumListComponent implements OnInit {
   @ViewChild('addLocationModal', {static: false}) modalLocation: ModalDirective;
   @ViewChild('modalDeleteDesideratum', {static: false}) modalDelete: ModalDirective;
   @ViewChild(MdbTableDirective, { static: true }) mdbTable: MdbTableDirective;
-  hide: Array<boolean> = [];
-  hideInner: Array<boolean> = [];
+  hide: boolean[] = [];
+  hideInner: boolean[][] = [[], []];
   desiderataList: Desideratum[];
   location: Location = {};
   selectedId: string;
-  rowIndex: number;
-  visibleEditIcons: boolean;
+  index1stLevel: number;
+  index2ndLevel: number;
+  index3rdLevel: number;
   selectedDesideratum: Desideratum;
   searchText: string;
   previous: string;
-  rowIndexLocation: number;
-  visibleEditIconsLocation: boolean;
   inputAmount: number;
-
+  disableToggle: boolean;
 
   constructor(private firebaseService: FirebaseService) {
   }
@@ -70,18 +69,37 @@ export class DesideratumListComponent implements OnInit {
   removeSelectedDesideratum() {
     this.firebaseService.deleteDesideratum(this.selectedId);
     this.modalDelete.hide();
+    this.index1stLevel = null;
+    this.index2ndLevel = null;
+    this.index3rdLevel = null;
+    this.disableToggle = false;
   }
 
   showEditIcons(index: number, id: string) {
-    this.rowIndex = index;
-    this.visibleEditIcons = true;
+    this.index1stLevel = index;
+    this.index2ndLevel = null;
+    this.index3rdLevel = null;
     this.selectedDesideratum = this.desiderataList.find(x => x.id === id);
+    this.disableToggle = true;
   }
 
   saveEditedDesideratum() {
     this.firebaseService.updateDesideratum(this.selectedDesideratum);
-    this.visibleEditIcons = false;
-    this.rowIndex = null;
+    this.index1stLevel = null;
+    this.index2ndLevel = null;
+    this.index3rdLevel = null;
+    this.disableToggle = false;
+    this.searchItems();
+    this.searchItems();
+  }
+
+  calculateAmountForDesideratum(id: string) {
+    const desideratum = this.desiderataList.find(x => x.id === id);
+    let amount = 0;
+    for (const location of desideratum.locations) {
+      amount = amount + location.amount;
+    }
+    return amount;
   }
 
   showAddLocationModal(id: string) {
@@ -98,10 +116,12 @@ export class DesideratumListComponent implements OnInit {
     this.modalLocation.hide();
   }
 
-  showEditIconsForLocation(index: number, amount: number) {
-    this.rowIndexLocation = index;
-    this.visibleEditIconsLocation = true;
+  showEditIconsForLocation(index1: number, index2: number, index3: number, amount: number) {
+    this.index1stLevel = index1;
+    this.index2ndLevel = index2;
+    this.index3rdLevel = index3;
     this.inputAmount = amount;
+    this.disableToggle = true;
   }
 
   updateAmount(id: string, sublocation: string) {
@@ -109,8 +129,10 @@ export class DesideratumListComponent implements OnInit {
     const location = desideratum.locations.find(x => x.sublocation === sublocation);
     location.amount = this.inputAmount;
     this.firebaseService.updateDesideratum(desideratum);
-    this.visibleEditIconsLocation = false;
-    this.rowIndexLocation = null;
+    this.index1stLevel = null;
+    this.index2ndLevel = null;
+    this.index3rdLevel = null;
+    this.disableToggle = false;
   }
 
   deleteLocation(id: string, sublocation: string) {
@@ -118,16 +140,32 @@ export class DesideratumListComponent implements OnInit {
     const locationIndex = desideratum.locations.findIndex(x => x.sublocation === sublocation);
     desideratum.locations.splice(locationIndex, 1);
     this.firebaseService.updateDesideratum(desideratum);
-    this.visibleEditIconsLocation = false;
-    this.rowIndexLocation = null;
+    this.index1stLevel = null;
+    this.index2ndLevel = null;
+    this.index3rdLevel = null;
+    this.disableToggle = false;
+  }
+
+  calculateAmountForLocation(id: string, loc: string) {
+    const desideratum = this.desiderataList.find(x => x.id === id);
+    const locations = desideratum.locations.filter(x => x.location === loc);
+    let amount = 0;
+    for (const location of locations) {
+      amount = amount + location.amount;
+    }
+    return amount;
   }
 
   toggle(row) {
-    this.hide[row] = !this.hide[row];
+    if (!this.disableToggle) {
+      this.hide[row] = !this.hide[row];
+    }
   }
 
-  toggleInner(row) {
-    this.hideInner[row] = !this.hideInner[row];
+  toggleInner(row, col) {
+    if (!this.disableToggle) {
+      this.hideInner[row][col] = !this.hideInner[row][col];
+    }
   }
 
   searchItems() {
