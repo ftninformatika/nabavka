@@ -3,6 +3,7 @@ import {Desideratum} from '../../models/desideratum';
 import {Location} from '../../models/location';
 import {FirebaseService} from '../../services/firebase.service';
 import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
+import {Sublocation} from '../../models/sublocation';
 
 @Component({
   selector: 'app-desideratum-list',
@@ -27,6 +28,7 @@ export class DesideratumListComponent implements OnInit {
   previous: string;
   inputAmount: number;
   disableToggle: boolean;
+  sublocationList: Sublocation[];
 
   constructor(private firebaseService: FirebaseService) {
   }
@@ -46,6 +48,11 @@ export class DesideratumListComponent implements OnInit {
       this.mdbTable.setDataSource(this.desiderataList);
       this.desiderataList = this.mdbTable.getDataSource();
       this.previous = this.mdbTable.getDataSource();
+    });
+    this.firebaseService.getSublocations().subscribe(data => {
+      this.sublocationList = data.map(e => {
+        return e.payload.doc.data() as Sublocation;
+      });
     });
   }
 
@@ -180,5 +187,21 @@ export class DesideratumListComponent implements OnInit {
       this.desiderataList = this.mdbTable.searchLocalDataBy(this.searchText);
       this.mdbTable.setDataSource(prev);
     }
+  }
+
+  selectSublocation(event: any) {
+    console.log(event);
+    this.location.sublocation = event as string;
+    console.log(this.location.sublocation);
+  }
+
+  getSublocation(code: string) {
+    const sublocation = this.sublocationList.find(x => x.code === code);
+    if (sublocation) {
+      return sublocation.code + ' - ' + sublocation.name;
+    } else {
+      return code;
+    }
+
   }
 }

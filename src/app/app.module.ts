@@ -15,6 +15,7 @@ import { GroupByPipe } from './pipes/group-by.pipe';
 import {FormsModule} from '@angular/forms';
 import { DistributersListComponent } from './components/distributers-list/distributers-list/distributers-list.component';
 import { OfferComponent } from './components/offer/offer.component';
+import { SelectLocationComponent } from './components/select-location/select-location.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { OfferComponent } from './components/offer/offer.component';
     DesideratumListComponent,
     GroupByPipe,
     DistributersListComponent,
-    OfferComponent
+    OfferComponent,
+    SelectLocationComponent
   ],
   imports: [
     BrowserModule,

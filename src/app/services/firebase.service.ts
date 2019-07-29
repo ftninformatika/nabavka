@@ -34,6 +34,9 @@ export class FirebaseService {
     return this.firestore.collection('Desiderata').snapshotChanges();
   }
 
+  getSublocations() {
+    return this.firestore.collection('Sublocation').snapshotChanges();
+  }
   getDistributers() {
     return this.firestore.collection('Distributer').snapshotChanges();
   }
