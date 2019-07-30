@@ -49,7 +49,7 @@
         </thead>
 
         <tbody *ngFor="let desiderat of desiderataList; let id = index;">
-        <tr >
+        <tr>
           <td>
             <a (click)="toggle(id)">
               <i class="far" [ngClass]="{'fa-plus-square': !hide[id], 'fa-minus-square': hide[id]}"></i></a>
@@ -100,7 +100,7 @@
                   <mdb-icon far icon="edit"></mdb-icon>
                 </button>
                 <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        (click)="showAddLocationModal(desiderat.id)">
+                        (click)="showAddLocationModal(id, desiderat.id)">
                   <mdb-icon fas icon="plus"></mdb-icon>
                 </button>
               </div>
@@ -110,7 +110,8 @@
                         (click)="saveEditedDesideratum()">
                   <mdb-icon fas icon="check"></mdb-icon>
                 </button>
-                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="showRemoveDesideratumModal(desiderat.id)">
+                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
+                        (click)="showRemoveDesideratumModal()">
                   <mdb-icon far icon="trash-alt"></mdb-icon>
                 </button>
               </div>
@@ -120,10 +121,10 @@
         <ng-container *ngIf="hide[id]">
           <ng-container *ngFor="let l of desiderat.locations|groupBy:'location'; let locId = index">
             <tr class="font-weight-bold teal-text">
+              <td></td>
               <td><a (click)="toggleInner(id, locId)">
                 <i class="far" [ngClass]="{'fa-plus-square': !hideInner[id][locId], 'fa-minus-square': hideInner[id][locId]}"></i></a>
               </td>
-              <td></td>
               <td></td>
               <td></td>
               <td></td>
@@ -280,7 +281,7 @@
      role="dialog"
      aria-labelledby="modalDelete"
      aria-hidden="true">
-  <div class="modal-dialog modal-notify modal-info" role="document">
+  <div class="modal-dialog modal-notify modal-danger" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
         <h4 class="modal-title white-text w-100 font-weight-bold py-2">
@@ -302,6 +303,36 @@
         <button mdbBtn color="primary" type="button" class="btnNoClass" id="btnNo" data-dismiss="modal" mdbWavesEffect
                 (click)="modalDeleteDesideratum.hide()">
           Не
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal deleteDesideratum-->
+
+<!--Modal alreadyExists-->
+<div mdbModal #modalAlreadyExists class="modal fade" id="modalAlreadyExists" tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalAlreadyExists"
+     aria-hidden="true">
+  <div class="modal-dialog modal-notify modal-warning" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Дуплирање
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modalDeleteDesideratum.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <p class="text-center h4">Ови подаци већ постоје у табели! Ажурирајте постојеће податке!</p>
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button mdbBtn color="primary" type="button" class="waves-effect" mdbWavesEffect id="btnOK" data-dismiss="modal"
+                (click)="modalAlreadyExists.hide()">
+          У реду
         </button>
       </div>
     </div>

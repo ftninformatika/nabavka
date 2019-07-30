@@ -49,7 +49,7 @@
         </thead>
 
         <tbody *ngFor="let desiderat of desiderataList; let id = index;">
-        <tr mdbTableCol>
+        <tr>
           <td>
             <a (click)="toggle(id)">
               <i class="far" [ngClass]="{'fa-plus-square': !hide[id], 'fa-minus-square': hide[id]}"></i></a>
@@ -111,7 +111,7 @@
                   <mdb-icon fas icon="check"></mdb-icon>
                 </button>
                 <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        (click)="showRemoveDesideratumModal(desiderat.id)">
+                        (click)="showRemoveDesideratumModal()">
                   <mdb-icon far icon="trash-alt"></mdb-icon>
                 </button>
               </div>
@@ -120,7 +120,7 @@
         </tr>
         <ng-container *ngIf="hide[id]">
           <ng-container *ngFor="let l of desiderat.locations|groupBy:'location'; let locId = index">
-            <tr mdbTableCol class="font-weight-bold teal-text">
+            <tr class="font-weight-bold teal-text">
               <td></td>
               <td><a (click)="toggleInner(id, locId)">
                   <i class="far" [ngClass]="{'fa-plus-square': !hideInner[id][locId], 'fa-minus-square': hideInner[id][locId]}"></i></a>
@@ -133,7 +133,7 @@
               <td></td>
             </tr>
             <ng-container *ngIf="hideInner[id][locId]">
-              <tr mdbTableCol *ngFor="let v of l.value; let sublocId = index">
+              <tr *ngFor="let v of l.value; let sublocId = index">
                 <td></td>
                 <td></td>
                 <td></td>

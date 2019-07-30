@@ -13,6 +13,7 @@ import {Sublocation} from '../../models/sublocation';
 export class AcquisitionComponent implements OnInit {
   @ViewChild('addLocationModal', {static: false}) modalLocation: ModalDirective;
   @ViewChild('modalDeleteDesideratum', {static: false}) modalDelete: ModalDirective;
+  @ViewChild('modalAlreadyExists', {static: false}) modalAlreadyExists: ModalDirective;
   @ViewChild(MdbTableDirective, { static: true }) mdbTable: MdbTableDirective;
   hide: boolean[] = [];
   hideInner: boolean[][] = [];
@@ -26,7 +27,6 @@ export class AcquisitionComponent implements OnInit {
   searchText: string;
   previous: string;
   inputAmount: number;
-  disableToggle: boolean;
   sublocationList: Sublocation[];
 
   constructor(private firebaseService: FirebaseService) {
@@ -37,11 +37,23 @@ export class AcquisitionComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.firebaseService.getDesiderataData().subscribe(data => {
-      this.desiderataList = data.map(e => {
+    // this.firebaseService.getDesiderataData().subscribe(data => {
+    //   this.desiderataList = data.map(e => {
+    //     return {
+    //       id: e.payload.doc.id,
+    //       ...e.payload.doc.data() as any
+    //     } as Desideratum;
+    //   });
+    //   this.mdbTable.setDataSource(this.desiderataList);
+    //   this.desiderataList = this.mdbTable.getDataSource();
+    //   this.previous = this.mdbTable.getDataSource();
+    //   this.resetHideLists();
+    // });
+    this.firebaseService.getDesiderataDataOnce().subscribe(data => {
+      this.desiderataList = data.docs.map(e => {
         return {
-          id: e.payload.doc.id,
-          ...e.payload.doc.data() as any
+          id: e.id,
+          ...e.data() as any
         } as Desideratum;
       });
       this.mdbTable.setDataSource(this.desiderataList);
@@ -63,23 +75,30 @@ export class AcquisitionComponent implements OnInit {
       author: form[2].value,
       publisher: form[3].value
     };
-    this.firebaseService.addDesideratum(desideratum);
+    this.firebaseService.addDesideratum(desideratum).then(docRef => {
+      desideratum.id = docRef.id;
+    });
+    this.desiderataList.splice(0, 0, desideratum);
+    this.hide.splice(0, 0, false);
+    this.hideInner.splice(0, 0, []);
     form.reset();
     modalInstance.hide();
   }
 
-  showRemoveDesideratumModal(id: string) {
-    this.selectedId = id;
+  showRemoveDesideratumModal() {
     this.modalDelete.show();
   }
 
   removeSelectedDesideratum() {
-    this.firebaseService.deleteDesideratum(this.selectedId);
+    this.firebaseService.deleteDesideratum(this.selectedDesideratum.id);
+    const index = this.desiderataList.findIndex(x => x.id === this.selectedDesideratum.id);
+    this.desiderataList.splice(index, 1);
+    this.hide.splice(index, 1);
+    this.hideInner.splice(index, 1);
     this.modalDelete.hide();
     this.index1stLevel = null;
     this.index2ndLevel = null;
     this.index3rdLevel = null;
-    this.disableToggle = false;
   }
 
   showEditIcons(index: number, id: string) {
@@ -87,7 +106,6 @@ export class AcquisitionComponent implements OnInit {
     this.index2ndLevel = null;
     this.index3rdLevel = null;
     this.selectedDesideratum = this.desiderataList.find(x => x.id === id);
-    this.disableToggle = true;
   }
 
   saveEditedDesideratum() {
@@ -95,9 +113,6 @@ export class AcquisitionComponent implements OnInit {
     this.index1stLevel = null;
     this.index2ndLevel = null;
     this.index3rdLevel = null;
-    this.disableToggle = false;
-    this.searchItems();
-    this.searchItems();
   }
 
   calculateAmountForDesideratum(id: string) {
@@ -111,21 +126,28 @@ export class AcquisitionComponent implements OnInit {
     return amount;
   }
 
-  showAddLocationModal(id: string) {
+  showAddLocationModal(index: number, id: string) {
     this.selectedId = id;
     this.location = {};
     this.modalLocation.show();
   }
 
   addLocation() {
-    this.location.location = this.location.sublocation.substring(0, 2);
     const desideratum = this.desiderataList.find(x => x.id === this.selectedId);
     if (!desideratum.locations) {
       desideratum.locations = [];
     }
-    desideratum.locations.push(this.location);
-    this.firebaseService.updateDesideratum(desideratum);
-    this.modalLocation.hide();
+    if (desideratum.locations.find(x => x.sublocation === this.location.sublocation)) {
+      this.modalLocation.hide();
+      this.modalAlreadyExists.show();
+    } else {
+      this.location.location = this.location.sublocation.substring(0, 2);
+      desideratum.locations.push(this.location);
+      const renderFix = [...desideratum.locations];
+      desideratum.locations = renderFix;
+      this.firebaseService.updateDesideratum(desideratum);
+      this.modalLocation.hide();
+    }
   }
 
   showEditIconsForLocation(index1: number, index2: number, index3: number, amount: number) {
@@ -133,7 +155,6 @@ export class AcquisitionComponent implements OnInit {
     this.index2ndLevel = index2;
     this.index3rdLevel = index3;
     this.inputAmount = amount;
-    this.disableToggle = true;
   }
 
   updateAmount(id: string, sublocation: string) {
@@ -144,18 +165,18 @@ export class AcquisitionComponent implements OnInit {
     this.index1stLevel = null;
     this.index2ndLevel = null;
     this.index3rdLevel = null;
-    this.disableToggle = false;
   }
 
   deleteLocation(id: string, sublocation: string) {
     const desideratum = this.desiderataList.find(x => x.id === id);
     const locationIndex = desideratum.locations.findIndex(x => x.sublocation === sublocation);
     desideratum.locations.splice(locationIndex, 1);
+    const renderFix = [...desideratum.locations];
+    desideratum.locations = renderFix;
     this.firebaseService.updateDesideratum(desideratum);
     this.index1stLevel = null;
     this.index2ndLevel = null;
     this.index3rdLevel = null;
-    this.disableToggle = false;
   }
 
   calculateAmountForLocation(id: string, loc: string) {
@@ -169,18 +190,14 @@ export class AcquisitionComponent implements OnInit {
   }
 
   toggle(row) {
-    if (!this.disableToggle) {
-      this.hide[row] = !this.hide[row];
-    }
+    this.hide[row] = !this.hide[row];
   }
 
   toggleInner(row, col) {
-    if (!this.disableToggle) {
-      if (!this.hideInner[row]) {
-        this.hideInner[row] = [];
-      }
-      this.hideInner[row][col] = !this.hideInner[row][col];
+    if (!this.hideInner[row]) {
+      this.hideInner[row] = [];
     }
+    this.hideInner[row][col] = !this.hideInner[row][col];
   }
 
   resetHideLists() {
@@ -216,4 +233,5 @@ export class AcquisitionComponent implements OnInit {
       return code;
     }
   }
+
 }
