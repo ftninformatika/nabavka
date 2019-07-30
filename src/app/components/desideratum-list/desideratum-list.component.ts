@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {Desideratum} from '../../models/desideratum';
 import {Location} from '../../models/location';
 import {FirebaseService} from '../../services/firebase.service';
@@ -14,12 +14,14 @@ import {Sublocation} from '../../models/sublocation';
 export class DesideratumListComponent implements OnInit {
   @ViewChild('addLocationModal', {static: false}) modalLocation: ModalDirective;
   @ViewChild('modalDeleteDesideratum', {static: false}) modalDelete: ModalDirective;
+  @ViewChild('modalAlreadyExists', {static: false}) modalAlreadyExists: ModalDirective;
   @ViewChild(MdbTableDirective, { static: true }) mdbTable: MdbTableDirective;
   hide: boolean[] = [];
-  hideInner: boolean[][] = [[], []];
+  hideInner: boolean[][] = [];
   desiderataList: Desideratum[];
   location: Location = {};
   selectedId: string;
+  index1stLevelForLocation: number;
   index1stLevel: number;
   index2ndLevel: number;
   index3rdLevel: number;
@@ -38,16 +40,29 @@ export class DesideratumListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.firebaseService.getDesiderataData().subscribe(data => {
-      this.desiderataList = data.map(e => {
+    // this.firebaseService.getDesiderataData().subscribe(data => {
+    //   this.desiderataList = data.map(e => {
+    //     return {
+    //       id: e.payload.doc.id,
+    //       ...e.payload.doc.data() as any
+    //     } as Desideratum;
+    //   });
+    //   this.mdbTable.setDataSource(this.desiderataList);
+    //   this.desiderataList = this.mdbTable.getDataSource();
+    //   this.previous = this.mdbTable.getDataSource();
+    //   this.resetHideLists();
+    // });
+    this.firebaseService.getDesiderataDataOnce().subscribe(data => {
+      this.desiderataList = data.docs.map(e => {
         return {
-          id: e.payload.doc.id,
-          ...e.payload.doc.data() as any
+          id: e.id,
+          ...e.data() as any
         } as Desideratum;
       });
       this.mdbTable.setDataSource(this.desiderataList);
       this.desiderataList = this.mdbTable.getDataSource();
       this.previous = this.mdbTable.getDataSource();
+      this.resetHideLists();
     });
     this.firebaseService.getSublocations().subscribe(data => {
       this.sublocationList = data.map(e => {
@@ -64,6 +79,7 @@ export class DesideratumListComponent implements OnInit {
       publisher: form[3].value
     };
     this.firebaseService.addDesideratum(desideratum);
+    this.desiderataList.splice(0, 0, desideratum);
     form.reset();
     modalInstance.hide();
   }
@@ -103,24 +119,51 @@ export class DesideratumListComponent implements OnInit {
   calculateAmountForDesideratum(id: string) {
     const desideratum = this.desiderataList.find(x => x.id === id);
     let amount = 0;
-    for (const location of desideratum.locations) {
-      amount = amount + location.amount;
+    if (desideratum.locations) {
+      for (const location of desideratum.locations) {
+        amount = amount + location.amount;
+      }
     }
     return amount;
   }
 
-  showAddLocationModal(id: string) {
+  showAddLocationModal(index: number, id: string) {
+    this.index1stLevelForLocation = index;
     this.selectedId = id;
     this.location = {};
     this.modalLocation.show();
   }
 
   addLocation() {
-    this.location.location = this.location.sublocation.substring(0, 2);
+    this.mdbTable.dataSourceChange().subscribe((data: any) => {
+      console.log('change');
+    });
     const desideratum = this.desiderataList.find(x => x.id === this.selectedId);
-    desideratum.locations.push(this.location);
-    this.firebaseService.updateDesideratum(desideratum);
-    this.modalLocation.hide();
+    if (!desideratum.locations) {
+      desideratum.locations = [];
+    }
+    if (desideratum.locations.find(x => x.sublocation === this.location.sublocation)) {
+      this.modalLocation.hide();
+      this.modalAlreadyExists.show();
+    } else {
+      this.location.location = this.location.sublocation.substring(0, 2);
+      desideratum.locations.push(this.location);
+      this.firebaseService.updateDesideratum(desideratum);
+
+      this.mdbTable.getDataSource().forEach((el: any, index: any) => {
+        if (el.id === desideratum.id) {
+          el.locations = desideratum.locations;
+          console.log(el);
+        }
+      });
+
+      this.modalLocation.hide();
+      // this.desiderataList = [...this.desiderataList];
+      // this.mdbTable.setDataSource(this.desiderataList);
+      // this.desiderataList = this.mdbTable.getDataSource();
+      // this.previous = this.mdbTable.getDataSource();
+
+    }
   }
 
   showEditIconsForLocation(index1: number, index2: number, index3: number, amount: number) {
@@ -143,14 +186,31 @@ export class DesideratumListComponent implements OnInit {
   }
 
   deleteLocation(id: string, sublocation: string) {
+    this.mdbTable.dataSourceChange().subscribe((data: any) => {
+      console.log('change');
+    });
     const desideratum = this.desiderataList.find(x => x.id === id);
     const locationIndex = desideratum.locations.findIndex(x => x.sublocation === sublocation);
     desideratum.locations.splice(locationIndex, 1);
     this.firebaseService.updateDesideratum(desideratum);
+    this.mdbTable.rowRemoved().subscribe((data: any) => {
+      console.log('removed');
+      console.log(data);
+      this.mdbTable.setDataSource(this.desiderataList);
+      this.desiderataList = this.mdbTable.getDataSource();
+      this.previous = this.mdbTable.getDataSource();
+    });
     this.index1stLevel = null;
     this.index2ndLevel = null;
     this.index3rdLevel = null;
     this.disableToggle = false;
+  }
+
+  emitDataSourceChange() {
+    this.mdbTable.dataSourceChange().subscribe((data: any) => {
+      console.log('emit change');
+      console.log(data);
+    });
   }
 
   calculateAmountForLocation(id: string, loc: string) {
@@ -164,14 +224,25 @@ export class DesideratumListComponent implements OnInit {
   }
 
   toggle(row) {
-    if (!this.disableToggle) {
+    //console.log('toggle' + row);
+    //if (!this.disableToggle) {
       this.hide[row] = !this.hide[row];
-    }
+    //}
   }
 
   toggleInner(row, col) {
     if (!this.disableToggle) {
+      if (!this.hideInner[row]) {
+        this.hideInner[row] = [];
+      }
       this.hideInner[row][col] = !this.hideInner[row][col];
+    }
+  }
+
+  resetHideLists() {
+    for (const i of Object.keys(this.desiderataList)) {
+      this.hide[i] = false;
+      this.hideInner[i] = [];
     }
   }
 
@@ -190,9 +261,7 @@ export class DesideratumListComponent implements OnInit {
   }
 
   selectSublocation(event: any) {
-    console.log(event);
     this.location.sublocation = event as string;
-    console.log(this.location.sublocation);
   }
 
   getSublocation(code: string) {
@@ -202,6 +271,5 @@ export class DesideratumListComponent implements OnInit {
     } else {
       return code;
     }
-
   }
 }

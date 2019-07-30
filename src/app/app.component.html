@@ -19,18 +19,12 @@
             <a class="dropdown-item waves-light" mdbWavesEffect>Опција 2</a>
           </div>
         </li>
-        <li class="nav-item dropdown" dropdown>
-          <a dropdownToggle mdbWavesEffect type="button" class="nav-link dropdown-toggle waves-light" mdbWavesEffect>
+        <li class="nav-item">
+          <a mdbWavesEffect type="button" class="nav-link waves-light" [routerLink]="['/desiderata']">
             <mdb-icon far icon="heart"></mdb-icon> Дезидерати<span class="caret"></span></a>
-          <div *dropdownMenu class="dropdown-menu dropdown dropdown-primary" role="menu">
-            <a class="dropdown-item waves-light" mdbWavesEffect>Опција 1</a>
-            <a class="dropdown-item waves-light" mdbWavesEffect>Опција 2</a>
-            <div class="divider dropdown-divider"></div>
-            <a class="dropdown-item waves-light" mdbWavesEffect>Опција 2</a>
-          </div>
         </li>
         <li class="nav-item" >
-          <a  mdbWavesEffect type="button" class="nav-link  waves-light" mdbWavesEffect [routerLink]="['/distributers']">
+          <a mdbWavesEffect type="button" class="nav-link waves-light" [routerLink]="['/distributers']">
             <mdb-icon far icon="address-book"></mdb-icon> Понуде<span class="caret"></span></a>
         </li>
 
