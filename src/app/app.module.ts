@@ -17,6 +17,8 @@ import { DistributersListComponent } from './components/distributers-list/distri
 import { OfferComponent } from './components/offer/offer.component';
 import { SelectLocationComponent } from './components/select-location/select-location.component';
 import { AcquisitionComponent } from './components/acquisition/acquisition.component';
+import {FirestoreDatePipe} from './pipes/firestore-date-pipe';
+import { AcquisitionItemComponent } from './components/acquisition-item/acquisition-item.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,9 @@ import { AcquisitionComponent } from './components/acquisition/acquisition.compo
     DistributersListComponent,
     OfferComponent,
     SelectLocationComponent,
-    AcquisitionComponent
+    AcquisitionComponent,
+    FirestoreDatePipe,
+    AcquisitionItemComponent
   ],
   imports: [
     BrowserModule,

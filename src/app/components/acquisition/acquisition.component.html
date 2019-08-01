@@ -1,341 +1,79 @@
-<!-- Editable table -->
-<mdb-card>
-
-  <div class="card-header">
-    <h3 class="py-2">Дезидерати</h3>
-  </div>
-
-  <div class="card-body">
-    <div id="table" class="table-editable">
-      <div class="d-flex">
-        <div class="d-flex flex-grow-1">
-          <div class="md-form mt-0">
-            <input mdbInput type="text" class="form-control ml-0" [(ngModel)]="searchText" id="search-input">
-            <label for="search-input">Претражи</label>
+<div class="row">
+  <div class="col-auto flex-grow-1">
+    <div class="row">
+      <div class="col-auto">
+        <h3 class="py-2">Набавка</h3>
+      </div>
+      <div class="col-auto flex-grow-1 px-0">
+        <h3 class="py-2 font-weight-bolder">{{acquisition.year}} - {{acquisition.num}}</h3>
+      </div>
+    </div>
+    <div class="row">
+        <div class="col-auto">
+          <div>
+            Датум покретања:
+          </div>
+          <div>
+            {{acquisition.startDate | firestoreDate}}
           </div>
         </div>
-        <a mdbBtn floating="true" color="primary" size="sm" (click)="modalAddDesideratum.show()" mdbWavesEffect>
-          <mdb-icon fas icon="plus"></mdb-icon>
-        </a>
-      </div>
-      <table mdbTable small="true" class="table table-bordered table-responsive-md table-striped text-left">
-        <thead>
-        <tr>
-          <th></th>
-          <th [mdbTableSort]="desiderataList" sortBy="isbn" (click)="resetHideLists()">
-            ИСБН
-            <mdb-icon fas icon="sort"></mdb-icon>
-          </th>
-          <th [mdbTableSort]="desiderataList" sortBy="title" (click)="resetHideLists()">
-            Наслов
-            <mdb-icon fas icon="sort"></mdb-icon>
-          </th>
-          <th [mdbTableSort]="desiderataList" sortBy="author" (click)="resetHideLists()">
-            Аутор
-            <mdb-icon fas icon="sort"></mdb-icon>
-          </th>
-          <th [mdbTableSort]="desiderataList" sortBy="publisher" (click)="resetHideLists()">
-            Издавач
-            <mdb-icon fas icon="sort"></mdb-icon>
-          </th>
-          <th>
-            Локација
-          </th>
-          <th>
-            Количина
-          </th>
-          <th></th>
-        </tr>
-        </thead>
+    </div>
+  </div>
 
-        <tbody *ngFor="let desiderat of desiderataList; let id = index;">
-        <tr>
-          <td>
-            <a (click)="toggle(id)">
-              <i class="far" [ngClass]="{'fa-plus-square': !hide[id], 'fa-minus-square': hide[id]}"></i></a>
-          </td>
-          <td>
-            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else isbn">
-              <input [(ngModel)]="selectedDesideratum.isbn" #ctrl="ngModel" type="text" class="form-control" mdbInput
-                     (keyup.enter)="saveEditedDesideratum()">
-            </ng-container>
-            <ng-template #isbn>
-              {{desiderat.isbn}}
-            </ng-template>
-          </td>
-          <td>
-            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else title">
-              <input [(ngModel)]="selectedDesideratum.title" #ctrl="ngModel" type="text" class="form-control" mdbInput
-                     (keyup.enter)="saveEditedDesideratum()">
-            </ng-container>
-            <ng-template #title>
-              {{desiderat.title}}
-            </ng-template>
-          </td>
-          <td>
-            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else author">
-              <input [(ngModel)]="selectedDesideratum.author" #ctrl="ngModel" type="text" class="form-control" mdbInput
-                     (keyup.enter)="saveEditedDesideratum()">
-            </ng-container>
-            <ng-template #author>
-              {{desiderat.author}}
-            </ng-template>
-          </td>
-          <td>
-            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else publisher">
-              <input [(ngModel)]="selectedDesideratum.publisher" #ctrl="ngModel" type="text" class="form-control" mdbInput
-                     (keyup.enter)="saveEditedDesideratum()">
-            </ng-container>
-            <ng-template #publisher>
-              {{desiderat.publisher}}
-            </ng-template>
-          </td>
-          <td></td>
-          <td class="font-italic font-weight-bold">{{calculateAmountForDesideratum(desiderat.id)}}</td>
-          <td>
-            <div class="d-flex flex-column justify-content-end">
-              <div class="d-flex justify-content-end">
-                <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        (click)="showEditIcons(id, desiderat.id)">
-                  <mdb-icon far icon="edit"></mdb-icon>
-                </button>
-                <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        (click)="showAddLocationModal(id, desiderat.id)">
-                  <mdb-icon fas icon="plus"></mdb-icon>
-                </button>
-              </div>
-
-              <div *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null" class="d-flex justify-content-end">
-                <button mdbBtn color="info" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        (click)="saveEditedDesideratum()">
-                  <mdb-icon fas icon="check"></mdb-icon>
-                </button>
-                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        (click)="showRemoveDesideratumModal()">
-                  <mdb-icon far icon="trash-alt"></mdb-icon>
-                </button>
-              </div>
-            </div>
-          </td>
-        </tr>
-        <ng-container *ngIf="hide[id]">
-          <ng-container *ngFor="let l of desiderat.locations|groupBy:'location'; let locId = index">
-            <tr class="font-weight-bold teal-text">
-              <td></td>
-              <td><a (click)="toggleInner(id, locId)">
-                <i class="far" [ngClass]="{'fa-plus-square': !hideInner[id][locId], 'fa-minus-square': hideInner[id][locId]}"></i></a>
-              </td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td class="font-italic">{{l.key}}</td>
-              <td class="font-italic">{{calculateAmountForLocation(desiderat.id, l.key)}}</td>
-              <td></td>
-            </tr>
-            <ng-container *ngIf="hideInner[id][locId]">
-              <tr *ngFor="let v of l.value; let sublocId = index">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>{{getSublocation(v.sublocation)}}</td>
-                <td>
-                  <ng-container *ngIf="id == index1stLevel && locId == index2ndLevel && sublocId == index3rdLevel; else sublocation">
-                    <input [(ngModel)]="inputAmount" type="number" class="form-control" mdbInput
-                           (keyup.enter)="updateAmount(desiderat.id, v.sublocation)">
-                  </ng-container>
-                  <ng-template #sublocation>
-                    {{v.amount}}
-                  </ng-template>
-                </td>
-                <td>
-                  <div class="d-flex justify-content-end">
-                    <div class="mr-2 ml-2">
-                      <a (click)="showEditIconsForLocation(id, locId, sublocId, v.amount)">
-                        <mdb-icon far class="orange-text" icon="edit"></mdb-icon></a></div>
-
-                    <div *ngIf="id == index1stLevel && locId == index2ndLevel && sublocId == index3rdLevel" class="d-flex">
-                      <div class="mr-2 ml-2">
-                        <a (click)="updateAmount(desiderat.id, v.sublocation)">
-                          <mdb-icon fas class="blue-text" icon="check"></mdb-icon></a></div>
-                      <div class="mr-2 ml-2">
-                        <a (click)="deleteLocation(desiderat.id, v.sublocation)">
-                          <mdb-icon far class="red-text" icon="trash-alt"></mdb-icon></a></div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </ng-container>
+  <div class="col-auto d-flex flex-column">
+    <div class="col mb-2">
+      <div class="row">
+        <div class="col-auto">
+          <mdb-icon fas icon="hand-holding-usd" class="fa-lg blue-text"></mdb-icon>
+        </div>
+        <div class="col text-left pl-0">
+          <ng-container *ngIf="editBudget; else budget">
+            <input [(ngModel)]="acquisition.budget" #ctrl="ngModel" type="number" class="form-control" mdbInput
+                   (keyup.enter)="toggleEditBudget()">
           </ng-container>
-        </ng-container>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</mdb-card>
-<!-- Editable table -->
+          <ng-template #budget>
+            <h6 class="font-weight-bolder">{{acquisition.budget|number:'1.2-2'}}</h6>
+          </ng-template>
 
-<!--Modal addLocation-->
-<div mdbModal #addLocationModal class="modal fade top" id="modalAddLocation" tabindex="-1" role="dialog"
-     aria-labelledby="addLocationModal" aria-hidden="true" style="overflow-y: auto">
-  <div class="modal-dialog modal-notify modal-info" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
-          Потребе на локацији
-        </h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                (click)="addLocationModal.hide()">
-          <span aria-hidden="true" class="white-text">&times;</span>
-        </button>
-      </div>
-
-      <!--Body-->
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <!--         <mdb-icon fas icon="map-marker-alt"></mdb-icon>-->
-          <!--          <input [(ngModel)]="location.sublocation" #ctrl="ngModel"-->
-          <!--                 type="text"-->
-          <!--                 class="form-control"-->
-          <!--                 id="sublocation"-->
-          <!--                 mdbInput-->
-          <!--          />-->
-          <!--          <label for="sublocation">Локација</label>-->
-          <app-select-location [value]="location.sublocation" (selectedLocationEvent)="selectSublocation($event)"></app-select-location>
+          <h6 class="grey-text">Буџет</h6>
         </div>
-
-        <div class="md-form">
-          <!--          <mdb-icon fas icon="layer-group"></mdb-icon>-->
-          <input [(ngModel)]="location.amount"
-                 type="number"
-                 class="form-control"
-                 id="amount"
-                 mdbInput
-          />
-          <label for="amount">Количина</label>
+        <div class="col-auto">
+          <mdb-badge (click)="toggleEditBudget()" color="amber">
+            <mdb-icon fas icon="edit"></mdb-icon>
+          </mdb-badge>
         </div>
       </div>
-
-      <div class="modal-footer justify-content-center">
-        <button type="button" mdbBtn color="info" class="waves-effect" mdbWavesEffect
-                (click)="addLocation()">
-          Додај
-        </button>
+    </div>
+    <div class="col-auto mb-2">
+      <div class="row">
+        <div class="col-auto">
+          <mdb-icon fas icon="shopping-cart" class="fa-lg blue-text"></mdb-icon>
+        </div>
+        <div class="col text-left pl-0">
+          <h6 class="font-weight-bolder">{{amount|number:'1.2-2'}}</h6>
+          <h6 class="grey-text">Потрошено</h6>
+        </div>
+      </div>
+    </div>
+    <div class="col-auto mb-2">
+      <div class="row">
+        <div class="col-auto">
+          <ng-container *ngIf="getRemain()>=0; else down">
+            <mdb-icon fas icon="thumbs-up" class="fa-lg blue-text"></mdb-icon>
+          </ng-container>
+          <ng-template #down>
+            <mdb-icon fas icon="thumbs-down" class="fa-lg red-text "></mdb-icon>
+          </ng-template>
+        </div>
+        <div class="col text-left pl-0">
+          <h6 class="font-weight-bolder">{{getRemain()|number:'1.2-2'}}</h6>
+          <h6 class="grey-text">Преостало</h6>
+        </div>
       </div>
     </div>
   </div>
 </div>
-<!--Modal addLocation-->
 
-<!--Modal addDesideratum-->
-<div mdbModal #modalAddDesideratum class="modal fade top" id="modalAddDesideratum" tabindex="-1"
-     role="dialog"
-     aria-labelledby="modalAdd" aria-hidden="true" style="overflow-y: auto">
-  <div class="modal-dialog modal-notify modal-info" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
-          Нови дезидерат
-        </h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                (click)="modalAddDesideratum.hide()">
-          <span aria-hidden="true" class="white-text">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <form #addForm>
-          <div class="md-form mb-5">
-            <input type="text" id="inputIsbn" class="form-control validate" mdbInput>
-            <label data-error="wrong" data-success="right" for="inputIsbn">ИСБН</label>
-          </div>
-
-          <div class="md-form mb-5">
-            <input type="text" id="inputTitle" class="form-control validate" mdbInput>
-            <label data-error="wrong" data-success="right" for="inputTitle">Наслов</label>
-          </div>
-
-          <div class="md-form mb-5">
-            <input type="text" id="inputAuthor" class="form-control validate" mdbInput>
-            <label data-error="wrong" data-success="right" for="inputAuthor">Аутор</label>
-          </div>
-
-          <div class="md-form mb-5">
-            <input type="text" id="inputPublisher" class="form-control validate" mdbInput>
-            <label data-error="wrong" data-success="right" for="inputPublisher">Издавач</label>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer justify-content-center">
-        <button type="button" mdbBtn color="info" class="waves-effect" mdbWavesEffect
-                (click)="addDesideratum(addForm, modalAddDesideratum)">Додај
-        </button>
-      </div>
-    </div>
-  </div>
+<div *ngFor="let group of acquisition.acquisitionGroups" class="mb-3">
+  <app-acquisition-item [acquisitionGroup]="group"></app-acquisition-item>
 </div>
-<!--Modal addDesideratum-->
-
-<!--Modal deleteDesideratum-->
-<div mdbModal #modalDeleteDesideratum class="modal fade" id="modalDeleteDesideratum" tabindex="-1"
-     role="dialog"
-     aria-labelledby="modalDelete"
-     aria-hidden="true">
-  <div class="modal-dialog modal-notify modal-danger" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
-          Брисање дезидерата
-        </h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                (click)="modalDeleteDesideratum.hide()">
-          <span aria-hidden="true" class="white-text">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <p class="text-center h4">Да ли сте сигурни да желите да обришете дезидерат?</p>
-      </div>
-      <div class="modal-footer d-flex justify-content-center deleteButtonsWrapper">
-        <button mdbBtn color="danger" type="button" class="btnYesClass" id="btnYes" data-dismiss="modal" mdbWavesEffect
-                (click)="removeSelectedDesideratum()">
-          Да
-        </button>
-        <button mdbBtn color="primary" type="button" class="btnNoClass" id="btnNo" data-dismiss="modal" mdbWavesEffect
-                (click)="modalDeleteDesideratum.hide()">
-          Не
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<!--Modal deleteDesideratum-->
-
-<!--Modal alreadyExists-->
-<div mdbModal #modalAlreadyExists class="modal fade" id="modalAlreadyExists" tabindex="-1"
-     role="dialog"
-     aria-labelledby="modalAlreadyExists"
-     aria-hidden="true">
-  <div class="modal-dialog modal-notify modal-warning" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
-          Дуплирање
-        </h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                (click)="modalDeleteDesideratum.hide()">
-          <span aria-hidden="true" class="white-text">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <p class="text-center h4">Ови подаци већ постоје у табели! Ажурирајте постојеће податке!</p>
-      </div>
-      <div class="modal-footer d-flex justify-content-center">
-        <button mdbBtn color="primary" type="button" class="waves-effect" mdbWavesEffect id="btnOK" data-dismiss="modal"
-                (click)="modalAlreadyExists.hide()">
-          У реду
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<!--Modal deleteDesideratum-->

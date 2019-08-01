@@ -2,12 +2,12 @@ import {Desideratum} from './desideratum';
 
 export class Acquisition {
   id?: string;
-  year: string;
-  num: string;
-  startDate: Date;
-  budget: number;
-  status: Status;
-  desiderataUpdated: boolean;
+  year?: string;
+  num?: string;
+  startDate?: Date;
+  budget?: number;
+  status?: Status;
+  desiderataUpdated?: boolean;
   acquisitionGroups?: AcquisitionGroup[];
 }
 
@@ -29,7 +29,7 @@ export class Price {
   vat: number;
 }
 
-enum Status {
+export enum Status {
   OPEN = 'open',
   CLOSED = 'closed',
   DELIVERY = 'delivery'

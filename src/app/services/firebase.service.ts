@@ -5,6 +5,7 @@ import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import {Distributer} from '../models/distributer';
 import {Offer} from '../models/offer';
+import {Acquisition} from '../models/acquisition';
 
 
 @Injectable({
@@ -41,6 +42,19 @@ export class FirebaseService {
   getSublocations() {
     return this.firestore.collection('Sublocation').snapshotChanges();
   }
+
+  getAcquisitionOnce(id: string) {
+    return this.firestore.collection('Acquisition').doc(id).get();
+  }
+
+  addAcquisition(acquisition: Acquisition) {
+    return this.firestore.collection('Acquisition').add(acquisition);
+  }
+
+  updateAcquisition(id: string, acquisition: Acquisition) {
+    this.firestore.collection('Acquisition').doc(id).update(acquisition);
+  }
+
   getDistributers() {
     return this.firestore.collection('Distributer').snapshotChanges();
   }
