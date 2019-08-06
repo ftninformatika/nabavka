@@ -1,0 +1,48 @@
+<div class="row">
+
+<ng-container *ngFor="let acquisition of acquisitionList; let id = index;">
+
+  <ng-container *ngIf="id%3 == 0">
+    <div class="w-100"></div>
+  </ng-container>
+
+  <div class="col-lg-4 col-md-12 p-4">
+    <mdb-card cascade="true">
+      <div class="view view-cascade gradient-card-header rainy-ashville-gradient">
+        <h6 class="indigo-text">Набавка</h6>
+        <h2 class="card-header-title indigo-text">{{acquisition.title}}</h2>
+      </div>
+
+      <mdb-card-body cascade="true" class="text-left">
+        <div class="row">
+          <div class="col-auto">
+            Датум покретања:
+          </div>
+          <div class="col-auto px-0">
+            {{acquisition.startDate | firestoreDate}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-auto">
+            Статус:
+          </div>
+          <div class="col-auto px-0">
+            {{acquisition.status | statusPipe}}
+          </div>
+        </div>
+        <hr>
+        <a href="#" mdbBtn color="primary" mdbWavesEffect [routerLink]="['/acquisition/'+acquisition.id]">Отвори</a>
+      </mdb-card-body>
+    </mdb-card>
+  </div>
+</ng-container>
+
+</div>
+
+<div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+
+  <a mdbBtn floating="true" size="lg" color="blue" mdbWavesEffect>
+    <mdb-icon fas icon="plus" ></mdb-icon>
+  </a>
+
+</div>

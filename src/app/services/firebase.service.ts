@@ -43,6 +43,12 @@ export class FirebaseService {
     return this.firestore.collection('Sublocation').snapshotChanges();
   }
 
+  getAcquisitionListOnce() {
+    return this.firestore.collection('Acquisition', ref => {
+      return ref.orderBy('startDate', 'desc');
+    }).get();
+  }
+
   getAcquisitionOnce(id: string) {
     return this.firestore.collection('Acquisition').doc(id).get();
   }

@@ -4,19 +4,79 @@
       <div class="col-auto">
         <h3 class="py-2">Набавка</h3>
       </div>
-      <div class="col-auto flex-grow-1 px-0">
-        <h3 class="py-2 font-weight-bolder">{{acquisition.year}} - {{acquisition.num}}</h3>
+      <div class="col-auto px-0">
+        <ng-container *ngIf="edit; else title">
+          <input [(ngModel)]="acquisition.title" #ctrl="ngModel" type="text" class="form-control" mdbInput
+                 (keyup.enter)="toggleEdit()">
+        </ng-container>
+        <ng-template #title>
+          <h3 class="py-2 font-weight-bolder">{{acquisition.title}}</h3>
+        </ng-template>
       </div>
     </div>
     <div class="row">
         <div class="col-auto">
-          <div>
-            Датум покретања:
-          </div>
-          <div>
-            {{acquisition.startDate | firestoreDate}}
-          </div>
+          Датум покретања:
         </div>
+        <div class="col-auto px-0">
+          <ng-container *ngIf="edit; else date">
+            <input [ngModel]="acquisition.startDate" (ngModelChange)="parseDate($event)" #ctrl="ngModel" type="date" class="form-control" mdbInput
+                   (keyup.enter)="toggleEdit()">
+          </ng-container>
+          <ng-template #date>
+            {{acquisition.startDate | firestoreDate}}
+          </ng-template>
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-auto">
+        Статус:
+      </div>
+      <div class="col-auto px-0">
+        {{acquisition.status | statusPipe}}
+      </div>
+    </div>
+    <div class="row pl-3 mt-2">
+      <ng-container *ngIf="edit; else ok">
+<!--        <button mdbBtn type="button" color="info" outline="true" (click)="toggleEdit()" mdbWavesEffect>Сачувај</button>-->
+        <a mdbBtn floating="true" size="sm" color="info" (click)="toggleEdit()" mdbWavesEffect>
+          <mdb-icon fas icon="check"></mdb-icon>
+        </a>
+<!--        <button mdbBtn type="button" color="danger" outline="true" mdbWavesEffect>Обриши набавку</button>-->
+        <a mdbBtn floating="true" size="sm" color="danger" (click)="toggleEdit()" mdbWavesEffect>
+          <mdb-icon fas icon="trash-alt"></mdb-icon>
+        </a>
+      </ng-container>
+      <ng-template #ok>
+<!--        <button mdbBtn type="button" color="amber" outline="true" (click)="toggleEdit()" mdbWavesEffect>Измени</button>-->
+        <a mdbBtn floating="true" size="sm" color="amber" (click)="toggleEdit()" mdbWavesEffect
+           data-toggle="tooltip" title="Измени">
+          <mdb-icon fas icon="pen"></mdb-icon>
+        </a>
+      </ng-template>
+<!--      <button mdbBtn type="button" color="primary" outline="true" mdbWavesEffect>Додај партију</button>-->
+      <a mdbBtn floating="true" size="sm" color="primary" (click)="modalAddAcquisitionGroup.show()" mdbWavesEffect
+         data-toggle="tooltip" title="Додај партију">
+        <mdb-icon fas icon="plus"></mdb-icon>
+      </a>
+
+      <div class="d-flex" (mouseleave)="fixed.toggle()">
+        <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect (mouseenter)="fixed.toggle()">
+          <mdb-icon fas icon="ellipsis-h" ></mdb-icon>
+        </a>
+
+        <div mdbCollapse="isCollapsed" #fixed="bs-collapse">
+          <a mdbBtn floating="true" size="sm" color="default" mdbWavesEffect
+             data-toggle="tooltip" title="Промени статус">
+            <mdb-icon fas icon="forward" ></mdb-icon>
+          </a>
+          <a mdbBtn floating="true" size="sm" color="default" mdbWavesEffect
+             data-toggle="tooltip" title="Штамапај">
+            <mdb-icon fas icon="file-alt"></mdb-icon>
+          </a>
+        </div>
+
+      </div>
     </div>
   </div>
 
@@ -27,9 +87,9 @@
           <mdb-icon fas icon="hand-holding-usd" class="fa-lg blue-text"></mdb-icon>
         </div>
         <div class="col text-left pl-0">
-          <ng-container *ngIf="editBudget; else budget">
+          <ng-container *ngIf="edit; else budget">
             <input [(ngModel)]="acquisition.budget" #ctrl="ngModel" type="number" class="form-control" mdbInput
-                   (keyup.enter)="toggleEditBudget()">
+                   (keyup.enter)="toggleEdit()">
           </ng-container>
           <ng-template #budget>
             <h6 class="font-weight-bolder">{{acquisition.budget|number:'1.2-2'}}</h6>
@@ -37,11 +97,11 @@
 
           <h6 class="grey-text">Буџет</h6>
         </div>
-        <div class="col-auto">
-          <mdb-badge (click)="toggleEditBudget()" color="amber">
-            <mdb-icon fas icon="edit"></mdb-icon>
-          </mdb-badge>
-        </div>
+<!--        <div class="col-auto">-->
+<!--          <mdb-badge (click)="toggleEdit()" color="amber">-->
+<!--            <mdb-icon fas icon="edit"></mdb-icon>-->
+<!--          </mdb-badge>-->
+<!--        </div>-->
       </div>
     </div>
     <div class="col-auto mb-2">
@@ -75,5 +135,44 @@
 </div>
 
 <div *ngFor="let group of acquisition.acquisitionGroups" class="mb-3">
-  <app-acquisition-item [acquisitionGroup]="group"></app-acquisition-item>
+  <app-acquisition-item [acquisitionGroup]="group" (updateAcquisitionGroupEvent)="updateAcquisitionGroup($event)"
+                        (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)"></app-acquisition-item>
+</div>
+
+
+<!--Modal addAcquisitionGroup -->
+<div mdbModal #modalAddAcquisitionGroup class="modal fade top" id="modalAddAcquisitionGroup" tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalAdd" aria-hidden="true" style="overflow-y: auto">
+  <div class="modal-dialog modal-notify modal-info" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Нова партија
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modalAddAcquisitionGroup.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <form #addForm>
+          <div class="md-form mb-5">
+            <input type="text" id="inputTitle" class="form-control validate" mdbInput>
+            <label data-error="wrong" data-success="right" for="inputTitle">Назив</label>
+          </div>
+
+          <div class="md-form mb-5">
+            <input type="text" id="inputPublisher" class="form-control validate" mdbInput>
+            <label data-error="wrong" data-success="right" for="inputPublisher">Добављач</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" mdbBtn color="info" class="waves-effect" mdbWavesEffect
+                (click)="addAcquisitionGroup(addForm, modalAddAcquisitionGroup)">Додај
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

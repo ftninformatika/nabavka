@@ -1,9 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {FirebaseService} from '../../services/firebase.service';
 import {ActivatedRoute} from '@angular/router';
-import {Acquisition, AcquisitionGroup, Item, Status} from '../../models/acquisition';
+import {Acquisition, AcquisitionGroup, Item, Price, Status} from '../../models/acquisition';
 import {Desideratum} from '../../models/desideratum';
 import {GroupByPipe} from '../../pipes/group-by.pipe';
+import {firestore} from 'firebase/app';
+import Timestamp = firestore.Timestamp;
 
 @Component({
   selector: 'app-acquisition',
@@ -15,18 +17,19 @@ export class AcquisitionComponent implements OnInit {
   acquisitionId: string;
   acquisition: Acquisition = {};
   amount = 0;
-  editBudget = false;
+  edit = false;
 
-  constructor(private firebaseService: FirebaseService, private route: ActivatedRoute, private groupBy: GroupByPipe) { }
+  constructor(private firebaseService: FirebaseService, private route: ActivatedRoute, private groupBy: GroupByPipe) {
+  }
 
   ngOnInit() {
-    // this.acquisitionId = this.route.snapshot.paramMap.get('acquisition_id');
-    this.acquisitionId = 'w80tqpWSj4X1ndlzhZBb';
+    this.acquisitionId = this.route.snapshot.paramMap.get('id');
+    // this.acquisitionId = 'w80tqpWSj4X1ndlzhZBb';
     this.firebaseService.getAcquisitionOnce(this.acquisitionId).subscribe(doc => {
       if (doc.exists) {
         this.acquisition = doc.data() as Acquisition;
         this.calculateAmount();
-        console.log(this.acquisition);
+        // console.log(this.acquisition);
       }
     });
 
@@ -36,7 +39,7 @@ export class AcquisitionComponent implements OnInit {
     //     return e.data() as Desideratum;
     //   });
     //   const desiderataGroups = this.groupBy.transform(desiderataList, 'publisher');
-    //   this.acquisition = {year: '2019', num: 'I deo', startDate: new Date(2019, 2, 1), budget: 100000,
+    //   this.acquisition = {title: '2017 - I deo', startDate: new Date(2017, 3, 1), budget: 100000,
     //     status: Status.OPEN, desiderataUpdated: false};
     //   const acquisitionGroups: AcquisitionGroup[] = [];
     //   desiderataGroups.forEach((desiderataGroup, index) => {
@@ -57,23 +60,34 @@ export class AcquisitionComponent implements OnInit {
 
   calculateAmount() {
     if (this.acquisition) {
+      this.amount = 0;
       this.acquisition.acquisitionGroups.forEach(group => {
         group.items.forEach(item => {
-          this.amount = this.amount + item.planedPrice.price;
+          let locNo = 0;
+          if (item.desideratum.locations) {
+            for (const location of item.desideratum.locations) {
+              locNo = locNo + location.amount;
+            }
+          }
+          this.amount = this.amount + locNo * item.planedPrice.price;
         });
       });
     }
   }
 
-  toggleEditBudget() {
-    if (this.acquisition.budget) {
-      if (this.editBudget) {
-        this.editBudget = false;
+  toggleEdit() {
+    if (this.acquisition) {
+      if (this.edit) {
+        this.edit = false;
         this.saveAcquisition();
       } else {
-        this.editBudget = true;
+        this.edit = true;
       }
     }
+  }
+
+  parseDate(value: any) {
+    this.acquisition.startDate = new Date(value);
   }
 
   saveAcquisition() {
@@ -86,5 +100,29 @@ export class AcquisitionComponent implements OnInit {
     } else {
       return 0 - this.amount;
     }
+  }
+
+  updateAcquisitionGroup(acquisitionGroup: AcquisitionGroup) {
+    this.calculateAmount();
+    this.saveAcquisition();
+  }
+
+  deleteAcquisitionGroup(acquisitionGroup: AcquisitionGroup) {
+    const groupIndex = this.acquisition.acquisitionGroups.findIndex(x => x === acquisitionGroup);
+    this.acquisition.acquisitionGroups.splice(groupIndex, 1);
+    this.calculateAmount();
+    this.saveAcquisition();
+  }
+
+  addAcquisitionGroup(form: any, modalInstance: any) {
+    const acquisitionGroup: AcquisitionGroup = {
+      title: form[0].value,
+      distributor: form[1].value,
+      items: []
+    };
+    this.acquisition.acquisitionGroups.splice(0, 0, acquisitionGroup);
+    form.reset();
+    modalInstance.hide();
+    this.saveAcquisition();
   }
 }

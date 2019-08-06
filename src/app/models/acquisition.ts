@@ -2,8 +2,7 @@ import {Desideratum} from './desideratum';
 
 export class Acquisition {
   id?: string;
-  year?: string;
-  num?: string;
+  title?: string;
   startDate?: Date;
   budget?: number;
   status?: Status;

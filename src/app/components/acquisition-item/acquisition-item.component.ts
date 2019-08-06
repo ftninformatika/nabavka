@@ -1,4 +1,4 @@
-import {Component, HostListener, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
 import {Desideratum} from '../../models/desideratum';
 import {Location} from '../../models/location';
@@ -13,8 +13,11 @@ import {AcquisitionGroup, Item, Price} from '../../models/acquisition';
 })
 export class AcquisitionItemComponent implements OnInit {
   @Input() acquisitionGroup: AcquisitionGroup;
+  @Output() updateAcquisitionGroupEvent: EventEmitter<AcquisitionGroup> = new EventEmitter<AcquisitionGroup>();
+  @Output() deleteAcquisitionGroupEvent: EventEmitter<AcquisitionGroup> = new EventEmitter<AcquisitionGroup>();
   @ViewChild('addLocationModal', {static: false}) modalLocation: ModalDirective;
-  @ViewChild('modalDeleteDesideratum', {static: false}) modalDelete: ModalDirective;
+  @ViewChild('modalDeleteItem', {static: false}) modalDelete: ModalDirective;
+  @ViewChild('modalDeleteAcquisitionGroup', {static: false}) modalDeleteGroup: ModalDirective;
   @ViewChild('modalAlreadyExists', {static: false}) modalAlreadyExists: ModalDirective;
   @ViewChild(MdbTableDirective, { static: true }) mdbTable: MdbTableDirective;
   hide: boolean[] = [];
@@ -27,6 +30,7 @@ export class AcquisitionItemComponent implements OnInit {
   selectedItem: Item;
   inputAmount: number;
   sublocationList: Sublocation[];
+  editGroup = false;
 
   constructor(private firebaseService: FirebaseService) {
   }
@@ -48,12 +52,18 @@ export class AcquisitionItemComponent implements OnInit {
       author: form[2].value,
       publisher: form[3].value
     };
-    const item: Item = {desideratum, planedPrice: new Price()};
+    const planedPrice: Price = {
+      price: form[4].value,
+      rebate: form[5].value,
+      vat: form[6].value
+    }
+    const item: Item = {desideratum, planedPrice};
     this.acquisitionGroup.items.splice(0, 0, item);
     this.hide.splice(0, 0, false);
     this.hideInner.splice(0, 0, []);
     form.reset();
     modalInstance.hide();
+    this.updateAcquisitionGroupEvent.emit(this.acquisitionGroup);
   }
 
   showRemoveItemModal() {
@@ -69,6 +79,7 @@ export class AcquisitionItemComponent implements OnInit {
     this.index1stLevel = null;
     this.index2ndLevel = null;
     this.index3rdLevel = null;
+    this.updateAcquisitionGroupEvent.emit(this.acquisitionGroup);
   }
 
   showEditIcons(index: number, isbn: string) {
@@ -82,6 +93,7 @@ export class AcquisitionItemComponent implements OnInit {
     this.index1stLevel = null;
     this.index2ndLevel = null;
     this.index3rdLevel = null;
+    this.updateAcquisitionGroupEvent.emit(this.acquisitionGroup);
   }
 
   calculateAmountForItem(isbn: string) {
@@ -92,6 +104,31 @@ export class AcquisitionItemComponent implements OnInit {
         amount = amount + location.amount;
       }
     }
+    return amount;
+  }
+
+  calculatePriceForItem(isbn: string) {
+    const item = this.acquisitionGroup.items.find(x => x.desideratum.isbn === isbn);
+    let amount = 0;
+    if (item.desideratum.locations) {
+      for (const location of item.desideratum.locations) {
+        amount = amount + location.amount;
+      }
+    }
+    return amount * item.planedPrice.price;
+  }
+
+  calculatePriceForGroup() {
+    let amount = 0;
+    this.acquisitionGroup.items.forEach(item => {
+      let locNo = 0;
+      if (item.desideratum.locations) {
+        for (const location of item.desideratum.locations) {
+          locNo = locNo + location.amount;
+        }
+      }
+      amount = amount + locNo * item.planedPrice.price;
+    });
     return amount;
   }
 
@@ -115,6 +152,7 @@ export class AcquisitionItemComponent implements OnInit {
       const renderFix = [...item.desideratum.locations];
       item.desideratum.locations = renderFix;
       this.modalLocation.hide();
+      this.updateAcquisitionGroupEvent.emit(this.acquisitionGroup);
     }
   }
 
@@ -132,6 +170,7 @@ export class AcquisitionItemComponent implements OnInit {
     this.index1stLevel = null;
     this.index2ndLevel = null;
     this.index3rdLevel = null;
+    this.updateAcquisitionGroupEvent.emit(this.acquisitionGroup);
   }
 
   deleteLocation(isbn: string, sublocation: string) {
@@ -143,6 +182,7 @@ export class AcquisitionItemComponent implements OnInit {
     this.index1stLevel = null;
     this.index2ndLevel = null;
     this.index3rdLevel = null;
+    this.updateAcquisitionGroupEvent.emit(this.acquisitionGroup);
   }
 
   calculateAmountForLocation(isbn: string, loc: string) {
@@ -184,6 +224,24 @@ export class AcquisitionItemComponent implements OnInit {
     } else {
       return code;
     }
+  }
+
+  toggleEditGroup() {
+    if (this.editGroup) {
+      this.editGroup = false;
+      this.updateAcquisitionGroupEvent.emit(this.acquisitionGroup);
+    } else {
+      this.editGroup = true;
+    }
+  }
+
+  showDeleteGroupModal() {
+    this.modalDeleteGroup.show();
+  }
+
+  deleteGroup() {
+    this.modalDeleteGroup.hide();
+    this.deleteAcquisitionGroupEvent.emit(this.acquisitionGroup);
   }
 
 }

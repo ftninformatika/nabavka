@@ -11,7 +11,11 @@ export class FirestoreDatePipe extends DatePipe implements PipeTransform {
 
   transform(value: any, args?: any): any {
     if (value) {
-      return super.transform((value as Timestamp).toDate(), 'dd.MM.yyyy.');
+      if (value instanceof Timestamp) {
+        return super.transform((value as Timestamp).toDate(), 'dd.MM.yyyy.');
+      } else {
+        return super.transform(value, 'dd.MM.yyyy.');
+      }
     } else {
       return '';
     }

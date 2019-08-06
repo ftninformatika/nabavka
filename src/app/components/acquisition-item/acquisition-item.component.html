@@ -1,12 +1,42 @@
-<!-- Editable table -->
 <mdb-card>
 
   <div class="card-header py-1">
     <div class="d-flex align-items-center">
+
       <div class="d-flex flex-grow-1">
-        <h4 class="py-1 mb-0">{{acquisitionGroup.title}}</h4>
+        <div class="row">
+          <div class="col-auto text-left">
+            <ng-container *ngIf="editGroup; else title">
+              <input [(ngModel)]="acquisitionGroup.title" #ctrl="ngModel" type="text" class="form-control" mdbInput
+                     (keyup.enter)="toggleEditGroup()">
+            </ng-container>
+            <ng-template #title>
+              <h4 class="py-1 mb-0">{{acquisitionGroup.title}}</h4>
+            </ng-template>
+          </div>
+<!--          <div class="col-auto">-->
+<!--            <mdb-badge (click)="toggleEditTitle()" color="amber">-->
+<!--              <mdb-icon fas icon="pen"></mdb-icon>-->
+<!--            </mdb-badge>-->
+<!--          </div>-->
+        </div>
+
       </div>
-      <a mdbBtn floating="true" color="primary" size="sm" (click)="modalAddDesideratum.show()" mdbWavesEffect>
+      <ng-container *ngIf="editGroup; else ok">
+        <a mdbBtn floating="true" color="info" size="sm" (click)="toggleEditGroup()" mdbWavesEffect>
+          <mdb-icon fas icon="check"></mdb-icon>
+        </a>
+        <a mdbBtn floating="true" color="danger" size="sm" (click)="showDeleteGroupModal()" mdbWavesEffect>
+          <mdb-icon fas icon="trash-alt"></mdb-icon>
+        </a>
+      </ng-container>
+      <ng-template #ok>
+        <a mdbBtn floating="true" color="amber" size="sm" (click)="toggleEditGroup()" mdbWavesEffect>
+          <mdb-icon fas icon="pen"></mdb-icon>
+        </a>
+      </ng-template>
+      <a mdbBtn floating="true" color="primary" size="sm" (click)="modalAddItem.show()" mdbWavesEffect
+         data-toggle="tooltip" title="Додај наслов">
         <mdb-icon fas icon="plus"></mdb-icon>
       </a>
     </div>
@@ -15,7 +45,7 @@
   <div class="card-body">
     <div id="table" class="table-editable">
 
-      <table mdbTable small="true" class="table table-bordered table-responsive-md table-striped text-left">
+      <table mdbTable small="true" class="table table-bordered table-responsive-md table-striped text-left mb-0">
         <thead>
         <tr>
           <th></th>
@@ -34,20 +64,23 @@
           <th>
             Издавач
           </th>
-<!--          <th>-->
-<!--            Цена-->
-<!--          </th>-->
-<!--          <th>-->
-<!--            Рабат-->
-<!--          </th>-->
-<!--          <th>-->
-<!--            ПДВ-->
-<!--          </th>-->
+          <th>
+            Цена
+          </th>
+          <th>
+            Рабат
+          </th>
+          <th>
+            ПДВ
+          </th>
           <th>
             Локација
           </th>
           <th>
             Количина
+          </th>
+          <th>
+            Укупно
           </th>
           <th></th>
         </tr>
@@ -95,22 +128,39 @@
               {{item.desideratum.publisher}}
             </ng-template>
           </td>
+          <td>
+            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else price">
+              <input [(ngModel)]="selectedItem.planedPrice.price" #ctrl="ngModel" type="number" class="form-control" mdbInput
+                     (keyup.enter)="saveEditedItem()">
+            </ng-container>
+            <ng-template #price>
+              {{item.planedPrice.price|number:'1.2-2'}}
+            </ng-template>
+          </td>
+          <td>
+            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else rebate">
+              <input [(ngModel)]="selectedItem.planedPrice.rebate" #ctrl="ngModel" type="number" class="form-control" mdbInput
+                     (keyup.enter)="saveEditedItem()">
+            </ng-container>
+            <ng-template #rebate>
+              {{item.planedPrice.rebate|number:'1.2-2'}}
+            </ng-template>
+          </td>
+          <td>
+            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else vat">
+              <input [(ngModel)]="selectedItem.planedPrice.vat" #ctrl="ngModel" type="number" class="form-control" mdbInput
+                     (keyup.enter)="saveEditedItem()">
+            </ng-container>
+            <ng-template #vat>
+              {{item.planedPrice.vat|number:'1.2-2'}}
+            </ng-template>
+          </td>
           <td></td>
           <td class="font-italic font-weight-bold">{{calculateAmountForItem(item.desideratum.isbn)}}</td>
+          <td class="font-italic">{{calculatePriceForItem(item.desideratum.isbn)|number:'1.2-2'}}</td>
           <td>
-            <div class="d-flex flex-column justify-content-end">
-              <div class="d-flex justify-content-end">
-                <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        (click)="showEditIcons(id, item.desideratum.isbn)">
-                  <mdb-icon far icon="edit"></mdb-icon>
-                </button>
-                <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        (click)="showAddLocationModal(id, item.desideratum.isbn)">
-                  <mdb-icon fas icon="plus"></mdb-icon>
-                </button>
-              </div>
-
-              <div *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null" class="d-flex justify-content-end">
+            <div class="d-flex justify-content-end">
+              <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else ok1">
                 <button mdbBtn color="info" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
                         (click)="saveEditedItem()">
                   <mdb-icon fas icon="check"></mdb-icon>
@@ -119,7 +169,35 @@
                         (click)="showRemoveItemModal()">
                   <mdb-icon far icon="trash-alt"></mdb-icon>
                 </button>
+              </ng-container>
+              <ng-template #ok1>
+                <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
+                        (click)="showEditIcons(id, item.desideratum.isbn)">
+                  <mdb-icon fas icon="pen"></mdb-icon>
+                </button>
+              </ng-template>
+              <div class="d-flex justify-content-end">
+<!--                <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect-->
+<!--                        (click)="showEditIcons(id, item.desideratum.isbn)">-->
+<!--                  <mdb-icon far icon="edit"></mdb-icon>-->
+<!--                </button>-->
+                <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
+                        (click)="showAddLocationModal(id, item.desideratum.isbn)"
+                        data-toggle="tooltip" title="Додај локацију">
+                  <mdb-icon fas icon="plus"></mdb-icon>
+                </button>
               </div>
+
+<!--              <div *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null" class="d-flex justify-content-end">-->
+<!--                <button mdbBtn color="info" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect-->
+<!--                        (click)="saveEditedItem()">-->
+<!--                  <mdb-icon fas icon="check"></mdb-icon>-->
+<!--                </button>-->
+<!--                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect-->
+<!--                        (click)="showRemoveItemModal()">-->
+<!--                  <mdb-icon far icon="trash-alt"></mdb-icon>-->
+<!--                </button>-->
+<!--              </div>-->
             </div>
           </td>
         </tr>
@@ -133,12 +211,19 @@
               <td></td>
               <td></td>
               <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
               <td class="font-italic">{{l.key}}</td>
               <td class="font-italic">{{calculateAmountForLocation(item.desideratum.isbn, l.key)}}</td>
+              <td></td>
               <td></td>
             </tr>
             <ng-container *ngIf="hideInner[id][locId]">
               <tr *ngFor="let v of l.value; let sublocId = index">
+                <td></td>
+                <td></td>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -154,20 +239,25 @@
                     {{v.amount}}
                   </ng-template>
                 </td>
+                <td></td>
                 <td>
                   <div class="d-flex justify-content-end">
-                    <div class="mr-2 ml-2">
-                      <a (click)="showEditIconsForLocation(id, locId, sublocId, v.amount)">
-                        <mdb-icon far class="orange-text" icon="edit"></mdb-icon></a></div>
-
-                    <div *ngIf="id == index1stLevel && locId == index2ndLevel && sublocId == index3rdLevel" class="d-flex">
+                    <ng-container *ngIf="id == index1stLevel && locId == index2ndLevel && sublocId == index3rdLevel; else ok" class="d-flex">
                       <div class="mr-2 ml-2">
                         <a (click)="updateAmount(item.desideratum.isbn, v.sublocation)">
-                          <mdb-icon fas class="blue-text" icon="check"></mdb-icon></a></div>
+                          <mdb-icon fas class="blue-text" icon="check"></mdb-icon></a>
+                      </div>
                       <div class="mr-2 ml-2">
                         <a (click)="deleteLocation(item.desideratum.isbn, v.sublocation)">
-                          <mdb-icon far class="red-text" icon="trash-alt"></mdb-icon></a></div>
-                    </div>
+                          <mdb-icon far class="red-text" icon="trash-alt"></mdb-icon></a>
+                      </div>
+                    </ng-container>
+                    <ng-template #ok>
+                      <div class="mr-2 ml-2">
+                        <a (click)="showEditIconsForLocation(id, locId, sublocId, v.amount)">
+                          <mdb-icon far class="orange-text" icon="edit"></mdb-icon></a>
+                      </div>
+                    </ng-template>
                   </div>
                 </td>
               </tr>
@@ -175,11 +265,25 @@
           </ng-container>
         </ng-container>
         </tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="font-italic teal-text">{{calculatePriceForGroup()|number:'1.2-2'}}</td>
+          <td></td>
+        </tr>
+
       </table>
     </div>
   </div>
 </mdb-card>
-<!-- Editable table -->
 
 <!--Modal addLocation-->
 <div mdbModal #addLocationModal class="modal fade top" id="modalAddLocation" tabindex="-1" role="dialog"
@@ -233,18 +337,18 @@
 </div>
 <!--Modal addLocation-->
 
-<!--Modal addDesideratum-->
-<div mdbModal #modalAddDesideratum class="modal fade top" id="modalAddDesideratum" tabindex="-1"
+<!--Modal addItem-->
+<div mdbModal #modalAddItem class="modal fade top" id="modalAddDesideratum" tabindex="-1"
      role="dialog"
      aria-labelledby="modalAdd" aria-hidden="true" style="overflow-y: auto">
   <div class="modal-dialog modal-notify modal-info" role="document">
     <div class="modal-content">
       <div class="modal-header text-center">
         <h4 class="modal-title white-text w-100 font-weight-bold py-2">
-          Нови дезидерат
+          Нови наслов
         </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                (click)="modalAddDesideratum.hide()">
+                (click)="modalAddItem.hide()">
           <span aria-hidden="true" class="white-text">&times;</span>
         </button>
       </div>
@@ -269,20 +373,35 @@
             <input type="text" id="inputPublisher" class="form-control validate" mdbInput>
             <label data-error="wrong" data-success="right" for="inputPublisher">Издавач</label>
           </div>
+
+          <div class="md-form mb-5">
+            <input type="number" id="inputPrice" class="form-control validate" mdbInput>
+            <label data-error="wrong" data-success="right" for="inputPrice">Цена</label>
+          </div>
+
+          <div class="md-form mb-5">
+            <input type="text" id="inputRebate" class="form-control validate" mdbInput>
+            <label data-error="wrong" data-success="right" for="inputRebate">Рабат</label>
+          </div>
+
+          <div class="md-form mb-5">
+            <input type="text" id="inputVat" class="form-control validate" mdbInput>
+            <label data-error="wrong" data-success="right" for="inputVat">ПДВ</label>
+          </div>
         </form>
       </div>
       <div class="modal-footer justify-content-center">
         <button type="button" mdbBtn color="info" class="waves-effect" mdbWavesEffect
-                (click)="addItem(addForm, modalAddDesideratum)">Додај
+                (click)="addItem(addForm, modalAddItem)">Додај
         </button>
       </div>
     </div>
   </div>
 </div>
-<!--Modal addDesideratum-->
+<!--Modal addItem-->
 
-<!--Modal deleteDesideratum-->
-<div mdbModal #modalDeleteDesideratum class="modal fade" id="modalDeleteDesideratum" tabindex="-1"
+<!--Modal deleteItem-->
+<div mdbModal #modalDeleteItem class="modal fade" id="modalDeleteItem" tabindex="-1"
      role="dialog"
      aria-labelledby="modalDelete"
      aria-hidden="true">
@@ -290,15 +409,15 @@
     <div class="modal-content">
       <div class="modal-header text-center">
         <h4 class="modal-title white-text w-100 font-weight-bold py-2">
-          Брисање дезидерата
+          Брисање наслова
         </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                (click)="modalDeleteDesideratum.hide()">
+                (click)="modalDeleteItem.hide()">
           <span aria-hidden="true" class="white-text">&times;</span>
         </button>
       </div>
       <div class="modal-body mx-3">
-        <p class="text-center h4">Да ли сте сигурни да желите да обришете дезидерат?</p>
+        <p class="text-center h4">Да ли сте сигурни да желите да обришете наслов?</p>
       </div>
       <div class="modal-footer d-flex justify-content-center deleteButtonsWrapper">
         <button mdbBtn color="danger" type="button" class="btnYesClass" id="btnYes" data-dismiss="modal" mdbWavesEffect
@@ -306,14 +425,14 @@
           Да
         </button>
         <button mdbBtn color="primary" type="button" class="btnNoClass" id="btnNo" data-dismiss="modal" mdbWavesEffect
-                (click)="modalDeleteDesideratum.hide()">
+                (click)="modalDeleteItem.hide()">
           Не
         </button>
       </div>
     </div>
   </div>
 </div>
-<!--Modal deleteDesideratum-->
+<!--Modal deleteItem-->
 
 <!--Modal alreadyExists-->
 <div mdbModal #modalAlreadyExists class="modal fade" id="modalAlreadyExists" tabindex="-1"
@@ -327,7 +446,7 @@
           Дуплирање
         </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                (click)="modalDeleteDesideratum.hide()">
+                (click)="modalAlreadyExists.hide()">
           <span aria-hidden="true" class="white-text">&times;</span>
         </button>
       </div>
@@ -343,5 +462,38 @@
     </div>
   </div>
 </div>
-<!--Modal deleteDesideratum-->
+<!--Modal alreadyExists-->
 
+<!--Modal deleteAcquisitionGroup-->
+<div mdbModal #modalDeleteAcquisitionGroup class="modal fade" id="modalDeleteAcquisitionGroup" tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalDelete"
+     aria-hidden="true">
+  <div class="modal-dialog modal-notify modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Брисање партије
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modalDeleteAcquisitionGroup.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <p class="text-center h4">Да ли сте сигурни да желите да обришете партију?</p>
+      </div>
+      <div class="modal-footer d-flex justify-content-center deleteButtonsWrapper">
+        <button mdbBtn color="danger" type="button" class="btnYesClass" data-dismiss="modal" mdbWavesEffect
+                (click)="deleteGroup()">
+          Да
+        </button>
+        <button mdbBtn color="primary" type="button" class="btnNoClass" data-dismiss="modal" mdbWavesEffect
+                (click)="modalDeleteAcquisitionGroup.hide()">
+          Не
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal deleteAcquisitionGroup-->
