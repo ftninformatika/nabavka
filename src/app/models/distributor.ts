@@ -1,4 +1,4 @@
-export class Distributer {
+export class Distributor {
   id?: string;
   pib?: string;
   name?: string;

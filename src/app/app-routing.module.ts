@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {DistributersListComponent} from './components/distributers-list/distributers-list/distributers-list.component';
+import {DistributorsListComponent} from './components/distributors-list/distributors-list.component';
 import {DesideratumListComponent} from './components/desideratum-list/desideratum-list.component';
 import {OfferComponent} from './components/offer/offer.component';
 import {AcquisitionComponent} from './components/acquisition/acquisition.component';
+import {LoginComponent} from './components/login/login.component';
+import {AuthGuard} from './guards/auth.guard';
 import {DashboardComponent} from './components/dashboard/dashboard.component';
 
 const routes: Routes = [

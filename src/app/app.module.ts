@@ -12,13 +12,17 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DesideratumListComponent } from './components/desideratum-list/desideratum-list.component';
 import { GroupByPipe } from './pipes/group-by.pipe';
-import { FormsModule } from '@angular/forms';
-import { DistributersListComponent } from './components/distributers-list/distributers-list/distributers-list.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { DistributorsListComponent } from './components/distributors-list/distributors-list.component';
 import { OfferComponent } from './components/offer/offer.component';
 import { SelectLocationComponent } from './components/select-location/select-location.component';
 import { AcquisitionComponent } from './components/acquisition/acquisition.component';
 import {FirestoreDatePipe} from './pipes/firestore-date-pipe';
 import { AcquisitionItemComponent } from './components/acquisition-item/acquisition-item.component';
+import { LoginComponent } from './components/login/login.component';
+import {NgxsStoragePluginModule} from '@ngxs/storage-plugin';
+import {NgxsModule} from '@ngxs/store';
+import {UserState} from './states/user.state';
 import { StatusPipe } from './pipes/status.pipe';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 
@@ -27,11 +31,13 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     AppComponent,
     DesideratumListComponent,
     GroupByPipe,
-    DistributersListComponent,
+    DistributorsListComponent,
     OfferComponent,
     SelectLocationComponent,
     AcquisitionComponent,
     FirestoreDatePipe,
+    AcquisitionItemComponent,
+    LoginComponent,
     AcquisitionItemComponent,
     StatusPipe,
     DashboardComponent
@@ -43,7 +49,10 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     MDBBootstrapModulesPro.forRoot(),
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule,
+    NgxsModule.forRoot([UserState]),
+    NgxsStoragePluginModule.forRoot()
   ],
   providers: [
     MDBSpinningPreloader,

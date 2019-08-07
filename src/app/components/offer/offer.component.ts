@@ -4,7 +4,7 @@ import {Offer} from '../../models/offer';
 import {Book} from '../../models/book';
 import {ModalDirective} from 'ng-uikit-pro-standard';
 import {ActivatedRoute} from '@angular/router';
-import {Distributer} from '../../models/distributer';
+import {Distributor} from '../../models/distributor';
 
 @Component({
   selector: 'app-offer',
@@ -20,17 +20,17 @@ export class OfferComponent implements OnInit {
   test: string;
   @ViewChild(ModalDirective, {static: false})
   modal: ModalDirective;
-  distributer: Distributer;
+  distributer: Distributor;
 
   constructor(private firebaseService: FirebaseService, private route: ActivatedRoute) { }
   ngOnInit() {
     this.pib = this.route.snapshot.paramMap.get('pib');
-    this.firebaseService.getDistributer(this.pib).subscribe(dist => {
+    this.firebaseService.getDistributor(this.pib).subscribe(dist => {
       this.distributer = dist.map(e => {
         return {
           id: e.payload.doc.id,
           ... e.payload.doc.data() as any
-        } as Distributer;
+        } as Distributor;
       })[0];
     });
     this.firebaseService.getOffers(this.pib).subscribe(data => {

@@ -4,7 +4,7 @@
   <div class="card-body">
     <div id="table" class="table-editable">
       <span class="table-add float-right mb-3 mr-2">
-       <a mdbBtn floating="true" color="primary" size="sm" (click)="addNewDistributer()">
+       <a mdbBtn floating="true" color="primary" size="sm" (click)="addNewDistributor()">
           <mdb-icon fas icon="plus"></mdb-icon>
         </a>
       </span>
@@ -17,48 +17,48 @@
           <th class="text-center">Контакт особа</th>
           <th class="text-center"></th>
         </tr>
-        <tbody *ngFor="let distributer of distributersList; let id = index">
+        <tbody *ngFor="let distributor of distributorsList; let id = index">
 
 
         <tr>
          <td>
            <ng-container *ngIf="id !== rowIndex">
-             {{distributer.pib}}
+             {{distributor.pib}}
            </ng-container>
            <ng-container *ngIf="id == rowIndex">
-             <input mdbInput type="text" name="text" [(ngModel)]="distributer.pib"  class="form-control">
+             <input mdbInput type="text" name="text" [(ngModel)]="distributor.pib"  class="form-control">
            </ng-container>
           </td>
           <td>
             <ng-container *ngIf="id !== rowIndex">
-              {{distributer.name}}
+              {{distributor.name}}
             </ng-container>
             <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="text" name="text" [(ngModel)]="distributer.name"  class="form-control">
+              <input mdbInput type="text" name="text" [(ngModel)]="distributor.name"  class="form-control">
             </ng-container>
           </td>
           <td>
             <ng-container *ngIf="id !== rowIndex">
-              {{distributer.phone}}
+              {{distributor.phone}}
             </ng-container>
             <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="text" name="text" [(ngModel)]="distributer.phone"  class="form-control">
+              <input mdbInput type="text" name="text" [(ngModel)]="distributor.phone"  class="form-control">
             </ng-container>
           </td>
           <td>
             <ng-container *ngIf="id !== rowIndex">
-              {{distributer.email}}
+              {{distributor.email}}
             </ng-container>
             <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="text" name="text" [(ngModel)]="distributer.email"  class="form-control">
+              <input mdbInput type="text" name="text" [(ngModel)]="distributor.email"  class="form-control">
             </ng-container>
           </td>
           <td>
             <ng-container *ngIf="id !== rowIndex">
-              {{distributer.contactPerson}}
+              {{distributor.contactPerson}}
             </ng-container>
             <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="text" name="text" [(ngModel)]="distributer.contactPerson"  class="form-control">
+              <input mdbInput type="text" name="text" [(ngModel)]="distributor.contactPerson"  class="form-control">
             </ng-container>
           </td>
           <td>
@@ -69,18 +69,18 @@
                 <mdb-icon fas icon="edit"></mdb-icon>
               </button>
 
-                 <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect [routerLink]="['/offers/'+distributer.pib]">
+                 <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect [routerLink]="['/offers/'+distributor.pib]">
                   <mdb-icon fas icon="eye"></mdb-icon>
                  </button>
               </div>
             </ng-container>
             <ng-container *ngIf="id == rowIndex">
               <div class="d-flex justify-content-end">
-                <button mdbBtn color="success" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="update(distributer)">
+                <button mdbBtn color="success" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="update(distributor)">
                   <mdb-icon fas icon="check-circle"></mdb-icon>
                 </button>
 
-                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="remove(distributer)">
+                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="remove(distributor)">
                   <mdb-icon fas icon="trash-alt"></mdb-icon>
                 </button>
               </div>
@@ -129,7 +129,7 @@
       <!--Body-->
       <div class="modal-body">
         <div class="md-form mb-5">
-          <input [(ngModel)]="distributer.pib" #ctrl="ngModel"
+          <input [(ngModel)]="distributor.pib" #ctrl="ngModel"
                  type="text"
                  class="form-control"
                  id="pib"
@@ -138,7 +138,7 @@
           <label for="pib">ПИБ</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="distributer.name" #ctrl="ngModel"
+          <input [(ngModel)]="distributor.name" #ctrl="ngModel"
                  type="text"
                  class="form-control"
                  id="name"
@@ -147,7 +147,7 @@
           <label for="name">Назив</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="distributer.phone" #ctrl="ngModel"
+          <input [(ngModel)]="distributor.phone" #ctrl="ngModel"
                  type="text"
                  class="form-control"
                  id="phone"
@@ -156,7 +156,7 @@
           <label for="phone">Телефон</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="distributer.email" #ctrl="ngModel"
+          <input [(ngModel)]="distributor.email" #ctrl="ngModel"
                  type="text"
                  class="form-control"
                  id="email"
@@ -165,7 +165,7 @@
           <label for="email">Емаил</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="distributer.contactPerson" #ctrl="ngModel"
+          <input [(ngModel)]="distributor.contactPerson" #ctrl="ngModel"
                  type="text"
                  class="form-control"
                  id="contactPerson"

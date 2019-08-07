@@ -3,10 +3,11 @@ import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firest
 import {Desideratum} from '../models/desideratum';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
-import {Distributer} from '../models/distributer';
+import {Distributor} from '../models/distributor';
 import {Offer} from '../models/offer';
 import {Acquisition} from '../models/acquisition';
-
+import {User} from '../models/user';
+import {map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -61,18 +62,18 @@ export class FirebaseService {
     this.firestore.collection('Acquisition').doc(id).update(acquisition);
   }
 
-  getDistributers() {
-    return this.firestore.collection('Distributer').snapshotChanges();
+  getDistributors() {
+    return this.firestore.collection('Distributor').snapshotChanges();
   }
-  updateDistributer(distributer: Distributer) {
-      this.firestore.collection('Distributer').doc(distributer.id).update(distributer);
-      this.firestore.collection('Distributer').doc(distributer.id).update({id: firebase.firestore.FieldValue.delete()});
+  updateDistributor(distributor: Distributor) {
+      this.firestore.collection('Distributor').doc(distributor.id).update(distributor);
+      this.firestore.collection('Distributor').doc(distributor.id).update({id: firebase.firestore.FieldValue.delete()});
   }
-  removeDistributer(id: string) {
-    this.firestore.collection('Distributer').doc(id).delete();
+  removeDistributor(id: string) {
+    this.firestore.collection('Distributor').doc(id).delete();
   }
-  addDistributer(item: Distributer) {
-    return this.firestore.collection('Distributer').add(item);
+  addDistributor(item: Distributor) {
+    return this.firestore.collection('Distributor').add(item);
   }
   addOffer(item: Offer) {
     return this.firestore.collection('Offer').add(item);
@@ -89,9 +90,14 @@ export class FirebaseService {
     return this.firestore.collection('Offer', ref =>
       ref.where('distributer', '==', pib)).snapshotChanges();
   }
-  getDistributer(pib: string) {
-    return this.firestore.collection('Distributer', ref =>
+  getDistributor(pib: string) {
+    return this.firestore.collection('Distributor', ref =>
       ref.where('pib', '==', pib)).snapshotChanges();
+  }
+
+  getUser(username: string, password: string) {
+    return this.firestore.collection('User', ref =>
+      ref.where('username', '==', username)).snapshotChanges();
   }
 
 }
