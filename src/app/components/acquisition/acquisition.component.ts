@@ -1,11 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FirebaseService} from '../../services/firebase.service';
-import {ActivatedRoute} from '@angular/router';
-import {Acquisition, AcquisitionGroup, Item, Price, Status} from '../../models/acquisition';
-import {Desideratum} from '../../models/desideratum';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Acquisition, AcquisitionGroup, Status} from '../../models/acquisition';
 import {GroupByPipe} from '../../pipes/group-by.pipe';
-import {firestore} from 'firebase/app';
-import Timestamp = firestore.Timestamp;
+import {ModalDirective} from 'ng-uikit-pro-standard';
 
 @Component({
   selector: 'app-acquisition',
@@ -14,13 +12,15 @@ import Timestamp = firestore.Timestamp;
   providers: [ GroupByPipe ]
 })
 export class AcquisitionComponent implements OnInit {
+  @ViewChild('modalChangeStatus', {static: false}) modalChangeStatus: ModalDirective;
   acquisitionId: string;
   acquisition: Acquisition = {};
   amount = 0;
   edit = false;
+  Status = Status;
 
-  constructor(private firebaseService: FirebaseService, private route: ActivatedRoute, private groupBy: GroupByPipe) {
-  }
+  constructor(private firebaseService: FirebaseService, private route: ActivatedRoute, private router: Router,
+              private groupBy: GroupByPipe) {}
 
   ngOnInit() {
     this.acquisitionId = this.route.snapshot.paramMap.get('id');
@@ -123,6 +123,22 @@ export class AcquisitionComponent implements OnInit {
     this.acquisition.acquisitionGroups.splice(0, 0, acquisitionGroup);
     form.reset();
     modalInstance.hide();
+    this.saveAcquisition();
+  }
+
+  deleteAcquisition() {
+    this.firebaseService.deleteAcquisition(this.acquisitionId).then(docRef => {
+      this.router.navigate(['/dashboard']);
+    });
+  }
+
+  changeStatus() {
+    if (this.acquisition.status === Status.OPEN) {
+      this.acquisition.status = Status.CLOSED;
+    } else if (this.acquisition.status === Status.CLOSED) {
+      this.acquisition.status = Status.DELIVERY;
+    }
+    this.modalChangeStatus.hide();
     this.saveAcquisition();
   }
 }

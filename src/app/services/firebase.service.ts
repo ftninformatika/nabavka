@@ -61,6 +61,10 @@ export class FirebaseService {
     this.firestore.collection('Acquisition').doc(id).update(acquisition);
   }
 
+  deleteAcquisition(id: string) {
+    return this.firestore.collection('Acquisition').doc(id).delete();
+  }
+
   getDistributers() {
     return this.firestore.collection('Distributer').snapshotChanges();
   }
