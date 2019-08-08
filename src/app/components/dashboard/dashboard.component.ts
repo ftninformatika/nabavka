@@ -39,7 +39,8 @@ export class DashboardComponent implements OnInit {
         if (acquisition.status === Status.OPEN) {
           amount = amount + locNo * item.planedPrice.price;
         } else {
-          amount = amount + locNo * item.realPrice.price;
+         // amount = amount + locNo * item.realPrice.price;
+          amount = amount + locNo * item.planedPrice.price;
         }
       });
     });
