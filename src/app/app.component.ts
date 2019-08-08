@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import {LogoutAction, UserState} from './states/user.state';
+import {Select, Store} from '@ngxs/store';
+import {Roles} from './configs/app.config';
+import {Observable} from 'rxjs';
+import {User} from './models/user';
 
 @Component({
   selector: 'app-root',
@@ -7,6 +12,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-
-  constructor(private router: Router) { }
+  @Select(UserState.userDetails) loggeduser: Observable<User>;
+  Roles = Roles;
+  constructor(private router: Router, private store: Store) {
+  }
+  logout() {
+    this.store.dispatch(new LogoutAction());
+    this.router.navigate(['']);
+  }
 }

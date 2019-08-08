@@ -25,6 +25,7 @@ import {NgxsModule} from '@ngxs/store';
 import {UserState} from './states/user.state';
 import { StatusPipe } from './pipes/status.pipe';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { AccessDeniedComponent } from './components/access-denied/access-denied.component';
 
 @NgModule({
   declarations: [
@@ -40,9 +41,12 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     LoginComponent,
     AcquisitionItemComponent,
     StatusPipe,
-    DashboardComponent
+    DashboardComponent,
+    AccessDeniedComponent
   ],
   imports: [
+    NgxsModule.forRoot([UserState]),
+    NgxsStoragePluginModule.forRoot(),
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
@@ -51,8 +55,6 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     AngularFirestoreModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxsModule.forRoot([UserState]),
-    NgxsStoragePluginModule.forRoot()
   ],
   providers: [
     MDBSpinningPreloader,

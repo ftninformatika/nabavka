@@ -1,0 +1,43 @@
+<div class="full-bg-img mask flex-center">
+  <div class="container"><!-- Form -->
+    <div class="row">
+      <div class="col-xl-5 col-lg-6 col-md-10 col-sm-12 mx-auto mt-5">
+        <div class="card wow fadeIn" data-wow-delay="0.3s" style="animation-name: none; visibility: visible;">
+    <form [formGroup]="loginForm" class="text-center border border-light p-5">
+      <p class="h4 mb-4">Пријава</p>
+      <!-- Email -->
+      <div class="md-form">
+        <input type="email" id="materialLoginFormEmail" class="form-control" formControlName="username" mdbInput>
+        <label for="materialLoginFormEmail">Корисничко име</label>
+      </div>
+
+      <!-- Password -->
+      <div class="md-form">
+        <input type="password"  id="materialLoginFormPassword" formControlName="password" class="form-control" mdbInput>
+        <label for="materialLoginFormPassword">Лозинка</label>
+      </div>
+
+     <!-- <div class="d-flex justify-content-around">
+        <div>
+
+          <mdb-checkbox>Remember me</mdb-checkbox>
+        </div>
+        <div>
+
+          <a href="">Forgot password?</a>
+        </div>
+      </div>-->
+
+      <!-- Sign in button -->
+      <button mdbBtn color="info" outline="true" rounded="true" block="true" class="my-4 waves-effect z-depth-0" mdbWavesEffect
+              type="submit" (click)="signIn()">Sign in</button>
+
+
+
+    </form>
+    <!-- Form -->
+    </div>
+    </div>
+    </div>
+  </div>
+</div>

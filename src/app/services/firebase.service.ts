@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
+import {AngularFirestore} from '@angular/fire/firestore';
 import {Desideratum} from '../models/desideratum';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -92,10 +92,11 @@ export class FirebaseService {
     return this.firestore.collection('Offer', ref =>
       ref.where('distributer', '==', pib)).snapshotChanges();
   }
-
   getDistributor(pib: string) {
     return this.firestore.collection('Distributor', ref =>
+      ref.where('pib', '==', pib)).snapshotChanges();
   }
+
   getUser(username: string, password: string) {
     return this.firestore.collection('User', ref =>
       ref.where('username', '==', username)).snapshotChanges();
