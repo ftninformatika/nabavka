@@ -1,49 +1,29 @@
 <div class="row">
   <div class="col-auto flex-grow-1">
-    <div class="row">
+    <div class="row pl-2">
       <div class="col-auto">
-        <h3 class="py-2">Набавка</h3>
+        <h5 class="grey-text">Набавка</h5>
       </div>
-      <div class="col-auto px-0">
+    </div>
+    <div class="row pl-2">
+      <div class="col-auto">
         <ng-container *ngIf="edit; else title">
           <input [(ngModel)]="acquisition.title" #ctrl="ngModel" type="text" class="form-control" mdbInput
                  (keyup.enter)="toggleEdit()">
         </ng-container>
         <ng-template #title>
-          <h3 class="py-2 font-weight-bolder">{{acquisition.title}}</h3>
+          <h1 class="font-weight-bold dark-grey-text">{{acquisition.title}}</h1>
         </ng-template>
       </div>
     </div>
-    <div class="row">
-        <div class="col-auto">
-          Датум покретања:
-        </div>
-        <div class="col-auto px-0">
-          <ng-container *ngIf="edit; else date">
-            <input [ngModel]="acquisition.startDate" (ngModelChange)="parseDate($event)" #ctrl="ngModel" type="date" class="form-control" mdbInput
-                   (keyup.enter)="toggleEdit()">
-          </ng-container>
-          <ng-template #date>
-            {{acquisition.startDate | firestoreDate}}
-          </ng-template>
-        </div>
-    </div>
-    <div class="row">
-      <div class="col-auto">
-        Статус:
-      </div>
-      <div class="col-auto px-0">
-        {{acquisition.status | statusPipe}}
-      </div>
-    </div>
-    <div class="row pl-3 mt-2">
+    <div class="row pl-3 mt-3">
       <ng-container *ngIf="edit; else ok">
 <!--        <button mdbBtn type="button" color="info" outline="true" (click)="toggleEdit()" mdbWavesEffect>Сачувај</button>-->
         <a mdbBtn floating="true" size="sm" color="info" (click)="toggleEdit()" mdbWavesEffect>
           <mdb-icon fas icon="check"></mdb-icon>
         </a>
 <!--        <button mdbBtn type="button" color="danger" outline="true" mdbWavesEffect>Обриши набавку</button>-->
-        <a mdbBtn floating="true" size="sm" color="danger" (click)="toggleEdit()" mdbWavesEffect>
+        <a mdbBtn floating="true" size="sm" color="danger" (click)="modalDeleteAcquisition.show()" mdbWavesEffect>
           <mdb-icon fas icon="trash-alt"></mdb-icon>
         </a>
       </ng-container>
@@ -60,13 +40,13 @@
         <mdb-icon fas icon="plus"></mdb-icon>
       </a>
 
-      <div class="d-flex" (mouseleave)="fixed.toggle()">
-        <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect (mouseenter)="fixed.toggle()">
+      <div class="d-flex">
+        <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect (click)="menu.toggle()">
           <mdb-icon fas icon="ellipsis-h" ></mdb-icon>
         </a>
 
-        <div mdbCollapse="isCollapsed" #fixed="bs-collapse">
-          <a mdbBtn floating="true" size="sm" color="default" mdbWavesEffect
+        <div mdbCollapse="isCollapsed" #menu="bs-collapse">
+          <a mdbBtn floating="true" size="sm" color="default" (click)="modalChangeStatus.show()" mdbWavesEffect
              data-toggle="tooltip" title="Промени статус">
             <mdb-icon fas icon="forward" ></mdb-icon>
           </a>
@@ -76,6 +56,62 @@
           </a>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+  <div class="col-3 d-flex flex-column">
+    <div class="col mb-2">
+      <div class="row">
+        <div class="col-auto">
+          <mdb-icon fas icon="calendar-day" class="fa-lg blue-text"></mdb-icon>
+        </div>
+        <div class="col text-left pl-0">
+          <ng-container *ngIf="edit; else startdate">
+            <input [ngModel]="acquisition.startDate" (ngModelChange)="parseDate($event)" #ctrl="ngModel" type="date" class="form-control" mdbInput
+                   (keyup.enter)="toggleEdit()">
+          </ng-container>
+          <ng-template #startdate>
+            <h6 class="font-weight-bolder">{{acquisition.startDate | firestoreDate}}</h6>
+          </ng-template>
+          <h6 class="grey-text">датум креирања</h6>
+        </div>
+      </div>
+    </div>
+    <div class="col-auto mb-2">
+      <div class="row">
+        <div class="col-auto">
+          <mdb-icon fas icon="calendar-check" class="fa-lg blue-text"></mdb-icon>
+        </div>
+        <div class="col text-left pl-0">
+          <ng-container *ngIf="edit; else date">
+            <input [ngModel]="acquisition.acquisitionDate" (ngModelChange)="parseDate($event)" #ctrl="ngModel" type="date" class="form-control" mdbInput
+                   (keyup.enter)="toggleEdit()">
+          </ng-container>
+          <ng-template #date>
+            <h6 class="font-weight-bolder">{{acquisition.acquisitionDate | firestoreDate}}</h6>
+          </ng-template>
+          <h6 class="grey-text">датум јавне набавке</h6>
+        </div>
+      </div>
+    </div>
+    <div class="col-auto mb-2">
+      <div class="row">
+        <div class="col-auto">
+          <ng-container *ngIf="acquisition.status == Status.OPEN">
+            <mdb-icon fas icon="unlock" size="lg" class="fa-lg blue-text"></mdb-icon>
+          </ng-container>
+          <ng-container *ngIf="acquisition.status == Status.CLOSED">
+            <mdb-icon fas icon="lock" size="lg" class="fa-lg blue-text"></mdb-icon>
+          </ng-container>
+          <ng-container *ngIf="acquisition.status == Status.DELIVERY">
+            <mdb-icon fab icon="dolly" size="lg" class="fa-lg blue-text"></mdb-icon>
+          </ng-container>
+        </div>
+        <div class="col text-left pl-0">
+          <h6 class="font-weight-bolder">{{acquisition.status | statusPipe}}</h6>
+          <h6 class="grey-text">статус</h6>
+        </div>
       </div>
     </div>
   </div>
@@ -94,8 +130,7 @@
           <ng-template #budget>
             <h6 class="font-weight-bolder">{{acquisition.budget|number:'1.2-2'}}</h6>
           </ng-template>
-
-          <h6 class="grey-text">Буџет</h6>
+          <h6 class="grey-text">буџет</h6>
         </div>
 <!--        <div class="col-auto">-->
 <!--          <mdb-badge (click)="toggleEdit()" color="amber">-->
@@ -107,11 +142,11 @@
     <div class="col-auto mb-2">
       <div class="row">
         <div class="col-auto">
-          <mdb-icon fas icon="shopping-cart" class="fa-lg blue-text"></mdb-icon>
+          <mdb-icon fas icon="coins" class="fa-lg blue-text"></mdb-icon>
         </div>
         <div class="col text-left pl-0">
           <h6 class="font-weight-bolder">{{amount|number:'1.2-2'}}</h6>
-          <h6 class="grey-text">Потрошено</h6>
+          <h6 class="grey-text">вредност</h6>
         </div>
       </div>
     </div>
@@ -127,12 +162,31 @@
         </div>
         <div class="col text-left pl-0">
           <h6 class="font-weight-bolder">{{getRemain()|number:'1.2-2'}}</h6>
-          <h6 class="grey-text">Преостало</h6>
+          <h6 class="grey-text">преостало</h6>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+
+<!--<mdb-tabset [buttonClass]="'md-pills pills-light-blue'" >-->
+<!--  <mdb-tab heading="{{Status.OPEN | statusPipe}}">-->
+<!--  </mdb-tab>-->
+<!--  <mdb-tab heading="{{Status.CLOSED | statusPipe}}">-->
+<!--  </mdb-tab>-->
+<!--  <mdb-tab heading="{{Status.DELIVERY | statusPipe}}" [disabled]="true">-->
+<!--  </mdb-tab>-->
+<!--</mdb-tabset>-->
+
+<!--<mdb-stepper #stepper>-->
+<!--  <mdb-step name="{{Status.OPEN | statusPipe}}" >-->
+<!--  </mdb-step>-->
+<!--  <mdb-step name="{{Status.CLOSED | statusPipe}}" >-->
+<!--  </mdb-step>-->
+<!--  <mdb-step name="{{Status.DELIVERY | statusPipe}}" class="disabled">-->
+<!--  </mdb-step>-->
+<!--</mdb-stepper>-->
 
 <div *ngFor="let group of acquisition.acquisitionGroups" class="mb-3">
   <app-acquisition-item [acquisitionGroup]="group" (updateAcquisitionGroupEvent)="updateAcquisitionGroup($event)"
@@ -176,3 +230,80 @@
     </div>
   </div>
 </div>
+
+<!--Modal addAcquisitionGroup -->
+
+<!--Modal deleteAcquisition-->
+<div mdbModal #modalDeleteAcquisition class="modal fade" id="modalDeleteAcquisition" tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalDelete"
+     aria-hidden="true">
+  <div class="modal-dialog modal-notify modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Брисање набавке
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modalDeleteAcquisition.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <p class="text-center h4">Да ли сте сигурни да желите да обришете набавку?</p>
+      </div>
+      <div class="modal-footer d-flex justify-content-center deleteButtonsWrapper">
+        <button mdbBtn color="danger" type="button" class="btnYesClass" data-dismiss="modal" mdbWavesEffect
+                (click)="deleteAcquisition()">
+          Да
+        </button>
+        <button mdbBtn color="primary" type="button" class="btnNoClass" data-dismiss="modal" mdbWavesEffect
+                (click)="modalDeleteAcquisition.hide()">
+          Не
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal deleteAcquisition-->
+
+<!--Modal changeStatus-->
+<div mdbModal #modalChangeStatus class="modal fade" id="modalChangeStatus" tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalChangeStatus"
+     aria-hidden="true">
+  <div class="modal-dialog modal-notify modal-info" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Промена статуса
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modalChangeStatus.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <ng-container *ngIf="acquisition.status == Status.OPEN">
+          <p class="text-center h4">Набавка из стауса У припреми прелази у статус Затворена.</p>
+          <p class="text-center h4">Да ли сте сигурни да желите да промените статус?</p>
+        </ng-container>
+        <ng-container *ngIf="acquisition.status == Status.CLOSED">
+          <p class="text-center h4">Набавка из стауса Затворена прелази у статус Достава.</p>
+          <p class="text-center h4">Да ли сте сигурни да желите да промените статус?</p>
+        </ng-container>
+      </div>
+      <div class="modal-footer d-flex justify-content-center deleteButtonsWrapper">
+        <button mdbBtn color="danger" type="button" class="btnYesClass" data-dismiss="modal" mdbWavesEffect
+                (click)="changeStatus()">
+          Да
+        </button>
+        <button mdbBtn color="primary" type="button" class="btnNoClass" data-dismiss="modal" mdbWavesEffect
+                (click)="modalChangeStatus.hide()">
+          Не
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal changeStatus-->

@@ -4,6 +4,7 @@ export class Acquisition {
   id?: string;
   title?: string;
   startDate?: Date;
+  acquisitionDate?: Date;
   budget?: number;
   status?: Status;
   desiderataUpdated?: boolean;

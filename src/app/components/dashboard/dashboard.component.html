@@ -8,26 +8,75 @@
 
   <div class="col-lg-4 col-md-12 p-4">
     <mdb-card cascade="true">
-      <div class="view view-cascade gradient-card-header rainy-ashville-gradient">
+      <div class="view view-cascade gradient-card-header winter-neva-gradient">
         <h6 class="indigo-text">Набавка</h6>
         <h2 class="card-header-title indigo-text">{{acquisition.title}}</h2>
       </div>
 
       <mdb-card-body cascade="true" class="text-left">
-        <div class="row">
-          <div class="col-auto">
-            Датум покретања:
+        <div class="mx-2">
+          <div class="row mb-2">
+            <div class="col-auto d-flex flex-row flex-grow-1">
+              <ng-container *ngIf="acquisition.status == Status.OPEN">
+                <mdb-icon fas icon="unlock" size="lg" class="blue-text"></mdb-icon>
+              </ng-container>
+              <ng-container *ngIf="acquisition.status == Status.CLOSED">
+                <mdb-icon fas icon="lock" size="lg" class="blue-text"></mdb-icon>
+              </ng-container>
+              <ng-container *ngIf="acquisition.status == Status.DELIVERY">
+                <mdb-icon fab icon="dolly" size="lg" class="blue-text"></mdb-icon>
+              </ng-container>
+              <div class="pl-3">
+                {{acquisition.status | statusPipe}}
+              </div>
+            </div>
+            <div class="col-auto grey-text">
+              статус
+            </div>
           </div>
-          <div class="col-auto px-0">
-            {{acquisition.startDate | firestoreDate}}
+          <div class="row mb-2">
+            <div class="col-auto d-flex flex-row flex-grow-1">
+              <mdb-icon fas icon="coins" size="lg" class="blue-text"></mdb-icon>
+              <div class="pl-3">
+                {{calculateAmount(acquisition) | number:'1.2-2'}}
+              </div>
+            </div>
+            <div class="col-auto grey-text">
+              вредност
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-auto">
-            Статус:
+          <div class="row mb-2">
+            <div class="col-auto d-flex flex-row flex-grow-1">
+              <mdb-icon fas icon="hand-holding-usd" size="lg" class="blue-text"></mdb-icon>
+              <div class="pl-3">
+                {{acquisition.budget | number:'1.2-2'}}
+              </div>
+            </div>
+            <div class="col-auto grey-text">
+              буџет
+            </div>
           </div>
-          <div class="col-auto px-0">
-            {{acquisition.status | statusPipe}}
+          <div class="row mb-2">
+            <div class="col-auto d-flex flex-row flex-grow-1">
+              <mdb-icon fas icon="calendar-day" size="lg" class="blue-text"></mdb-icon>
+              <div class="pl-3">
+                {{acquisition.startDate | firestoreDate}}
+              </div>
+            </div>
+            <div class="col-auto grey-text">
+              датум креирања
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-auto d-flex flex-row flex-grow-1">
+              <mdb-icon fas icon="calendar-check" size="lg" class="blue-text"></mdb-icon>
+              <div class="pl-3">
+                {{acquisition.acquisitionDate | firestoreDate}}
+              </div>
+            </div>
+            <div class="col-auto grey-text">
+              датум јавне набавке
+            </div>
           </div>
         </div>
         <hr>
@@ -40,9 +89,45 @@
 </div>
 
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-
-  <a mdbBtn floating="true" size="lg" color="blue" mdbWavesEffect>
+  <a mdbBtn floating="true" size="lg" color="blue" mdbWavesEffect (click)="modalAddAcquisition.show()">
     <mdb-icon fas icon="plus" ></mdb-icon>
   </a>
-
 </div>
+
+<!--Modal addAcquisition -->
+<div mdbModal #modalAddAcquisition class="modal fade top" id="modalAddAcquisition" tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalAdd" aria-hidden="true" style="overflow-y: auto">
+  <div class="modal-dialog modal-notify modal-info" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Нова набавка
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modalAddAcquisition.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <form #addForm>
+          <div class="md-form mb-5">
+            <input type="text" id="inputTitle" class="form-control validate" mdbInput>
+            <label data-error="wrong" data-success="right" for="inputTitle">Назив</label>
+          </div>
+
+          <div class="md-form mb-5">
+            <input type="number" id="inputBudget" class="form-control validate" mdbInput>
+            <label data-error="wrong" data-success="right" for="inputBudget">Буџет</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" mdbBtn color="info" class="waves-effect" mdbWavesEffect
+                (click)="addAcquisition(addForm, modalAddAcquisition)">Додај
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal addAcquisition -->

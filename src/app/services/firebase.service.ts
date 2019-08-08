@@ -7,7 +7,6 @@ import {Distributor} from '../models/distributor';
 import {Offer} from '../models/offer';
 import {Acquisition} from '../models/acquisition';
 import {User} from '../models/user';
-import {map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -62,6 +61,9 @@ export class FirebaseService {
     this.firestore.collection('Acquisition').doc(id).update(acquisition);
   }
 
+  deleteAcquisition(id: string) {
+    return this.firestore.collection('Acquisition').doc(id).delete();
+  }
   getDistributors() {
     return this.firestore.collection('Distributor').snapshotChanges();
   }
@@ -90,11 +92,10 @@ export class FirebaseService {
     return this.firestore.collection('Offer', ref =>
       ref.where('distributer', '==', pib)).snapshotChanges();
   }
+
   getDistributor(pib: string) {
     return this.firestore.collection('Distributor', ref =>
-      ref.where('pib', '==', pib)).snapshotChanges();
   }
-
   getUser(username: string, password: string) {
     return this.firestore.collection('User', ref =>
       ref.where('username', '==', username)).snapshotChanges();
