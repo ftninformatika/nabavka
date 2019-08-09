@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable } from '@angular/core';
 import {Store} from '@ngxs/store';
 import {Router} from '@angular/router';
 import {UserState} from '../states/user.state';

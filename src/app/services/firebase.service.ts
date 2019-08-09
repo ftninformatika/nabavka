@@ -99,7 +99,7 @@ export class FirebaseService {
 
   getUser(username: string, password: string) {
     return this.firestore.collection('User', ref =>
-      ref.where('username', '==', username)).snapshotChanges();
+      ref.where('username', '==', username)).get();
   }
 
 }

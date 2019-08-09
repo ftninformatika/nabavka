@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
-import {User} from '../../models/user';
-import {Store} from '@ngxs/store';
+import {Actions, ofActionCompleted, Store} from '@ngxs/store';
 import {LoginAction} from '../../states/user.state';
+import {NavigationUtilService} from '../../services/navigation-util.service';
 
 @Component({
   selector: 'app-login',
@@ -14,14 +14,17 @@ export class LoginComponent implements OnInit {
     username: new FormControl(''),
     password: new FormControl(''),
   });
-  user: User;
-  constructor(private store: Store) { }
+
+  constructor(private action: Actions, private  nav: NavigationUtilService, private store: Store) { }
   ngOnInit() {
+    this.action.pipe(ofActionCompleted(LoginAction)).subscribe(() => {
+      this.nav.navigateToHome();
+    });
   }
 
   signIn() {
     const username = this.loginForm.value.username.trim();
     const password = this.loginForm.value.password.trim();
     this.store.dispatch(new LoginAction(username, password));
-  }
+}
 }

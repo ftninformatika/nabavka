@@ -1,10 +1,7 @@
 import {User} from '../models/user';
 import {Action, Selector, State, StateContext} from '@ngxs/store';
 import {FirebaseService} from '../services/firebase.service';
-import {Router} from '@angular/router';
-import {NavigationUtilService} from '../services/navigation-util.service';
-
-
+import {tap} from 'rxjs/operators';
 
 export class LoginAction {
   static readonly type = '[Login Page] getUser';
@@ -27,7 +24,7 @@ export interface IAuthUser {
   defaults: { user: null}
 })
 export class UserState {
-
+ userLogged: any;
 
   @Selector()
   public static getRole(state: IAuthUser) {
@@ -41,34 +38,24 @@ export class UserState {
     return state.user;
   }
 
-  constructor(private firebaseService: FirebaseService, private router: Router, private  nav: NavigationUtilService) {}
+  constructor(private firebaseService: FirebaseService) {}
 
 
   @Action(LoginAction)
   public signIn(ctx: StateContext<IAuthUser>, action: LoginAction) {
-    try {
-      this.firebaseService.getUser(action.username, action.password).subscribe(
-          value => {
-            const response = value.map(e => {
-              return {
-                ...e.payload.doc.data()
-              };
-            })[0] as User;
-            this.nav.navigateToHome();
-            ctx.patchState({
-              user: response
-            });
-
-          });
-    } catch (e) {
-      console.log('error during login action');
-    }
+    return this.firebaseService.getUser(action.username, action.password).pipe(tap((value) => {
+      this.userLogged = value.docs.map(e => {
+        return {
+          ...e.data()
+        };
+      })[0] as User;
+      ctx.patchState({user: this.userLogged} );
+    }));
   }
   @Action([LogoutAction])
   public signOut(ctx: StateContext<IAuthUser>) {
-    ctx.setState({user: undefined});
+    ctx.patchState({user: undefined});
   }
-
 
 }
 

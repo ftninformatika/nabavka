@@ -1,12 +1,11 @@
 
 <!-- Editable table -->
-<div class="card">
-  <h3 class="card-header text-center font-weight-bold text-uppercase py-4">Листа понуђених књига</h3>
+<mdb-card>
+<div class="card-header">
+  <h3 class="py-2">Листа понуђених књига:  {{distributer.name}}</h3>
+</div>
   <div class="card-body">
     <div id="table" class="table-editable">
-           <span >
-           Дистрибутер: {{distributer.name}}
-      </span>
       <span class="table-add float-right mb-3 mr-2">
         <a mdbBtn floating="true" color="primary" size="sm" (click)="addNewOffer()">
           <mdb-icon fas icon="plus"></mdb-icon>
@@ -109,7 +108,7 @@
       </table>
     </div>
   </div>
-</div>
+</mdb-card>
 <!-- Editable table -->
 <!--Modal-->
 <div

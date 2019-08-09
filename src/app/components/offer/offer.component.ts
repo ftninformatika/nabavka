@@ -17,7 +17,6 @@ export class OfferComponent implements OnInit {
   offeredBooks: Book[] ;
   rowIndex: number;
   pib: string;
-  test: string;
   @ViewChild(ModalDirective, {static: false})
   modal: ModalDirective;
   distributer: Distributor;
@@ -29,7 +28,7 @@ export class OfferComponent implements OnInit {
       this.distributer = dist.map(e => {
         return {
           id: e.payload.doc.id,
-          ... e.payload.doc.data() as any
+          ... e.payload.doc.data()
         } as Distributor;
       })[0];
     });
@@ -37,7 +36,7 @@ export class OfferComponent implements OnInit {
       this.offerList = data.map(e => {
         return {
           id: e.payload.doc.id,
-          ... e.payload.doc.data() as any
+          ... e.payload.doc.data()
         } as Offer;
       })[0];
       // tslint:disable-next-line:triple-equals
