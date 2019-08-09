@@ -8,7 +8,7 @@
 
   <div class="col-lg-4 col-md-12 p-4">
     <mdb-card cascade="true">
-      <div class="view view-cascade gradient-card-header winter-neva-gradient">
+      <div class="view view-cascade gradient-card-header winter-neva-gradient" mdbWavesEffect>
         <h6 class="indigo-text">Набавка</h6>
         <h2 class="card-header-title indigo-text">{{acquisition.title}}</h2>
       </div>
@@ -80,7 +80,7 @@
           </div>
         </div>
         <hr>
-        <a href="#" mdbBtn color="primary" mdbWavesEffect [routerLink]="['/acquisition/'+acquisition.id]">Отвори</a>
+        <a href="#" mdbBtn color="primary" mdbWavesEffect [routerLink]="['/acquisition/'+acquisition.id]">Детаљи</a>
       </mdb-card-body>
     </mdb-card>
   </div>
