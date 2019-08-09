@@ -17,46 +17,61 @@
       </div>
     </div>
     <div class="row pl-3 mt-3">
-      <ng-container *ngIf="edit; else ok">
-<!--        <button mdbBtn type="button" color="info" outline="true" (click)="toggleEdit()" mdbWavesEffect>Сачувај</button>-->
-        <a mdbBtn floating="true" size="sm" color="info" (click)="toggleEdit()" mdbWavesEffect>
-          <mdb-icon fas icon="check"></mdb-icon>
+
+      <ng-container *ngIf="acquisition.status != Status.DELIVERY; else desideratumUpdate">
+        <ng-container *ngIf="edit; else ok">
+          <!--        <button mdbBtn type="button" color="info" outline="true" (click)="toggleEdit()" mdbWavesEffect>Сачувај</button>-->
+          <a mdbBtn floating="true" size="sm" color="info" (click)="toggleEdit()" mdbWavesEffect>
+            <mdb-icon fas icon="check"></mdb-icon>
+          </a>
+          <!--        <button mdbBtn type="button" color="danger" outline="true" mdbWavesEffect>Обриши набавку</button>-->
+          <a mdbBtn floating="true" size="sm" color="danger" (click)="modalDeleteAcquisition.show()" mdbWavesEffect>
+            <mdb-icon fas icon="trash-alt"></mdb-icon>
+          </a>
+        </ng-container>
+        <ng-template #ok>
+          <!--        <button mdbBtn type="button" color="amber" outline="true" (click)="toggleEdit()" mdbWavesEffect>Измени</button>-->
+          <a mdbBtn floating="true" size="sm" color="amber" (click)="toggleEdit()" mdbWavesEffect
+             data-toggle="tooltip" title="Измени">
+            <mdb-icon fas icon="pen"></mdb-icon>
+          </a>
+        </ng-template>
+        <!--      <button mdbBtn type="button" color="primary" outline="true" mdbWavesEffect>Додај партију</button>-->
+        <!--      <a mdbBtn floating="true" size="sm" color="primary" (click)="modalAddAcquisitionGroup.show()" mdbWavesEffect-->
+        <!--         data-toggle="tooltip" title="Додај партију">-->
+        <!--        <mdb-icon fas icon="plus"></mdb-icon>-->
+        <!--      </a>-->
+        <a mdbBtn floating="true" size="sm" color="default" (click)="modalChangeStatus.show()" mdbWavesEffect
+           data-toggle="tooltip" title="Промени статус">
+          <mdb-icon fas icon="forward" ></mdb-icon>
         </a>
-<!--        <button mdbBtn type="button" color="danger" outline="true" mdbWavesEffect>Обриши набавку</button>-->
-        <a mdbBtn floating="true" size="sm" color="danger" (click)="modalDeleteAcquisition.show()" mdbWavesEffect>
-          <mdb-icon fas icon="trash-alt"></mdb-icon>
+        <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect
+           data-toggle="tooltip" title="Штамапај">
+          <mdb-icon fas icon="file-alt"></mdb-icon>
         </a>
       </ng-container>
-      <ng-template #ok>
-<!--        <button mdbBtn type="button" color="amber" outline="true" (click)="toggleEdit()" mdbWavesEffect>Измени</button>-->
-        <a mdbBtn floating="true" size="sm" color="amber" (click)="toggleEdit()" mdbWavesEffect
-           data-toggle="tooltip" title="Измени">
-          <mdb-icon fas icon="pen"></mdb-icon>
+      <ng-template #desideratumUpdate>
+        <a mdbBtn floating="true" size="sm" color="green" mdbWavesEffect
+           data-toggle="tooltip" title="Ажурирај дезидерате">
+          <mdb-icon fas icon="sync-alt"></mdb-icon>
         </a>
       </ng-template>
-<!--      <button mdbBtn type="button" color="primary" outline="true" mdbWavesEffect>Додај партију</button>-->
-      <a mdbBtn floating="true" size="sm" color="primary" (click)="modalAddAcquisitionGroup.show()" mdbWavesEffect
-         data-toggle="tooltip" title="Додај партију">
-        <mdb-icon fas icon="plus"></mdb-icon>
-      </a>
+<!--      <div class="d-flex">-->
+<!--        <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect (click)="menu.toggle()">-->
+<!--          <mdb-icon fas icon="ellipsis-h" ></mdb-icon>-->
+<!--        </a>-->
 
-      <div class="d-flex">
-        <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect (click)="menu.toggle()">
-          <mdb-icon fas icon="ellipsis-h" ></mdb-icon>
-        </a>
-
-        <div mdbCollapse="isCollapsed" #menu="bs-collapse">
-          <a mdbBtn floating="true" size="sm" color="default" (click)="modalChangeStatus.show()" mdbWavesEffect
-             data-toggle="tooltip" title="Промени статус">
-            <mdb-icon fas icon="forward" ></mdb-icon>
-          </a>
-          <a mdbBtn floating="true" size="sm" color="default" mdbWavesEffect
-             data-toggle="tooltip" title="Штамапај">
-            <mdb-icon fas icon="file-alt"></mdb-icon>
-          </a>
-        </div>
-
-      </div>
+<!--        <div mdbCollapse="isCollapsed" #menu="bs-collapse">-->
+<!--          <a mdbBtn floating="true" size="sm" color="default" (click)="modalChangeStatus.show()" mdbWavesEffect-->
+<!--             data-toggle="tooltip" title="Промени статус">-->
+<!--            <mdb-icon fas icon="forward" ></mdb-icon>-->
+<!--          </a>-->
+<!--          <a mdbBtn floating="true" size="sm" color="default" mdbWavesEffect-->
+<!--             data-toggle="tooltip" title="Штамапај">-->
+<!--            <mdb-icon fas icon="file-alt"></mdb-icon>-->
+<!--          </a>-->
+<!--        </div>-->
+<!--      </div>-->
     </div>
   </div>
 
@@ -68,7 +83,7 @@
         </div>
         <div class="col text-left pl-0">
           <ng-container *ngIf="edit; else startdate">
-            <input [ngModel]="acquisition.startDate" (ngModelChange)="parseDate($event)" #ctrl="ngModel" type="date" class="form-control" mdbInput
+            <input [ngModel]="acquisition.startDate" (ngModelChange)="parseDate($event, 'start')" #ctrl="ngModel" type="date" class="form-control" mdbInput
                    (keyup.enter)="toggleEdit()">
           </ng-container>
           <ng-template #startdate>
@@ -85,7 +100,7 @@
         </div>
         <div class="col text-left pl-0">
           <ng-container *ngIf="edit; else date">
-            <input [ngModel]="acquisition.acquisitionDate" (ngModelChange)="parseDate($event)" #ctrl="ngModel" type="date" class="form-control" mdbInput
+            <input [ngModel]="acquisition.acquisitionDate" (ngModelChange)="parseDate($event, 'acquistion')" #ctrl="ngModel" type="date" class="form-control" mdbInput
                    (keyup.enter)="toggleEdit()">
           </ng-container>
           <ng-template #date>
@@ -105,7 +120,7 @@
             <mdb-icon fas icon="lock" size="lg" class="fa-lg blue-text"></mdb-icon>
           </ng-container>
           <ng-container *ngIf="acquisition.status == Status.DELIVERY">
-            <mdb-icon fab icon="dolly" size="lg" class="fa-lg blue-text"></mdb-icon>
+            <mdb-icon fas icon="dolly" size="lg" class="fa-lg blue-text"></mdb-icon>
           </ng-container>
         </div>
         <div class="col text-left pl-0">
@@ -169,9 +184,8 @@
   </div>
 </div>
 
-
 <!--<mdb-tabset [buttonClass]="'md-pills pills-light-blue'" >-->
-<!--  <mdb-tab heading="{{Status.OPEN | statusPipe}}">-->
+<!--  <mdb-tab heading="{{Status.OPEN | statusPipe}}" >-->
 <!--  </mdb-tab>-->
 <!--  <mdb-tab heading="{{Status.CLOSED | statusPipe}}">-->
 <!--  </mdb-tab>-->
@@ -179,20 +193,64 @@
 <!--  </mdb-tab>-->
 <!--</mdb-tabset>-->
 
-<!--<mdb-stepper #stepper>-->
-<!--  <mdb-step name="{{Status.OPEN | statusPipe}}" >-->
-<!--  </mdb-step>-->
-<!--  <mdb-step name="{{Status.CLOSED | statusPipe}}" >-->
-<!--  </mdb-step>-->
-<!--  <mdb-step name="{{Status.DELIVERY | statusPipe}}" class="disabled">-->
-<!--  </mdb-step>-->
-<!--</mdb-stepper>-->
-
-<div *ngFor="let group of acquisition.acquisitionGroups" class="mb-3">
-  <app-acquisition-item [acquisitionGroup]="group" (updateAcquisitionGroupEvent)="updateAcquisitionGroup($event)"
-                        (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)"></app-acquisition-item>
+<div class="row justify-content-between">
+  <div class="col-8 col-lg-6 acquisition-stepper">
+    <mdb-stepper #stepper [linear]="true" (stepChange)="setVisibleCard($event)">
+      <mdb-step name="{{Status.OPEN | statusPipe}}" [stepForm]="firstFormControl" class="step1">
+      </mdb-step>
+      <mdb-step name="{{Status.CLOSED | statusPipe}}" [stepForm]="secondFormControl" class="step2">
+      </mdb-step>
+      <mdb-step name="{{Status.DELIVERY | statusPipe}}" [stepForm]="thirdFormControl" class="step3">
+      </mdb-step>
+    </mdb-stepper>
+  </div>
+  <div *ngIf="acquisition.status == Status.OPEN">
+    <div class="col-auto align-self-center">
+      <a mdbBtn floating="true" size="sm" color="primary" (click)="modalAddAcquisitionGroup.show()" mdbWavesEffect
+         data-toggle="tooltip" title="Додај партију">
+        <mdb-icon fas icon="plus"></mdb-icon>
+      </a>
+    </div>
+  </div>
 </div>
 
+<ng-container *ngIf="visibleCard == 0">
+  <ng-container *ngIf="acquisition.status == Status.OPEN; else openNotEdit">
+    <div *ngFor="let group of acquisition.acquisitionGroups" class="mb-3">
+      <app-acquisition-item [acquisitionGroup]="group" [status]="Status.OPEN" [editMode]="true" (updateAcquisitionGroupEvent)="updateAcquisitionGroup($event)"
+                            (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)"></app-acquisition-item>
+    </div>
+  </ng-container>
+  <ng-template #openNotEdit>
+    <div *ngFor="let group of acquisition.acquisitionGroups" class="mb-3">
+      <app-acquisition-item [acquisitionGroup]="group" [status]="Status.OPEN" [editMode]="false" (updateAcquisitionGroupEvent)="updateAcquisitionGroup($event)"
+                            (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)"></app-acquisition-item>
+    </div>
+  </ng-template>
+</ng-container>
+
+<ng-container *ngIf="visibleCard == 1 && acquisition.status != Status.OPEN">
+  <ng-container *ngIf="acquisition.status == Status.CLOSED; else closedNotEdit">
+    <div *ngFor="let group of acquisition.acquisitionGroups" class="mb-3">
+      <app-acquisition-item [acquisitionGroup]="group" [status]="Status.CLOSED" [editMode]="true" (updateAcquisitionGroupEvent)="updateAcquisitionGroup($event)"
+                            (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)"></app-acquisition-item>
+    </div>
+  </ng-container>
+  <ng-template #closedNotEdit>
+    <div *ngFor="let group of acquisition.acquisitionGroups" class="mb-3">
+      <app-acquisition-item [acquisitionGroup]="group" [status]="Status.CLOSED" [editMode]="false" (updateAcquisitionGroupEvent)="updateAcquisitionGroup($event)"
+                            (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)"></app-acquisition-item>
+    </div>
+  </ng-template>
+</ng-container>
+
+<ng-container *ngIf="visibleCard == 2">
+  <ng-container *ngIf="acquisition.status == Status.DELIVERY">
+    <div *ngFor="let group of createDeliveryLocations()" class="mb-3">
+      <app-delivery-item [acquisitionGroup]="group"></app-delivery-item>
+    </div>
+  </ng-container>
+</ng-container>
 
 <!--Modal addAcquisitionGroup -->
 <div mdbModal #modalAddAcquisitionGroup class="modal fade top" id="modalAddAcquisitionGroup" tabindex="-1"

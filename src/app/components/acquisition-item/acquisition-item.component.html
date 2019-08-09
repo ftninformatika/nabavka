@@ -6,39 +6,59 @@
       <div class="d-flex flex-grow-1">
         <div class="row">
           <div class="col-auto text-left">
-            <ng-container *ngIf="editGroup; else title">
-              <input [(ngModel)]="acquisitionGroup.title" #ctrl="ngModel" type="text" class="form-control" mdbInput
-                     (keyup.enter)="toggleEditGroup()">
-            </ng-container>
-            <ng-template #title>
-              <h4 class="py-1 mb-0">{{acquisitionGroup.title}}</h4>
-            </ng-template>
-          </div>
-<!--          <div class="col-auto">-->
-<!--            <mdb-badge (click)="toggleEditTitle()" color="amber">-->
-<!--              <mdb-icon fas icon="pen"></mdb-icon>-->
-<!--            </mdb-badge>-->
-<!--          </div>-->
-        </div>
 
+            <ng-container *ngIf="status==Status.OPEN; then acquisitionTitle; else acquisitionDistributor">
+            </ng-container>
+
+            <ng-template #acquisitionTitle>
+              <ng-container *ngIf="editGroup; else title">
+                <input [(ngModel)]="acquisitionGroup.title" #ctrl="ngModel" type="text" class="form-control" mdbInput
+                       (keyup.enter)="toggleEditGroup()">
+              </ng-container>
+              <ng-template #title>
+                <h4 class="py-3 mb-0">{{acquisitionGroup.title}}</h4>
+              </ng-template>
+            </ng-template>
+
+            <ng-template #acquisitionDistributor>
+              <ng-container *ngIf="editGroup; else title">
+                <input [(ngModel)]="acquisitionGroup.distributor" #ctrl="ngModel" type="text" class="form-control" mdbInput
+                       (keyup.enter)="toggleEditGroup()">
+              </ng-container>
+              <ng-template #title>
+                <h4 class="py-3 mb-0">{{acquisitionGroup.distributor}}</h4>
+              </ng-template>
+            </ng-template>
+
+          </div>
+        </div>
       </div>
-      <ng-container *ngIf="editGroup; else ok">
-        <a mdbBtn floating="true" color="info" size="sm" (click)="toggleEditGroup()" mdbWavesEffect>
-          <mdb-icon fas icon="check"></mdb-icon>
-        </a>
-        <a mdbBtn floating="true" color="danger" size="sm" (click)="showDeleteGroupModal()" mdbWavesEffect>
-          <mdb-icon fas icon="trash-alt"></mdb-icon>
-        </a>
+
+      <ng-container *ngIf="editMode">
+        <ng-container *ngIf="editGroup; else ok">
+          <a mdbBtn floating="true" color="info" size="sm" (click)="toggleEditGroup()" mdbWavesEffect>
+            <mdb-icon fas icon="check"></mdb-icon>
+          </a>
+          <div *ngIf="status==Status.OPEN">
+            <a mdbBtn floating="true" color="danger" size="sm" (click)="showDeleteGroupModal()" mdbWavesEffect>
+              <mdb-icon fas icon="trash-alt"></mdb-icon>
+            </a>
+          </div>
+        </ng-container>
+        <ng-template #ok>
+          <a mdbBtn floating="true" color="amber" size="sm" (click)="toggleEditGroup()" mdbWavesEffect>
+            <mdb-icon fas icon="pen"></mdb-icon>
+          </a>
+        </ng-template>
+
+        <div *ngIf="status==Status.OPEN">
+          <a mdbBtn floating="true" color="primary" size="sm" (click)="modalAddItem.show()" mdbWavesEffect
+             data-toggle="tooltip" title="Додај наслов">
+            <mdb-icon fas icon="plus"></mdb-icon>
+          </a>
+        </div>
       </ng-container>
-      <ng-template #ok>
-        <a mdbBtn floating="true" color="amber" size="sm" (click)="toggleEditGroup()" mdbWavesEffect>
-          <mdb-icon fas icon="pen"></mdb-icon>
-        </a>
-      </ng-template>
-      <a mdbBtn floating="true" color="primary" size="sm" (click)="modalAddItem.show()" mdbWavesEffect
-         data-toggle="tooltip" title="Додај наслов">
-        <mdb-icon fas icon="plus"></mdb-icon>
-      </a>
+
     </div>
   </div>
 
@@ -82,7 +102,9 @@
           <th>
             Укупно
           </th>
-          <th></th>
+          <ng-container *ngIf="editMode">
+            <th></th>
+          </ng-container>
         </tr>
         </thead>
 
@@ -128,36 +150,75 @@
               {{item.desideratum.publisher}}
             </ng-template>
           </td>
-          <td>
-            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else price">
-              <input [(ngModel)]="selectedItem.planedPrice.price" #ctrl="ngModel" type="number" class="form-control" mdbInput
-                     (keyup.enter)="saveEditedItem()">
-            </ng-container>
-            <ng-template #price>
-              {{item.planedPrice.price|number:'1.2-2'}}
-            </ng-template>
-          </td>
-          <td>
-            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else rebate">
-              <input [(ngModel)]="selectedItem.planedPrice.rebate" #ctrl="ngModel" type="number" class="form-control" mdbInput
-                     (keyup.enter)="saveEditedItem()">
-            </ng-container>
-            <ng-template #rebate>
-              {{item.planedPrice.rebate|number:'1.2-2'}}
-            </ng-template>
-          </td>
-          <td>
-            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else vat">
-              <input [(ngModel)]="selectedItem.planedPrice.vat" #ctrl="ngModel" type="number" class="form-control" mdbInput
-                     (keyup.enter)="saveEditedItem()">
-            </ng-container>
-            <ng-template #vat>
-              {{item.planedPrice.vat|number:'1.2-2'}}
-            </ng-template>
-          </td>
+
+          <ng-container *ngIf="status==Status.OPEN; then planedPrice; else realPrice">
+          </ng-container>
+
+          <ng-template #planedPrice>
+            <td>
+              <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else price">
+                <input [(ngModel)]="selectedItem.planedPrice.price" #ctrl="ngModel" type="number" class="form-control" mdbInput
+                       (keyup.enter)="saveEditedItem()">
+              </ng-container>
+              <ng-template #price>
+                {{item.planedPrice.price|number:'1.2-2'}}
+              </ng-template>
+            </td>
+            <td>
+              <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else rebate">
+                <input [(ngModel)]="selectedItem.planedPrice.rebate" #ctrl="ngModel" type="number" class="form-control" mdbInput
+                       (keyup.enter)="saveEditedItem()">
+              </ng-container>
+              <ng-template #rebate>
+                {{item.planedPrice.rebate|number:'1.2-2'}}
+              </ng-template>
+            </td>
+            <td>
+              <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else vat">
+                <input [(ngModel)]="selectedItem.planedPrice.vat" #ctrl="ngModel" type="number" class="form-control" mdbInput
+                       (keyup.enter)="saveEditedItem()">
+              </ng-container>
+              <ng-template #vat>
+                {{item.planedPrice.vat|number:'1.2-2'}}
+              </ng-template>
+            </td>
+          </ng-template>
+
+          <ng-template #realPrice>
+            <td>
+              <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else price">
+                <input [(ngModel)]="selectedItem.realPrice.price" #ctrl="ngModel" type="number" class="form-control" mdbInput
+                       (keyup.enter)="saveEditedItem()">
+              </ng-container>
+              <ng-template #price>
+                {{item.realPrice.price|number:'1.2-2'}}
+              </ng-template>
+            </td>
+            <td>
+              <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else rebate">
+                <input [(ngModel)]="selectedItem.realPrice.rebate" #ctrl="ngModel" type="number" class="form-control" mdbInput
+                       (keyup.enter)="saveEditedItem()">
+              </ng-container>
+              <ng-template #rebate>
+                {{item.realPrice.rebate|number:'1.2-2'}}
+              </ng-template>
+            </td>
+            <td>
+              <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else vat">
+                <input [(ngModel)]="selectedItem.realPrice.vat" #ctrl="ngModel" type="number" class="form-control" mdbInput
+                       (keyup.enter)="saveEditedItem()">
+              </ng-container>
+              <ng-template #vat>
+                {{item.realPrice.vat|number:'1.2-2'}}
+              </ng-template>
+            </td>
+          </ng-template>
+
           <td></td>
           <td class="font-italic font-weight-bold">{{calculateAmountForItem(item.desideratum.isbn)}}</td>
           <td class="font-italic">{{calculatePriceForItem(item.desideratum.isbn)|number:'1.2-2'}}</td>
+
+          <ng-container *ngIf="editMode">
           <td>
             <div class="d-flex justify-content-end">
               <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else ok1">
@@ -165,10 +226,12 @@
                         (click)="saveEditedItem()">
                   <mdb-icon fas icon="check"></mdb-icon>
                 </button>
-                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        (click)="showRemoveItemModal()">
-                  <mdb-icon far icon="trash-alt"></mdb-icon>
-                </button>
+                <div *ngIf="status==Status.OPEN">
+                  <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
+                          (click)="showRemoveItemModal()">
+                    <mdb-icon far icon="trash-alt"></mdb-icon>
+                  </button>
+                </div>
               </ng-container>
               <ng-template #ok1>
                 <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
@@ -181,11 +244,13 @@
 <!--                        (click)="showEditIcons(id, item.desideratum.isbn)">-->
 <!--                  <mdb-icon far icon="edit"></mdb-icon>-->
 <!--                </button>-->
-                <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        (click)="showAddLocationModal(id, item.desideratum.isbn)"
-                        data-toggle="tooltip" title="Додај локацију">
-                  <mdb-icon fas icon="plus"></mdb-icon>
-                </button>
+                <div *ngIf="status==Status.OPEN">
+                  <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
+                          (click)="showAddLocationModal(id, item.desideratum.isbn)"
+                          data-toggle="tooltip" title="Додај локацију">
+                    <mdb-icon fas icon="plus"></mdb-icon>
+                  </button>
+                </div>
               </div>
 
 <!--              <div *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null" class="d-flex justify-content-end">-->
@@ -200,6 +265,7 @@
 <!--              </div>-->
             </div>
           </td>
+          </ng-container>
         </tr>
         <ng-container *ngIf="hide[id]">
           <ng-container *ngFor="let l of item.desideratum.locations|groupBy:'location'; let locId = index">
@@ -217,7 +283,9 @@
               <td class="font-italic">{{l.key}}</td>
               <td class="font-italic">{{calculateAmountForLocation(item.desideratum.isbn, l.key)}}</td>
               <td></td>
-              <td></td>
+              <ng-container *ngIf="editMode">
+                <td></td>
+              </ng-container>
             </tr>
             <ng-container *ngIf="hideInner[id][locId]">
               <tr *ngFor="let v of l.value; let sublocId = index">
@@ -240,26 +308,30 @@
                   </ng-template>
                 </td>
                 <td></td>
-                <td>
-                  <div class="d-flex justify-content-end">
-                    <ng-container *ngIf="id == index1stLevel && locId == index2ndLevel && sublocId == index3rdLevel; else ok" class="d-flex">
-                      <div class="mr-2 ml-2">
-                        <a (click)="updateAmount(item.desideratum.isbn, v.sublocation)">
-                          <mdb-icon fas class="blue-text" icon="check"></mdb-icon></a>
+                <ng-container *ngIf="editMode">
+                  <td>
+                    <div *ngIf="status==Status.OPEN">
+                      <div class="d-flex justify-content-end">
+                        <ng-container *ngIf="id == index1stLevel && locId == index2ndLevel && sublocId == index3rdLevel; else ok" class="d-flex">
+                          <div class="mr-2 ml-2">
+                            <a (click)="updateAmount(item.desideratum.isbn, v.sublocation)">
+                              <mdb-icon fas class="blue-text" icon="check"></mdb-icon></a>
+                          </div>
+                          <div class="mr-2 ml-2">
+                            <a (click)="deleteLocation(item.desideratum.isbn, v.sublocation)">
+                              <mdb-icon far class="red-text" icon="trash-alt"></mdb-icon></a>
+                          </div>
+                        </ng-container>
+                        <ng-template #ok>
+                          <div class="mr-2 ml-2">
+                            <a (click)="showEditIconsForLocation(id, locId, sublocId, v.amount)">
+                              <mdb-icon far class="orange-text" icon="edit"></mdb-icon></a>
+                          </div>
+                        </ng-template>
                       </div>
-                      <div class="mr-2 ml-2">
-                        <a (click)="deleteLocation(item.desideratum.isbn, v.sublocation)">
-                          <mdb-icon far class="red-text" icon="trash-alt"></mdb-icon></a>
-                      </div>
-                    </ng-container>
-                    <ng-template #ok>
-                      <div class="mr-2 ml-2">
-                        <a (click)="showEditIconsForLocation(id, locId, sublocId, v.amount)">
-                          <mdb-icon far class="orange-text" icon="edit"></mdb-icon></a>
-                      </div>
-                    </ng-template>
-                  </div>
-                </td>
+                    </div>
+                  </td>
+                </ng-container>
               </tr>
             </ng-container>
           </ng-container>

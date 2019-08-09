@@ -25,6 +25,7 @@ import {NgxsModule} from '@ngxs/store';
 import {UserState} from './states/user.state';
 import { StatusPipe } from './pipes/status.pipe';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { DeliveryItemComponent } from './components/delivery-item/delivery-item.component';
 import { AccessDeniedComponent } from './components/access-denied/access-denied.component';
 
 @NgModule({
@@ -42,6 +43,7 @@ import { AccessDeniedComponent } from './components/access-denied/access-denied.
     AcquisitionItemComponent,
     StatusPipe,
     DashboardComponent,
+    DeliveryItemComponent,
     AccessDeniedComponent
   ],
   imports: [

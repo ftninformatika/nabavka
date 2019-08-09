@@ -15,6 +15,7 @@ export class AcquisitionGroup {
   title: string;
   distributor?: string;
   items?: Item[];
+  deliveryLocations?: DeliveryLocation[];
 }
 
 export class Item {
@@ -33,4 +34,10 @@ export enum Status {
   OPEN = 'open',
   CLOSED = 'closed',
   DELIVERY = 'delivery'
+}
+
+export class DeliveryLocation {
+  location: string;
+  desideratum: Desideratum;
+  price?: Price;
 }

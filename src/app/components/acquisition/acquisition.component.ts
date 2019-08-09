@@ -1,23 +1,31 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {FirebaseService} from '../../services/firebase.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Acquisition, AcquisitionGroup, Status} from '../../models/acquisition';
+import {Acquisition, AcquisitionGroup, DeliveryLocation, Status} from '../../models/acquisition';
 import {GroupByPipe} from '../../pipes/group-by.pipe';
-import {ModalDirective} from 'ng-uikit-pro-standard';
+import {MdbStepComponent, MdbStepperComponent, ModalDirective} from 'ng-uikit-pro-standard';
+import {FormControl, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-acquisition',
   templateUrl: './acquisition.component.html',
   styleUrls: ['./acquisition.component.scss'],
-  providers: [ GroupByPipe ]
+  providers: [ GroupByPipe ],
+  encapsulation: ViewEncapsulation.None
 })
+
 export class AcquisitionComponent implements OnInit {
   @ViewChild('modalChangeStatus', {static: false}) modalChangeStatus: ModalDirective;
+  @ViewChild('stepper', { static: true }) stepper: MdbStepperComponent;
   acquisitionId: string;
   acquisition: Acquisition = {};
   amount = 0;
   edit = false;
   Status = Status;
+  firstFormControl = new FormControl(false, Validators.requiredTrue);
+  secondFormControl = new FormControl(false, Validators.requiredTrue);
+  thirdFormControl = new FormControl(false, Validators.requiredTrue);
+  visibleCard = 0;
 
   constructor(private firebaseService: FirebaseService, private route: ActivatedRoute, private router: Router,
               private groupBy: GroupByPipe) {}
@@ -30,8 +38,10 @@ export class AcquisitionComponent implements OnInit {
         this.acquisition = doc.data() as Acquisition;
         this.calculateAmount();
         // console.log(this.acquisition);
+        this.setStepper();
       }
     });
+
 
     // let desiderataList: Desideratum[];
     // this.firebaseService.getDesiderataDataOnce().subscribe(data => {
@@ -69,7 +79,11 @@ export class AcquisitionComponent implements OnInit {
               locNo = locNo + location.amount;
             }
           }
-          this.amount = this.amount + locNo * item.planedPrice.price;
+          if (this.acquisition.status === Status.OPEN) {
+            this.amount = this.amount + locNo * item.planedPrice.price;
+          } else {
+            this.amount = this.amount + locNo * item.realPrice.price;
+          }
         });
       });
     }
@@ -86,8 +100,12 @@ export class AcquisitionComponent implements OnInit {
     }
   }
 
-  parseDate(value: any) {
-    this.acquisition.startDate = new Date(value);
+  parseDate(value: any, field: string) {
+    if (field === 'start') {
+      this.acquisition.startDate = new Date(value);
+    } else {
+      this.acquisition.acquisitionDate = new Date(value);
+    }
   }
 
   saveAcquisition() {
@@ -135,10 +153,68 @@ export class AcquisitionComponent implements OnInit {
   changeStatus() {
     if (this.acquisition.status === Status.OPEN) {
       this.acquisition.status = Status.CLOSED;
+      this.acquisition.acquisitionGroups.forEach(group => {
+        group.items.forEach(item => {
+          item.realPrice = {...item.planedPrice};
+        });
+      });
     } else if (this.acquisition.status === Status.CLOSED) {
       this.acquisition.status = Status.DELIVERY;
     }
     this.modalChangeStatus.hide();
     this.saveAcquisition();
+    this.setStepper();
+  }
+
+  setStepper() {
+    if (this.acquisition) {
+      if (this.acquisition.status === Status.OPEN) {
+        this.firstFormControl.setValue(false);
+        this.secondFormControl.setValue(false);
+        this.stepper.setNewActiveStep(0);
+      }
+      if (this.acquisition.status === Status.CLOSED) {
+        this.firstFormControl.setValue(true);
+        this.secondFormControl.setValue(false);
+        // this.stepper.setNewActiveStep(1);
+        this.stepper.next();
+      } else if (this.acquisition.status === Status.DELIVERY) {
+        this.firstFormControl.setValue(true);
+        this.secondFormControl.setValue(true);
+        // this.stepper.setNewActiveStep(2);
+        this.stepper.next();
+        this.stepper.next();
+      }
+    }
+  }
+
+  setVisibleCard(value: any) {
+    if (value.activeStep.stepForm.status === 'INVALID' && value.previousStep.stepForm.status === 'INVALID') {
+      this.visibleCard = value.previousStepIndex;
+    } else {
+      this.visibleCard = value.activeStepIndex;
+    }
+    // console.log(value);
+  }
+
+  createDeliveryLocations() {
+    if (this.acquisition) {
+      this.acquisition.acquisitionGroups.forEach(group => {
+        group.deliveryLocations = [];
+        group.items.forEach(item => {
+          const locationGroups = this.groupBy.transform(item.desideratum.locations, 'location');
+          locationGroups.forEach(locationGroup => {
+            const deliveryLocation: DeliveryLocation = new DeliveryLocation();
+            deliveryLocation.location = locationGroup.key;
+            const deliveryDesideratum = {...item.desideratum};
+            deliveryDesideratum.locations = locationGroup.value;
+            deliveryLocation.desideratum = deliveryDesideratum;
+            deliveryLocation.price = {...item.realPrice};
+            group.deliveryLocations.push(deliveryLocation);
+          });
+        });
+      });
+      return this.acquisition.acquisitionGroups;
+    }
   }
 }

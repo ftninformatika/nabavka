@@ -11,7 +11,7 @@ import {NavigationUtilService} from '../../services/navigation-util.service';
 })
 export class LoginComponent implements OnInit {
   public loginForm = new FormGroup({
-    username: new FormControl(''),
+    username: new FormControl('admin@admin'),
     password: new FormControl(''),
   });
 

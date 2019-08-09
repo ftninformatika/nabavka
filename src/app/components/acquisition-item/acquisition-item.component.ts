@@ -1,10 +1,10 @@
-import {Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
 import {Desideratum} from '../../models/desideratum';
 import {Location} from '../../models/location';
 import {Sublocation} from '../../models/sublocation';
 import {FirebaseService} from '../../services/firebase.service';
-import {AcquisitionGroup, Item, Price} from '../../models/acquisition';
+import {AcquisitionGroup, Item, Price, Status} from '../../models/acquisition';
 
 @Component({
   selector: 'app-acquisition-item',
@@ -13,6 +13,8 @@ import {AcquisitionGroup, Item, Price} from '../../models/acquisition';
 })
 export class AcquisitionItemComponent implements OnInit {
   @Input() acquisitionGroup: AcquisitionGroup;
+  @Input() status: Status;
+  @Input() editMode: boolean;
   @Output() updateAcquisitionGroupEvent: EventEmitter<AcquisitionGroup> = new EventEmitter<AcquisitionGroup>();
   @Output() deleteAcquisitionGroupEvent: EventEmitter<AcquisitionGroup> = new EventEmitter<AcquisitionGroup>();
   @ViewChild('addLocationModal', {static: false}) modalLocation: ModalDirective;
@@ -31,6 +33,7 @@ export class AcquisitionItemComponent implements OnInit {
   inputAmount: number;
   sublocationList: Sublocation[];
   editGroup = false;
+  Status = Status;
 
   constructor(private firebaseService: FirebaseService) {
   }
@@ -56,7 +59,7 @@ export class AcquisitionItemComponent implements OnInit {
       price: form[4].value,
       rebate: form[5].value,
       vat: form[6].value
-    }
+    };
     const item: Item = {desideratum, planedPrice};
     this.acquisitionGroup.items.splice(0, 0, item);
     this.hide.splice(0, 0, false);
@@ -115,7 +118,11 @@ export class AcquisitionItemComponent implements OnInit {
         amount = amount + location.amount;
       }
     }
-    return amount * item.planedPrice.price;
+    if (this.status === Status.OPEN) {
+      return amount * item.planedPrice.price;
+    } else {
+      return amount * item.realPrice.price;
+    }
   }
 
   calculatePriceForGroup() {
@@ -127,7 +134,11 @@ export class AcquisitionItemComponent implements OnInit {
           locNo = locNo + location.amount;
         }
       }
-      amount = amount + locNo * item.planedPrice.price;
+      if (this.status === Status.OPEN) {
+        amount = amount + locNo * item.planedPrice.price;
+      } else {
+        amount = amount + locNo * item.realPrice.price;
+      }
     });
     return amount;
   }
