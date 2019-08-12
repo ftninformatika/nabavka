@@ -4,6 +4,7 @@ import {Actions, ofActionCompleted, Store} from '@ngxs/store';
 import {LoginAction, UserState} from '../../states/user.state';
 import {NavigationUtilService} from '../../services/navigation-util.service';
 import {ToastService} from 'ng-uikit-pro-standard';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,8 @@ export class LoginComponent implements OnInit {
     password: new FormControl(''),
   });
 
-  constructor(private action: Actions, private  nav: NavigationUtilService, private store: Store, private  toast: ToastService) { }
+  // tslint:disable-next-line:max-line-length
+  constructor(private action: Actions, private router: Router, private  nav: NavigationUtilService, private store: Store, private  toast: ToastService) { }
   ngOnInit() {
     this.action.pipe(ofActionCompleted(LoginAction)).subscribe(res => {
           if (res.result.error) {
@@ -25,8 +27,10 @@ export class LoginComponent implements OnInit {
             const user = this.store.selectSnapshot(UserState.userDetails);
             if (user == null) {
               this.toast.error('Погрешно корисничко име или лозинка.', '', {opacity: 1});
+            } else {
+              const home = this.nav.getHome();
+              this.router.navigate([home]);
             }
-            this.nav.navigateToHome();
           }
     });
   }

@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import {LogoutAction, UserState} from './states/user.state';
-import {Select, Store} from '@ngxs/store';
+import {Store} from '@ngxs/store';
 import {Roles} from './configs/app.config';
 import {User} from './models/user';
 import {Observable} from 'rxjs';
@@ -13,7 +13,7 @@ import {Observable} from 'rxjs';
 })
 export class AppComponent  implements OnInit {
   public Roles = Roles;
-  loggeduser: Observable<User>;
+  public loggeduser: Observable<User> = this.store.select(UserState.userDetails);
   constructor(private router: Router, private store: Store) {
   }
   logout() {
@@ -22,7 +22,6 @@ export class AppComponent  implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loggeduser = this.store.select(UserState.userDetails);
   }
 
 }

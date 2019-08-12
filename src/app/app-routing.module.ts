@@ -12,13 +12,14 @@ import {AcquisitionGuard} from './guards/acquisition.guard';
 import {DesiderataGuard} from './guards/desiderata.guard';
 
 const routes: Routes = [
-  {path: '', component: LoginComponent, canActivate: [AuthGuard]},
+  {path: '', component: LoginComponent, canActivate: [AuthGuard], pathMatch: 'full'},
   {path: 'dashboard', component: DashboardComponent, canActivate: [AcquisitionGuard]},
   {path: 'acquisition/:id', component: AcquisitionComponent, canActivate: [AcquisitionGuard]},
   {path: 'distributors', component: DistributorsListComponent, canActivate: [AcquisitionGuard]},
   {path: 'offers/:pib', component: OfferComponent, canActivate: [AcquisitionGuard]},
   {path: 'desiderata', component: DesideratumListComponent, canActivate: [DesiderataGuard]},
-  {path: 'access-denied', component: AccessDeniedComponent}
+  {path: 'access-denied', component: AccessDeniedComponent},
+  {path: '**', redirectTo: ''}
 ];
 
 @NgModule({

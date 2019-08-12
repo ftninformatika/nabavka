@@ -7,8 +7,8 @@
       </a>
     </mdb-navbar-brand>
 
-    <links *ngIf="(loggeduser | async)">
-      <ul class="navbar-nav"  *ngIf="(loggeduser | async).role === Roles.ACQUISITION_MANAGER">
+    <links>
+      <ul class="navbar-nav" *ngIf="(loggeduser | async)?.role === Roles.ACQUISITION_MANAGER" >
         <li class="nav-item">
           <a mdbWavesEffect type="button" class="nav-link waves-light" [routerLink]="['/dashboard']">
             <mdb-icon fas icon="shopping-bag"></mdb-icon>Набавка <span class="caret"></span></a>
@@ -23,9 +23,9 @@
         </li>
       </ul>
 
-      <ul class="navbar-nav ml-auto" >
-        <li class="nav-item" >
-            <a mdbWavesEffect type="button" class="nav-link waves-light" (click)="logout()" [routerLink]="['/login']">
+      <ul class="navbar-nav ml-auto"   >
+        <li class="nav-item" *ngIf="(loggeduser | async)?.username !== null">
+            <a mdbWavesEffect type="button" class="nav-link waves-light" (click)="logout()">
               <mdb-icon fas icon="sign-out-alt"></mdb-icon> Одјава<span class="caret"></span>
             </a>
         </li>

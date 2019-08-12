@@ -11,14 +11,14 @@ export class NavigationUtilService {
 
   constructor(private store: Store, private router: Router) { }
 
-  public navigateToHome() {
+  public getHome() {
     const role = this.store.selectSnapshot(UserState.getRole);
     if (role === Roles.ACQUISITION_MANAGER) {
-      this.router.navigate([configs.adminHomePage]);
+      return configs.adminHomePage;
     } else if (role === Roles.DESIDERATUM_MANAGER) {
-      this.router.navigate([configs.librarianHomePage]);
+      return configs.librarianHomePage;
     } else {
-      return true;
+      return undefined;
     }
   }
 }
