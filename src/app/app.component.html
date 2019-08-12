@@ -7,8 +7,8 @@
       </a>
     </mdb-navbar-brand>
 
-    <links *ngIf="(loggeduser | async)?.user as user">
-      <ul class="navbar-nav"  *ngIf="user.role.toString() === Roles.ACQUISITION_MANAGER">
+    <links *ngIf="(loggeduser | async)">
+      <ul class="navbar-nav"  *ngIf="(loggeduser | async).role === Roles.ACQUISITION_MANAGER">
         <li class="nav-item">
           <a mdbWavesEffect type="button" class="nav-link waves-light" [routerLink]="['/dashboard']">
             <mdb-icon fas icon="shopping-bag"></mdb-icon>Набавка <span class="caret"></span></a>

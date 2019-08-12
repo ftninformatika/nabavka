@@ -35,7 +35,6 @@ export class UserState {
   }
   @Selector()
   public static userDetails(state: IAuthUser) {
-    console.log(state.user);
     return state.user;
   }
 
@@ -45,14 +44,19 @@ export class UserState {
   @Action(LoginAction)
   public signIn(ctx: StateContext<IAuthUser>, action: LoginAction) {
     let userLogged: any;
-    return this.firebaseService.getUser(action.username, action.password).pipe(tap((value) => {
-      userLogged = value.docs.map(e => {
-        return {
-          ...e.data()
-        };
-      })[0] as User;
-      ctx.patchState({user: userLogged} );
-    }));
+    try {
+      return this.firebaseService.getUser(action.username, action.password).pipe(tap((value) => {
+        userLogged = value.docs.map(e => {
+          return {
+            ...e.data()
+          };
+        })[0] as User;
+        ctx.patchState({user: userLogged} );
+      }));
+    } catch (e) {
+      console.log(e);
+    }
+
   }
   @Action([LogoutAction])
   public signOut(ctx: StateContext<IAuthUser>) {
