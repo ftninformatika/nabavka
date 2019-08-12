@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { MDBBootstrapModulesPro } from 'ng-uikit-pro-standard';
+import {MDBBootstrapModulesPro, ToastModule} from 'ng-uikit-pro-standard';
 import { MDBSpinningPreloader } from 'ng-uikit-pro-standard';
 import { environment } from '../environments/environment';
 import { AngularFireModule } from '@angular/fire';
@@ -57,6 +57,7 @@ import { AccessDeniedComponent } from './components/access-denied/access-denied.
     AngularFirestoreModule,
     FormsModule,
     ReactiveFormsModule,
+    ToastModule.forRoot()
   ],
   providers: [
     MDBSpinningPreloader,

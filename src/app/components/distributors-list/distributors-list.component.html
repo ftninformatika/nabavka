@@ -1,7 +1,7 @@
 <mdb-card>
 <!-- Editable table -->
   <div class="card-header">
-    <h3 class="py-2">Листа дистрибутера</h3>
+    <h3 class="py-2">Дистрибутери</h3>
   </div>
   <div class="card-body">
     <div id="table" class="table-editable">
@@ -67,13 +67,14 @@
             <ng-container *ngIf="id !== rowIndex">
 
               <div class="d-flex justify-content-end">
-                   <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="edit(id)">
-                <mdb-icon fas icon="edit"></mdb-icon>
-              </button>
-
-                 <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect [routerLink]="['/offers/'+distributor.pib]">
-                  <mdb-icon fas icon="eye"></mdb-icon>
-                 </button>
+                <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
+                        (click)="edit(id)">
+                  <mdb-icon far icon="edit"></mdb-icon>
+                </button>
+                <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
+                        [routerLink]="['/offers/'+distributor.pib]">
+                  <mdb-icon fas icon="plus"></mdb-icon>
+                </button>
               </div>
             </ng-container>
             <ng-container *ngIf="id == rowIndex">
