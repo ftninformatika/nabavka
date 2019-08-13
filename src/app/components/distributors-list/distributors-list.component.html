@@ -10,66 +10,67 @@
           <mdb-icon fas icon="plus"></mdb-icon>
         </a>
       </span>
-      <table class="table table-bordered table-responsive-md table-striped text-center">
+
+      <table mdbTable small="true" class="table table-bordered table-responsive-md table-striped text-left">
+        <thead>
         <tr>
-          <th class="text-center">ПИБ</th>
-          <th class="text-center">Назив</th>
-          <th class="text-center">Телефон</th>
-          <th class="text-center">Емаил</th>
-          <th class="text-center">Контакт особа</th>
-          <th class="text-center"></th>
+          <th>ПИБ</th>
+          <th>Назив</th>
+          <th>Телефон</th>
+          <th>Емаил</th>
+          <th>Контакт особа</th>
+          <th></th>
         </tr>
+        </thead>
         <tbody *ngFor="let distributor of distributorsList; let id = index">
-
-
         <tr>
-         <td>
-           <ng-container *ngIf="id !== rowIndex">
+         <td class="align-middle" >
+           <ng-container *ngIf="id == rowIndex;else pib">
+             <input mdbInput type="text" [(ngModel)]="distributor.pib"  class="form-control" (keyup.enter)="update(distributor)">
+           </ng-container>
+           <ng-template #pib>
              {{distributor.pib}}
-           </ng-container>
-           <ng-container *ngIf="id == rowIndex">
-             <input mdbInput type="text" name="text" [(ngModel)]="distributor.pib"  class="form-control">
-           </ng-container>
+           </ng-template>
           </td>
-          <td>
-            <ng-container *ngIf="id !== rowIndex">
+          <td class="align-middle">
+            <ng-container *ngIf="id == rowIndex;else name">
+              <input mdbInput type="text" [(ngModel)]="distributor.name"  class="form-control" (keyup.enter)="update(distributor)">
+            </ng-container>
+            <ng-template #name>
               {{distributor.name}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="text" name="text" [(ngModel)]="distributor.name"  class="form-control">
-            </ng-container>
+            </ng-template>
           </td>
-          <td>
-            <ng-container *ngIf="id !== rowIndex">
+          <td class="align-middle">
+            <ng-container *ngIf="id == rowIndex;else phone">
+              <input mdbInput type="text" [(ngModel)]="distributor.phone"  class="form-control" (keyup.enter)="update(distributor)">
+            </ng-container>
+            <ng-template #phone>
               {{distributor.phone}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="text" name="text" [(ngModel)]="distributor.phone"  class="form-control">
-            </ng-container>
+            </ng-template>
           </td>
-          <td>
-            <ng-container *ngIf="id !== rowIndex">
+          <td class="align-middle">
+            <ng-container *ngIf="id == rowIndex; else email">
+              <input mdbInput type="text" [(ngModel)]="distributor.email"  class="form-control" (keyup.enter)="update(distributor)">
+            </ng-container>
+            <ng-template #email>
               {{distributor.email}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="text" name="text" [(ngModel)]="distributor.email"  class="form-control">
-            </ng-container>
+            </ng-template>
           </td>
-          <td>
-            <ng-container *ngIf="id !== rowIndex">
-              {{distributor.contactPerson}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="text" name="text" [(ngModel)]="distributor.contactPerson"  class="form-control">
-            </ng-container>
-          </td>
-          <td>
-            <ng-container *ngIf="id !== rowIndex">
+          <td class="align-middle">
 
-              <div class="d-flex justify-content-end">
+            <ng-container *ngIf="id == rowIndex;else contactPerson">
+              <input mdbInput type="text" [(ngModel)]="distributor.contactPerson"  class="form-control" (keyup.enter)="update(distributor)">
+            </ng-container>
+            <ng-template #contactPerson>
+              {{distributor.contactPerson}}
+            </ng-template>
+          </td>
+          <td class="align-middle">
+            <ng-container *ngIf="id !== rowIndex">
+                <div class="d-flex justify-content-end">
                 <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
                         (click)="edit(id)">
-                  <mdb-icon far icon="edit"></mdb-icon>
+                  <mdb-icon fas icon="pen"></mdb-icon>
                 </button>
                 <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
                         [routerLink]="['/offers/'+distributor.pib]">
@@ -95,6 +96,7 @@
       </table>
     </div>
   </div>
+
 <!-- Editable table -->
 </mdb-card>
 <!--Modal-->

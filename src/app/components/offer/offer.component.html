@@ -1,93 +1,98 @@
-
-<!-- Editable table -->
 <mdb-card>
+<!-- Editable table -->
 <div class="card-header">
   <h3 class="py-2">Листа понуђених књига:  {{distributer.name}}</h3>
 </div>
+
   <div class="card-body">
     <div id="table" class="table-editable">
-      <span class="table-add float-right mb-3 mr-2">
+      <div class="d-flex">
+        <div class="d-flex flex-grow-1">
+          <div>
+            <mdb-icon fas size="lg" class="blue-text pr-2" icon="link"></mdb-icon>{{offerList.permalink}}
+          </div>
+        </div>
         <a mdbBtn floating="true" color="primary" size="sm" (click)="addNewOffer()">
           <mdb-icon fas icon="plus"></mdb-icon>
         </a>
-      </span>
-      <table class="table table-bordered table-responsive-md table-striped text-center">
+      </div>
+
+      <table mdbTable small="true" class="text-left">
+        <thead>
         <tr>
-          <th class="text-center">ИСБН</th>
-          <th class="text-center">Наслов</th>
-          <th class="text-center">Аутор</th>
-          <th class="text-center">Издавач</th>
-          <th class="text-center">Цена</th>
-          <th class="text-center">Рабат</th>
-          <th class="text-center">ПДВ</th>
+          <th>ИСБН</th>
+          <th>Наслов</th>
+          <th>Аутор</th>
+          <th>Издавач</th>
+          <th>Цена</th>
+          <th>Рабат</th>
+          <th>ПДВ</th>
           <th></th>
         </tr>
+        </thead>
         <tbody *ngFor="let offer of offeredBooks; let id = index">
-
-
         <tr>
-          <td>
-            <ng-container *ngIf="id !== rowIndex">
+          <td class="align-middle">
+            <ng-container *ngIf="id == rowIndex;else isbn">
+              <input mdbInput type="text" [(ngModel)]="offer.isbn"  class="form-control" (keyup.enter)="update()">
+            </ng-container>
+            <ng-template #isbn>
               {{offer.isbn}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="text" name="text" [(ngModel)]="offer.isbn"  class="form-control">
-            </ng-container>
+            </ng-template>
           </td>
-          <td>
-            <ng-container *ngIf="id !== rowIndex">
+          <td class="align-middle">
+            <ng-container *ngIf="id == rowIndex;else title">
+              <input mdbInput type="text"  [(ngModel)]="offer.title"  class="form-control" (keyup.enter)="update()">
+            </ng-container>
+            <ng-template #title>
               {{offer.title}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="text" name="text" [(ngModel)]="offer.title"  class="form-control">
-            </ng-container>
+            </ng-template>
           </td>
-          <td>
-            <ng-container *ngIf="id !== rowIndex">
+          <td class="align-middle">
+            <ng-container *ngIf="id == rowIndex;else author">
+              <input mdbInput type="text" [(ngModel)]="offer.author"  class="form-control" (keyup.enter)="update()">
+            </ng-container>
+            <ng-template #author>
               {{offer.author}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="text" name="text" [(ngModel)]="offer.author"  class="form-control">
-            </ng-container>
+            </ng-template>
           </td>
-          <td>
-            <ng-container *ngIf="id !== rowIndex">
+          <td class="align-middle">
+            <ng-container *ngIf="id == rowIndex;else publisher">
+              <input mdbInput type="text" [(ngModel)]="offer.publisher"  class="form-control" (keyup.enter)="update()">
+            </ng-container>
+            <ng-template #publisher >
               {{offer.publisher}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="text" name="text" [(ngModel)]="offer.publisher"  class="form-control">
-            </ng-container>
+            </ng-template>
           </td>
-          <td>
-            <ng-container *ngIf="id !== rowIndex">
+          <td class="align-middle">
+            <ng-container *ngIf="id == rowIndex;else price">
+              <input mdbInput type="number"  [(ngModel)]="offer.price"  class="form-control" (keyup.enter)="update()">
+            </ng-container>
+            <ng-template #price>
               {{offer.price}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="number" name="text" [(ngModel)]="offer.price"  class="form-control">
-            </ng-container>
+            </ng-template>
           </td>
-
-          <td>
-            <ng-container *ngIf="id !== rowIndex">
+          <td class="align-middle">
+            <ng-container *ngIf="id == rowIndex;else rebate">
+              <input mdbInput type="number"  [(ngModel)]="offer.rebate"  class="form-control" (keyup.enter)="update()">
+            </ng-container>
+            <ng-template #rebate>
               {{offer.rebate}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="number" name="text" [(ngModel)]="offer.rebate"  class="form-control">
-            </ng-container>
+            </ng-template>
           </td>
-          <td>
-            <ng-container *ngIf="id !== rowIndex">
+          <td class="align-middle">
+            <ng-container *ngIf="id == rowIndex;else vat">
+              <input mdbInput type="number"  [(ngModel)]="offer.vat"  class="form-control" (keyup.enter)="update()">
+            </ng-container>
+            <ng-template #vat>
               {{offer.vat}}
-            </ng-container>
-            <ng-container *ngIf="id == rowIndex">
-              <input mdbInput type="number" name="text" [(ngModel)]="offer.vat"  class="form-control">
-            </ng-container>
+            </ng-template>
           </td>
           <td>
             <ng-container *ngIf="id !== rowIndex">
               <div class="d-flex justify-content-end">
-                <button mdbBtn color="ambar" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="edit(id)">
-                  <mdb-icon fas icon="edit"></mdb-icon>
+                <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="edit(id)">
+                  <mdb-icon fas icon="pen"></mdb-icon>
                 </button>
               </div>
             </ng-container>
