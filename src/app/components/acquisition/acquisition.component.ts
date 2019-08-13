@@ -3,8 +3,7 @@ import {FirebaseService} from '../../services/firebase.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Acquisition, AcquisitionGroup, DeliveryLocation, Status} from '../../models/acquisition';
 import {GroupByPipe} from '../../pipes/group-by.pipe';
-import {MdbStepComponent, MdbStepperComponent, ModalDirective} from 'ng-uikit-pro-standard';
-import {FormControl, Validators} from '@angular/forms';
+import {ModalDirective} from 'ng-uikit-pro-standard';
 
 @Component({
   selector: 'app-acquisition',
@@ -16,16 +15,12 @@ import {FormControl, Validators} from '@angular/forms';
 
 export class AcquisitionComponent implements OnInit {
   @ViewChild('modalChangeStatus', {static: false}) modalChangeStatus: ModalDirective;
-  @ViewChild('stepper', { static: true }) stepper: MdbStepperComponent;
   acquisitionId: string;
   acquisition: Acquisition = {};
   amount = 0;
   edit = false;
   Status = Status;
-  firstFormControl = new FormControl(false, Validators.requiredTrue);
-  secondFormControl = new FormControl(false, Validators.requiredTrue);
-  thirdFormControl = new FormControl(false, Validators.requiredTrue);
-  visibleCard = 0;
+  selectedView = Status.OPEN;
 
   constructor(private firebaseService: FirebaseService, private route: ActivatedRoute, private router: Router,
               private groupBy: GroupByPipe) {}
@@ -132,6 +127,13 @@ export class AcquisitionComponent implements OnInit {
     this.saveAcquisition();
   }
 
+  updateDesiderata() {
+    this.acquisition.desiderataUpdated = true;
+    // not working with firestore
+    // this.saveAcquisition();
+    // TODO update desiderata
+  }
+
   addAcquisitionGroup(form: any, modalInstance: any) {
     const acquisitionGroup: AcquisitionGroup = {
       title: form[0].value,
@@ -169,52 +171,54 @@ export class AcquisitionComponent implements OnInit {
   setStepper() {
     if (this.acquisition) {
       if (this.acquisition.status === Status.OPEN) {
-        this.firstFormControl.setValue(false);
-        this.secondFormControl.setValue(false);
-        this.stepper.setNewActiveStep(0);
+        this.selectedView = Status.OPEN;
       }
       if (this.acquisition.status === Status.CLOSED) {
-        this.firstFormControl.setValue(true);
-        this.secondFormControl.setValue(false);
-        // this.stepper.setNewActiveStep(1);
-        this.stepper.next();
+        this.selectedView = Status.CLOSED;
       } else if (this.acquisition.status === Status.DELIVERY) {
-        this.firstFormControl.setValue(true);
-        this.secondFormControl.setValue(true);
-        // this.stepper.setNewActiveStep(2);
-        this.stepper.next();
-        this.stepper.next();
+        this.selectedView = Status.DELIVERY;
       }
     }
-  }
-
-  setVisibleCard(value: any) {
-    if (value.activeStep.stepForm.status === 'INVALID' && value.previousStep.stepForm.status === 'INVALID') {
-      this.visibleCard = value.previousStepIndex;
-    } else {
-      this.visibleCard = value.activeStepIndex;
-    }
-    // console.log(value);
   }
 
   createDeliveryLocations() {
     if (this.acquisition) {
       this.acquisition.acquisitionGroups.forEach(group => {
         group.deliveryLocations = [];
-        group.items.forEach(item => {
-          const locationGroups = this.groupBy.transform(item.desideratum.locations, 'location');
-          locationGroups.forEach(locationGroup => {
-            const deliveryLocation: DeliveryLocation = new DeliveryLocation();
-            deliveryLocation.location = locationGroup.key;
-            const deliveryDesideratum = {...item.desideratum};
-            deliveryDesideratum.locations = locationGroup.value;
-            deliveryLocation.desideratum = deliveryDesideratum;
-            deliveryLocation.price = {...item.realPrice};
-            group.deliveryLocations.push(deliveryLocation);
+        if (group.items) {
+          group.items.forEach(item => {
+            const locationGroups = this.groupBy.transform(item.desideratum.locations, 'location');
+            if (locationGroups) {
+              locationGroups.forEach(locationGroup => {
+                const deliveryLocation: DeliveryLocation = new DeliveryLocation();
+                deliveryLocation.location = locationGroup.key;
+                const deliveryDesideratum = {...item.desideratum};
+                deliveryDesideratum.locations = locationGroup.value;
+                deliveryLocation.desideratum = deliveryDesideratum;
+                deliveryLocation.price = {...item.realPrice};
+                group.deliveryLocations.push(deliveryLocation);
+              });
+            }
           });
-        });
+        }
       });
       return this.acquisition.acquisitionGroups;
+    }
+  }
+
+  selectView(status: Status) {
+    if (status === Status.OPEN) {
+      this.selectedView = status;
+    }
+    if (status === Status.CLOSED) {
+      if (this.acquisition.status === Status.CLOSED || this.acquisition.status === Status.DELIVERY) {
+        this.selectedView = status;
+      }
+    }
+    if (status === Status.DELIVERY) {
+      if (this.acquisition.status === Status.DELIVERY) {
+        this.selectedView = status;
+      }
     }
   }
 }

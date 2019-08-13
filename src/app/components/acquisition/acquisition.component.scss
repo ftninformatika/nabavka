@@ -1,73 +1,21 @@
 .acquisition-stepper {
 
-  ul.stepper.horizontal {
-    min-height: 0;
+  span.active {
+    background-color: #2196f3;
+    width: 1.75rem;
+    height: 1.75rem
+  }
+
+  span.disabled {
+    background-color: rgba(0, 0, 0, .3);
+    width: 1.75rem;
+    height: 1.75rem
   }
 
 
-  div.card-body {
-    padding-left: 0;
-    padding-right: 0;
-    height: 90px;
+  div.active {
+    font-weight:400;
   }
 
-  //ul.stepper.horizontal .step .step-title {
-  //  height: 40px;
-  //  align-items: center;
-  //}
-
-  ul.stepper.horizontal .step .step-title::before {
-    font-weight: 900;
-    font-family: "Font Awesome 5 Free";
-  }
-
-  ul.stepper.horizontal .step:nth-of-type(1) .step-title {
-    &:before {
-      content: "\f09c";
-    }
-  }
-
-  ul.stepper.horizontal .step:nth-of-type(1).done .step-title {
-    &:before {
-      content: "\f09c";
-      background-color: rgba(0,0,0,.3);
-    }
-  }
-
-  ul.stepper.horizontal .step:nth-of-type(1).wrong .step-title {
-    &:before {
-      content: "\f09c";
-      background-color: #4285f4;
-      font-size: 1rem;
-    }
-  }
-
-  ul.stepper.horizontal .step:nth-of-type(2) .step-title {
-    &:before {
-      content: "\f023";
-    }
-  }
-
-  ul.stepper.horizontal .step:nth-of-type(2).done .step-title {
-    &:before {
-      content: "\f023";
-      background-color: rgba(0,0,0,.3);
-    }
-  }
-
-  ul.stepper.horizontal .step:nth-of-type(2).wrong .step-title {
-    &:before {
-      content: "\f09c";
-      background-color: #4285f4;
-      font-size: 1rem;
-    }
-  }
-
-  ul.stepper.horizontal .step:nth-of-type(3) .step-title {
-    &:before {
-      content: "\f472";
-    }
-  }
 }
-
 
