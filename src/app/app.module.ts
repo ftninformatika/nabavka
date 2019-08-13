@@ -27,6 +27,7 @@ import { StatusPipe } from './pipes/status.pipe';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { DeliveryItemComponent } from './components/delivery-item/delivery-item.component';
 import { AccessDeniedComponent } from './components/access-denied/access-denied.component';
+import { ClipboardModule } from 'ngx-clipboard';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { AccessDeniedComponent } from './components/access-denied/access-denied.
     AngularFirestoreModule,
     FormsModule,
     ReactiveFormsModule,
-    ToastModule.forRoot()
+    ToastModule.forRoot({opacity: 1}),
+    ClipboardModule
   ],
   providers: [
     MDBSpinningPreloader,

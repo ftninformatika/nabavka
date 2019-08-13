@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FirebaseService} from '../../services/firebase.service';
 import {Offer} from '../../models/offer';
 import {Book} from '../../models/book';
@@ -104,5 +104,10 @@ export class OfferComponent implements OnInit {
   }
   getPermLink(pib: string) {
     return location.origin + '/offers/' + CryptoUtils.encryptData(pib);
+  }
+
+
+  linkCopied() {
+    this.toast.info('Линк је копиран у <i>clipboard</i>.', '', { enableHtml: true});
   }
 }

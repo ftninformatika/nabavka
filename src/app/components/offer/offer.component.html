@@ -10,7 +10,12 @@
       <div class="d-flex">
         <div class="d-flex flex-grow-1">
           <div *ngIf="(loggedUserRole | async) === Roles.ACQUISITION_MANAGER">
-            <mdb-icon fas size="lg" class="blue-text pr-2" icon="link"></mdb-icon>{{getPermLink(distributer?.pib)}}
+            <p class="font-weight-light text-muted">{{getPermLink(distributer?.pib)}}
+            <a mdbBtn floating="true" color="primary" size="sm" ngxClipboard [cbContent]="getPermLink(distributer?.pib)"
+               (cbOnSuccess)="linkCopied()" data-toggle="tooltip" title="Копирај линк">
+              <mdb-icon fas icon="copy"></mdb-icon>
+            </a>
+            </p>
           </div>
         </div>
         <a mdbBtn floating="true" color="primary" size="sm" (click)="addNewOffer()" data-toggle="tooltip" title="Додај књигу">
