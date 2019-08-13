@@ -34,7 +34,8 @@
     "webpack": "^4.35.3",
     "@ngxs/logger-plugin": "^3.5.0",
     "@ngxs/storage-plugin": "^3.5.0",
-    "@ngxs/store": "^3.5.0"
+    "@ngxs/store": "^3.5.0",
+    "aes-js": "^3.1.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.801.1",

@@ -3,6 +3,7 @@ import {FirebaseService} from '../../services/firebase.service';
 import {Distributor} from '../../models/distributor';
 import {ModalDirective} from 'ng-uikit-pro-standard';
 import {Offer} from '../../models/offer';
+import {CryptoUtils} from '../../utils/crypto.utils';
 
 @Component({
   selector: 'app-distributers-list',
@@ -12,9 +13,15 @@ import {Offer} from '../../models/offer';
 export class DistributorsListComponent implements OnInit {
   distributorsList: Distributor[];
   distributor: Distributor = {};
+  selectedDistributor: Distributor = {};
   rowIndex: number;
-  @ViewChild(ModalDirective, {static: false})
-  modal: ModalDirective;
+  distributorLink;
+  @ViewChild('addModal', {static: false})
+  addModal: ModalDirective;
+
+  @ViewChild('deleteDistributorModal', {static: false})
+  deleteDistributorModal: ModalDirective;
+
 
   constructor(private firebaseService: FirebaseService) {
   }
@@ -37,18 +44,23 @@ export class DistributorsListComponent implements OnInit {
     this.firebaseService.addDistributor(this.distributor);
     const offer: Offer = {};
     offer.distributer = this.distributor.pib;
-    offer.permalink = 'neki permlink';
     this.firebaseService.addOffer(offer);
-    this.modal.hide();
+    this.addModal.hide();
   }
-  remove(distributor: Distributor) {
-    this.firebaseService.removeDistributor(distributor.id);
+  remove() {
+    this.firebaseService.removeDistributor(this.selectedDistributor.id);
+    this.deleteDistributorModal.hide();
   }
   update(distributor: Distributor) {
     this.firebaseService.updateDistributor(distributor);
     this.rowIndex = -1;
   }
-  addNewDistributor() {
-    this.modal.show();
+  confirmDelete(distributor: Distributor) {
+    this.selectedDistributor = distributor;
+    this.deleteDistributorModal.show();
+  }
+
+  getDistributerCryptoId(pib: string) {
+    return CryptoUtils.encryptData(pib);
   }
 }

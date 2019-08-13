@@ -1,18 +1,19 @@
+<div *ngIf="distributer; else notExist">
 <mdb-card>
 <!-- Editable table -->
 <div class="card-header">
-  <h3 class="py-2">Листа понуђених књига:  {{distributer.name}}</h3>
+  <h3 class="py-2">Листа понуђених књига:  {{distributer?.name}}</h3>
 </div>
 
   <div class="card-body">
     <div id="table" class="table-editable">
       <div class="d-flex">
         <div class="d-flex flex-grow-1">
-          <div>
-            <mdb-icon fas size="lg" class="blue-text pr-2" icon="link"></mdb-icon>{{offerList.permalink}}
+          <div *ngIf="(loggedUserRole | async) === Roles.ACQUISITION_MANAGER">
+            <mdb-icon fas size="lg" class="blue-text pr-2" icon="link"></mdb-icon>{{getPermLink(distributer?.pib)}}
           </div>
         </div>
-        <a mdbBtn floating="true" color="primary" size="sm" (click)="addNewOffer()">
+        <a mdbBtn floating="true" color="primary" size="sm" (click)="addNewOffer()" data-toggle="tooltip" title="Додај књигу">
           <mdb-icon fas icon="plus"></mdb-icon>
         </a>
       </div>
@@ -102,7 +103,7 @@
                   <mdb-icon fas icon="check-circle"></mdb-icon>
                 </button>
 
-                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="remove(offer)">
+                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="modalDeleteOffer.show()">
                   <mdb-icon fas icon="trash-alt"></mdb-icon>
                 </button>
               </div>
@@ -115,10 +116,14 @@
   </div>
 </mdb-card>
 <!-- Editable table -->
-<!--Modal-->
+</div>
+<ng-template #notExist>
+  {{message}}
+</ng-template>
+  <!--Modal-->
 <div
   mdbModal
-  #frame="mdbModal"
+  #addModal
   class="modal fade top"
   id="frameModalTop"
   tabindex="-1"
@@ -126,6 +131,7 @@
   aria-labelledby="myModalLabel"
   aria-hidden="true"
   style="overflow-y: auto"
+  (closed)="onClosed($event)"
 >
   <!--Dialog-->
   <div class="modal-dialog modal-notify modal-info" role="document">
@@ -139,9 +145,9 @@
         <button
           type="button"
           class="close"
-          data-dismiss="modal"
+          data-dismiss="addModal"
           aria-label="Close"
-          (click)="frame.hide()"
+          (click)="addModal.hide()"
         >
           <span aria-hidden="true" class="white-text">&times;</span>
         </button>
@@ -150,7 +156,7 @@
       <!--Body-->
       <div class="modal-body">
         <div class="md-form mb-5">
-          <input [(ngModel)]="book.isbn" #ctrl="ngModel"
+          <input [(ngModel)]="book.isbn"
                  type="text"
                  class="form-control"
                  id="isbn"
@@ -159,7 +165,7 @@
           <label for="isbn">ИСБН</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="book.title" #ctrl="ngModel"
+          <input [(ngModel)]="book.title"
                  type="text"
                  class="form-control"
                  id="title"
@@ -168,7 +174,7 @@
           <label for="title">Наслов</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="book.author" #ctrl="ngModel"
+          <input [(ngModel)]="book.author"
                  type="text"
                  class="form-control"
                  id="author"
@@ -177,7 +183,7 @@
           <label for="author">Аутор</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="book.publisher" #ctrl="ngModel"
+          <input [(ngModel)]="book.publisher"
                  type="text"
                  class="form-control"
                  id="publisher"
@@ -186,7 +192,7 @@
           <label for="publisher">Издавач</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="book.price" #ctrl="ngModel"
+          <input [(ngModel)]="book.price"
                  type="number"
                  class="form-control"
                  id="price"
@@ -195,7 +201,7 @@
           <label for="price">Цена</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="book.rebate" #ctrl="ngModel"
+          <input [(ngModel)]="book.rebate"
                  type="number"
                  class="form-control"
                  id="rebate"
@@ -204,7 +210,7 @@
           <label for="rebate">Рабат</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="book.vat" #ctrl="ngModel"
+          <input [(ngModel)]="book.vat"
                  type="number"
                  class="form-control"
                  id="vat"
@@ -236,4 +242,38 @@
   <!--/.Dialog-->
 </div>
 <!--/.Modal-->
+
+<!-- deleteOfferModel -->
+<div mdbModal #modalDeleteOffer class="modal fade" id="modalDeleteOffer" tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalDelete"
+     aria-hidden="true">
+  <div class="modal-dialog modal-notify modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Брисање књиге
+        </h4>
+        <button type="button" class="close" data-dismiss="modalDeleteOffer" aria-label="Close"
+                (click)="modalDeleteOffer.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <p class="text-center h4">Да ли сте сигурни да желите да обришете књигу?</p>
+      </div>
+      <div class="modal-footer d-flex justify-content-center deleteButtonsWrapper">
+        <button mdbBtn color="danger" type="button" class="btnYesClass" data-dismiss="modalDeleteOffer" mdbWavesEffect
+                (click)="remove()">
+          Да
+        </button>
+        <button mdbBtn color="primary" type="button" class="btnNoClass" data-dismiss="modalDeleteOffer" mdbWavesEffect
+                (click)="modalDeleteOffer.hide()">
+          Не
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--/.deleteOfferModal -->
 

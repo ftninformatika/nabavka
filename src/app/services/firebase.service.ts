@@ -73,6 +73,7 @@ export class FirebaseService {
   }
   removeDistributor(id: string) {
     this.firestore.collection('Distributor').doc(id).delete();
+   /// todo dodati da se kaskadno obrisu ponude ovog dobavljaca
   }
   addDistributor(item: Distributor) {
     return this.firestore.collection('Distributor').add(item);

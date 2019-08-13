@@ -6,7 +6,7 @@
   <div class="card-body">
     <div id="table" class="table-editable">
       <span class="table-add float-right mb-3 mr-2">
-       <a mdbBtn floating="true" color="primary" size="sm" (click)="addNewDistributor()">
+       <a mdbBtn floating="true" color="primary" size="sm" (click)="addModal.show();" data-toggle="tooltip" title="Додај дистрибутера">
           <mdb-icon fas icon="plus"></mdb-icon>
         </a>
       </span>
@@ -73,8 +73,8 @@
                   <mdb-icon fas icon="pen"></mdb-icon>
                 </button>
                 <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        [routerLink]="['/offers/'+distributor.pib]">
-                  <mdb-icon fas icon="plus"></mdb-icon>
+                        [routerLink]="['/offers/'+getDistributerCryptoId(distributor.pib)]" data-toggle="tooltip" title="Прикажи понуду">
+                  <mdb-icon fas icon="book"></mdb-icon>
                 </button>
               </div>
             </ng-container>
@@ -84,7 +84,7 @@
                   <mdb-icon fas icon="check-circle"></mdb-icon>
                 </button>
 
-                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="remove(distributor)">
+                <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="confirmDelete(distributor)">
                   <mdb-icon fas icon="trash-alt"></mdb-icon>
                 </button>
               </div>
@@ -99,12 +99,12 @@
 
 <!-- Editable table -->
 </mdb-card>
-<!--Modal-->
+<!--addDistributirModal-->
 <div
   mdbModal
-  #frame="mdbModal"
+  #addModal
   class="modal fade top"
-  id="frameModalTop"
+  id="addModal"
   tabindex="-1"
   role="dialog"
   aria-labelledby="myModalLabel"
@@ -123,9 +123,9 @@
         <button
           type="button"
           class="close"
-          data-dismiss="modal"
+          data-dismiss="addModal"
           aria-label="Close"
-          (click)="frame.hide()"
+          (click)="addModal.hide()"
         >
           <span aria-hidden="true" class="white-text">&times;</span>
         </button>
@@ -134,7 +134,7 @@
       <!--Body-->
       <div class="modal-body">
         <div class="md-form mb-5">
-          <input [(ngModel)]="distributor.pib" #ctrl="ngModel"
+          <input [(ngModel)]="distributor.pib"
                  type="text"
                  class="form-control"
                  id="pib"
@@ -143,7 +143,7 @@
           <label for="pib">ПИБ</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="distributor.name" #ctrl="ngModel"
+          <input [(ngModel)]="distributor.name"
                  type="text"
                  class="form-control"
                  id="name"
@@ -152,7 +152,7 @@
           <label for="name">Назив</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="distributor.phone" #ctrl="ngModel"
+          <input [(ngModel)]="distributor.phone"
                  type="text"
                  class="form-control"
                  id="phone"
@@ -161,7 +161,7 @@
           <label for="phone">Телефон</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="distributor.email" #ctrl="ngModel"
+          <input [(ngModel)]="distributor.email"
                  type="text"
                  class="form-control"
                  id="email"
@@ -170,7 +170,7 @@
           <label for="email">Емаил</label>
         </div>
         <div class="md-form mb-5">
-          <input [(ngModel)]="distributor.contactPerson" #ctrl="ngModel"
+          <input [(ngModel)]="distributor.contactPerson"
                  type="text"
                  class="form-control"
                  id="contactPerson"
@@ -201,4 +201,38 @@
   </div>
   <!--/.Dialog-->
 </div>
-<!--/.Modal-->
+<!--/.addDistributorModal-->
+
+<!-- deleteDistributorModal -->
+<div mdbModal #deleteDistributorModal class="modal fade" id="deleteDistributorModal" tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalDelete"
+     aria-hidden="true">
+  <div class="modal-dialog modal-notify modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Брисање дистрибутера
+        </h4>
+        <button type="button" class="close" data-dismiss="deleteDistributorModal" aria-label="Close"
+                (click)="deleteDistributorModal.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <p class="text-center h4">Да ли сте сигурни да желите да обришете дистрибутера и све његове понуђене књиге?</p>
+      </div>
+      <div class="modal-footer d-flex justify-content-center deleteButtonsWrapper">
+        <button mdbBtn color="danger" type="button" class="btnYesClass" data-dismiss="deleteDistributorModal" mdbWavesEffect
+                (click)="remove()">
+          Да
+        </button>
+        <button mdbBtn color="primary" type="button" class="btnNoClass" data-dismiss="deleteDistributorModal" mdbWavesEffect
+                (click)="deleteDistributorModal.hide()">
+          Не
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--/.deleteDistributorModal -->

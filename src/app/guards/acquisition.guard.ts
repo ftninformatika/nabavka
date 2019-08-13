@@ -18,7 +18,6 @@ export class AcquisitionGuard implements  CanActivate {
       return true;
     } else {
       this.router.navigate(['access-denied']);
-      return false;
     }
   }
 }
