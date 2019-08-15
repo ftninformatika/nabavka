@@ -102,12 +102,5 @@ export class OfferComponent implements OnInit {
    this.book.publisher = null;
    this.book.title = null;
   }
-  getPermLink(pib: string) {
-    return location.origin + '/offers/' + CryptoUtils.encryptData(pib);
-  }
 
-
-  linkCopied() {
-    this.toast.info('Линк је копиран у <i>clipboard</i>.', '', { enableHtml: true});
-  }
 }

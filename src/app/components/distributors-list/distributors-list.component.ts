@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FirebaseService} from '../../services/firebase.service';
 import {Distributor} from '../../models/distributor';
-import {ModalDirective} from 'ng-uikit-pro-standard';
+import {ModalDirective, ToastService} from 'ng-uikit-pro-standard';
 import {Offer} from '../../models/offer';
 import {CryptoUtils} from '../../utils/crypto.utils';
 
@@ -23,7 +23,7 @@ export class DistributorsListComponent implements OnInit {
   deleteDistributorModal: ModalDirective;
 
 
-  constructor(private firebaseService: FirebaseService) {
+  constructor(private firebaseService: FirebaseService, private toast: ToastService) {
   }
 
   ngOnInit() {
@@ -62,5 +62,13 @@ export class DistributorsListComponent implements OnInit {
 
   getDistributerCryptoId(pib: string) {
     return CryptoUtils.encryptData(pib);
+  }
+
+  getPermLink(pib: string) {
+    return location.origin + '/offers/' + CryptoUtils.encryptData(pib);
+  }
+
+  linkCopied(link: string) {
+    this.toast.info('Линк за унос понуда је копиран у привремену меморију. <hr> <a>' + link + '</a>', '', { enableHtml: true});
   }
 }
