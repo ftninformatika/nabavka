@@ -17,7 +17,6 @@
       </div>
     </div>
     <div class="row pl-3 mt-3">
-
       <ng-container *ngIf="acquisition.status != Status.DELIVERY">
         <ng-container *ngIf="edit; else ok">
           <a mdbBtn floating="true" size="sm" color="info" (click)="toggleEdit()" mdbWavesEffect>

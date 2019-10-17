@@ -1,9 +1,10 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {AcquisitionGroup, DeliveryLocation, Price} from '../../models/acquisition';
 import {MdbTableDirective} from 'ng-uikit-pro-standard';
-import {Sublocation} from '../../models/sublocation';
+import {LocationCoder, Sublocation} from '../../models/location_coder';
 import {FirebaseService} from '../../services/firebase.service';
 import {Desideratum} from '../../models/desideratum';
+import {AcquisitionService} from '../../services/acquisition.service';
 
 @Component({
   selector: 'app-delivery-item',
@@ -16,18 +17,20 @@ export class DeliveryItemComponent implements OnInit {
   @ViewChild(MdbTableDirective, { static: true }) mdbTable: MdbTableDirective;
   hide: boolean[] = [];
   hideInner: boolean[][] = [];
-  sublocationList: Sublocation[];
+  sublocationList: Sublocation[] = [];
+  locationList: LocationCoder[] = [];
 
-  constructor(private firebaseService: FirebaseService) {
+  constructor(private acquisitionService: AcquisitionService) {
   }
 
   ngOnInit() {
     this.mdbTable.setDataSource(this.acquisitionGroup.items);
     this.resetHideLists();
-    this.firebaseService.getSublocations().subscribe(data => {
-      this.sublocationList = data.map(e => {
-        return e.payload.doc.data() as Sublocation;
-      });
+    this.acquisitionService.getSublocations().subscribe(data => {
+      this.sublocationList = data;
+    });
+    this.acquisitionService.getLocations().subscribe(data => {
+      this.locationList = data;
     });
   }
 
@@ -103,6 +106,15 @@ export class DeliveryItemComponent implements OnInit {
     const sublocation = this.sublocationList.find(x => x.code === code);
     if (sublocation) {
       return sublocation.code + ' - ' + sublocation.name;
+    } else {
+      return code;
+    }
+  }
+
+  getLocation(code: string) {
+    const location = this.locationList.find(x => x.code === code);
+    if (location) {
+      return location.code + ' - ' + location.name;
     } else {
       return code;
     }

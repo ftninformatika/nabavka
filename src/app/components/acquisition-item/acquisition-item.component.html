@@ -226,24 +226,30 @@
                         (click)="saveEditedItem()">
                   <mdb-icon fas icon="check"></mdb-icon>
                 </button>
-                <div *ngIf="status==Status.OPEN">
-                  <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                          (click)="showRemoveItemModal()">
-                    <mdb-icon far icon="trash-alt"></mdb-icon>
-                  </button>
-                </div>
+                <ng-container *ngIf="status==Status.OPEN">
+                  <div class="d-flex justify-content-end">
+                    <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
+                            (click)="showRemoveItemModal()">
+                      <mdb-icon far icon="trash-alt"></mdb-icon>
+                    </button>
+                    <div class="dropdown" mdbDropdown>
+                      <button mdbDropdownToggle mdbBtn color="teal" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect>
+                        <mdb-icon fas icon="angle-double-right"></mdb-icon>
+                      </button>
+                      <div class="dropdown-menu dropdown-menu-right" style="left:auto">
+                        <ng-container *ngFor="let group of getOtherAcquisitionGroups();">
+                          <a class="dropdown-item" (click)="moveToAcquisitionGroup(group)">{{group}}</a>
+                        </ng-container>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
               </ng-container>
               <ng-template #ok1>
                 <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
                         (click)="showEditIcons(id, item.desideratum.isbn)">
                   <mdb-icon fas icon="pen"></mdb-icon>
                 </button>
-              </ng-template>
-              <div class="d-flex justify-content-end">
-<!--                <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect-->
-<!--                        (click)="showEditIcons(id, item.desideratum.isbn)">-->
-<!--                  <mdb-icon far icon="edit"></mdb-icon>-->
-<!--                </button>-->
                 <div *ngIf="status==Status.OPEN">
                   <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
                           (click)="showAddLocationModal(id, item.desideratum.isbn)"
@@ -251,7 +257,7 @@
                     <mdb-icon fas icon="plus"></mdb-icon>
                   </button>
                 </div>
-              </div>
+              </ng-template>
 
 <!--              <div *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null" class="d-flex justify-content-end">-->
 <!--                <button mdbBtn color="info" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect-->
@@ -280,7 +286,7 @@
               <td></td>
               <td></td>
               <td></td>
-              <td class="font-italic">{{l.key}}</td>
+              <td class="font-italic">{{getLocation(l.key)}}</td>
               <td class="font-italic">{{calculateAmountForLocation(item.desideratum.isbn, l.key)}}</td>
               <td></td>
               <ng-container *ngIf="editMode">

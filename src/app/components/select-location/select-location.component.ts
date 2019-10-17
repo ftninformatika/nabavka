@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FirebaseService} from '../../services/firebase.service';
 import {Desideratum} from '../../models/desideratum';
-import {Sublocation} from '../../models/sublocation';
+import {Sublocation} from '../../models/location_coder';
 
 @Component({
   selector: 'app-select-location',

@@ -66,9 +66,7 @@
             <a (click)="toggle(id)">
               <i class="far" [ngClass]="{'fa-plus-square': !hide[id], 'fa-minus-square': hide[id]}"></i></a>
           </td>
-          <td>
-            {{deliveryLocationGroup.key}}
-          </td>
+          <td>{{getLocation(deliveryLocationGroup.key)}}</td>
           <td></td>
           <td></td>
           <td></td>

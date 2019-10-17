@@ -43,6 +43,10 @@ export class FirebaseService {
     return this.firestore.collection('Sublocation').snapshotChanges();
   }
 
+  getLocations() {
+    return this.firestore.collection('Location').snapshotChanges();
+  }
+
   getAcquisitionListOnce() {
     return this.firestore.collection('Acquisition', ref => {
       return ref.orderBy('startDate', 'desc');

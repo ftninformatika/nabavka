@@ -2,9 +2,10 @@ import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angula
 import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
 import {Desideratum} from '../../models/desideratum';
 import {Location} from '../../models/location';
-import {Sublocation} from '../../models/sublocation';
+import {LocationCoder, Sublocation} from '../../models/location_coder';
 import {FirebaseService} from '../../services/firebase.service';
 import {AcquisitionGroup, Item, Price, Status} from '../../models/acquisition';
+import {AcquisitionService} from '../../services/acquisition.service';
 
 @Component({
   selector: 'app-acquisition-item',
@@ -32,19 +33,21 @@ export class AcquisitionItemComponent implements OnInit {
   selectedItem: Item;
   inputAmount: number;
   sublocationList: Sublocation[];
+  locationList: LocationCoder[];
   editGroup = false;
   Status = Status;
 
-  constructor(private firebaseService: FirebaseService) {
+  constructor(private acquisitionService: AcquisitionService) {
   }
 
   ngOnInit() {
     this.mdbTable.setDataSource(this.acquisitionGroup.items);
     this.resetHideLists();
-    this.firebaseService.getSublocations().subscribe(data => {
-      this.sublocationList = data.map(e => {
-        return e.payload.doc.data() as Sublocation;
-      });
+    this.acquisitionService.getSublocations().subscribe(data => {
+      this.sublocationList = data;
+    });
+    this.acquisitionService.getLocations().subscribe(data => {
+      this.locationList = data;
     });
   }
 
@@ -237,6 +240,15 @@ export class AcquisitionItemComponent implements OnInit {
     }
   }
 
+  getLocation(code: string) {
+    const location = this.locationList.find(x => x.code === code);
+    if (location) {
+      return location.code + ' - ' + location.name;
+    } else {
+      return code;
+    }
+  }
+
   toggleEditGroup() {
     if (this.editGroup) {
       this.editGroup = false;
@@ -253,6 +265,21 @@ export class AcquisitionItemComponent implements OnInit {
   deleteGroup() {
     this.modalDeleteGroup.hide();
     this.deleteAcquisitionGroupEvent.emit(this.acquisitionGroup);
+  }
+
+  getOtherAcquisitionGroups() {
+    return this.acquisitionService.getOtherAcquisitionGroups(this.acquisitionGroup);
+  }
+
+  moveToAcquisitionGroup(name: string) {
+    const index = this.acquisitionGroup.items.findIndex(x => x.desideratum.isbn === this.selectedItem.desideratum.isbn);
+    this.acquisitionGroup.items.splice(index, 1);
+    this.hide.splice(index, 1);
+    this.hideInner.splice(index, 1);
+    this.index1stLevel = null;
+    this.index2ndLevel = null;
+    this.index3rdLevel = null;
+    this.acquisitionService.moveItemToGroup(this.selectedItem, name);
   }
 
 }

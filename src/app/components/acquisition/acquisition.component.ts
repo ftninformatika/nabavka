@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
-import {FirebaseService} from '../../services/firebase.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Acquisition, AcquisitionGroup, DeliveryLocation, Status} from '../../models/acquisition';
 import {GroupByPipe} from '../../pipes/group-by.pipe';
 import {ModalDirective} from 'ng-uikit-pro-standard';
+import {AcquisitionService} from '../../services/acquisition.service';
 
 @Component({
   selector: 'app-acquisition',
@@ -15,26 +15,22 @@ import {ModalDirective} from 'ng-uikit-pro-standard';
 
 export class AcquisitionComponent implements OnInit {
   @ViewChild('modalChangeStatus', {static: false}) modalChangeStatus: ModalDirective;
-  acquisitionId: string;
   acquisition: Acquisition = {};
   amount = 0;
   edit = false;
   Status = Status;
   selectedView = Status.OPEN;
 
-  constructor(private firebaseService: FirebaseService, private route: ActivatedRoute, private router: Router,
-              private groupBy: GroupByPipe) {}
+  constructor(private route: ActivatedRoute, private router: Router,
+              private groupBy: GroupByPipe, private acquisitionService: AcquisitionService) {}
 
   ngOnInit() {
-    this.acquisitionId = this.route.snapshot.paramMap.get('id');
+    const acquisitionId = this.route.snapshot.paramMap.get('id');
     // this.acquisitionId = 'w80tqpWSj4X1ndlzhZBb';
-    this.firebaseService.getAcquisitionOnce(this.acquisitionId).subscribe(doc => {
-      if (doc.exists) {
-        this.acquisition = doc.data() as Acquisition;
+    this.acquisitionService.getAcquisition(acquisitionId).subscribe(acquisition => {
+        this.acquisition = acquisition;
         this.calculateAmount();
-        // console.log(this.acquisition);
         this.setStepper();
-      }
     });
 
 
@@ -104,7 +100,8 @@ export class AcquisitionComponent implements OnInit {
   }
 
   saveAcquisition() {
-    this.firebaseService.updateAcquisition(this.acquisitionId, this.acquisition);
+    this.acquisitionService.saveAcquisition();
+    // this.firebaseService.updateAcquisition(this.acquisitionId, this.acquisition);
   }
 
   getRemain() {
@@ -147,7 +144,7 @@ export class AcquisitionComponent implements OnInit {
   }
 
   deleteAcquisition() {
-    this.firebaseService.deleteAcquisition(this.acquisitionId).then(docRef => {
+    this.acquisitionService.deleteAcquisition().subscribe(data => {
       this.router.navigate(['/dashboard']);
     });
   }
