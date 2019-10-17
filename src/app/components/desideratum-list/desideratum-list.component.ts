@@ -4,6 +4,7 @@ import {Location} from '../../models/location';
 import {FirebaseService} from '../../services/firebase.service';
 import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
 import {LocationCoder, Sublocation} from '../../models/location_coder';
+import {DesideratumService} from '../../services/desideratum.service';
 
 @Component({
   selector: 'app-desideratum-list',
@@ -31,7 +32,7 @@ export class DesideratumListComponent implements OnInit {
   sublocationList: Sublocation[];
   locationList: LocationCoder[];
 
-  constructor(private firebaseService: FirebaseService) {
+  constructor(private desideratumService: DesideratumService) {
   }
 
   @HostListener('input') oninput() {
@@ -51,27 +52,18 @@ export class DesideratumListComponent implements OnInit {
     //   this.previous = this.mdbTable.getDataSource();
     //   this.resetHideLists();
     // });
-    this.firebaseService.getDesiderataDataOnce().subscribe(data => {
-      this.desiderataList = data.docs.map(e => {
-        return {
-          id: e.id,
-          ...e.data() as any
-        } as Desideratum;
-      });
+    this.desideratumService.getDesiderataData().subscribe(data => {
+      this.desiderataList = data;
       this.mdbTable.setDataSource(this.desiderataList);
       this.desiderataList = this.mdbTable.getDataSource();
       this.previous = this.mdbTable.getDataSource();
       this.resetHideLists();
     });
-    this.firebaseService.getSublocations().subscribe(data => {
-      this.sublocationList = data.map(e => {
-        return e.payload.doc.data() as Sublocation;
-      });
+    this.desideratumService.getSublocations().subscribe(data => {
+      this.sublocationList = data;
     });
-    this.firebaseService.getLocations().subscribe(data => {
-      this.locationList = data.map(e => {
-        return e.payload.doc.data() as LocationCoder;
-      });
+    this.desideratumService.getLocations().subscribe(data => {
+      this.locationList = data;
     });
   }
 
@@ -82,8 +74,8 @@ export class DesideratumListComponent implements OnInit {
       author: form[2].value,
       publisher: form[3].value
     };
-    this.firebaseService.addDesideratum(desideratum).then(docRef => {
-      desideratum.id = docRef.id;
+    this.desideratumService.addDesideratum(desideratum).subscribe(data => {
+      desideratum.id = data;
     });
     this.desiderataList.splice(0, 0, desideratum);
     this.hide.splice(0, 0, false);
@@ -97,15 +89,16 @@ export class DesideratumListComponent implements OnInit {
   }
 
   removeSelectedDesideratum() {
-    this.firebaseService.deleteDesideratum(this.selectedDesideratum.id);
-    const index = this.desiderataList.findIndex(x => x.id === this.selectedDesideratum.id);
-    this.desiderataList.splice(index, 1);
-    this.hide.splice(index, 1);
-    this.hideInner.splice(index, 1);
-    this.modalDelete.hide();
-    this.index1stLevel = null;
-    this.index2ndLevel = null;
-    this.index3rdLevel = null;
+    this.desideratumService.deleteDesideratum(this.selectedDesideratum.id).subscribe(data => {
+      const index = this.desiderataList.findIndex(x => x.id === this.selectedDesideratum.id);
+      this.desiderataList.splice(index, 1);
+      this.hide.splice(index, 1);
+      this.hideInner.splice(index, 1);
+      this.modalDelete.hide();
+      this.index1stLevel = null;
+      this.index2ndLevel = null;
+      this.index3rdLevel = null;
+    });
   }
 
   showEditIcons(index: number, id: string) {
@@ -116,10 +109,11 @@ export class DesideratumListComponent implements OnInit {
   }
 
   saveEditedDesideratum() {
-    this.firebaseService.updateDesideratum(this.selectedDesideratum);
-    this.index1stLevel = null;
-    this.index2ndLevel = null;
-    this.index3rdLevel = null;
+    this.desideratumService.updateDesideratum(this.selectedDesideratum).subscribe(data => {
+      this.index1stLevel = null;
+      this.index2ndLevel = null;
+      this.index3rdLevel = null;
+    });
   }
 
   calculateAmountForDesideratum(id: string) {
@@ -152,8 +146,9 @@ export class DesideratumListComponent implements OnInit {
       desideratum.locations.push(this.location);
       const renderFix = [...desideratum.locations];
       desideratum.locations = renderFix;
-      this.firebaseService.updateDesideratum(desideratum);
-      this.modalLocation.hide();
+      this.desideratumService.updateDesideratum(desideratum).subscribe(data => {
+        this.modalLocation.hide();
+      });
     }
   }
 
@@ -168,10 +163,11 @@ export class DesideratumListComponent implements OnInit {
     const desideratum = this.desiderataList.find(x => x.id === id);
     const location = desideratum.locations.find(x => x.sublocation === sublocation);
     location.amount = this.inputAmount;
-    this.firebaseService.updateDesideratum(desideratum);
-    this.index1stLevel = null;
-    this.index2ndLevel = null;
-    this.index3rdLevel = null;
+    this.desideratumService.updateDesideratum(desideratum).subscribe(data => {
+      this.index1stLevel = null;
+      this.index2ndLevel = null;
+      this.index3rdLevel = null;
+    });
   }
 
   deleteLocation(id: string, sublocation: string) {
@@ -180,10 +176,11 @@ export class DesideratumListComponent implements OnInit {
     desideratum.locations.splice(locationIndex, 1);
     const renderFix = [...desideratum.locations];
     desideratum.locations = renderFix;
-    this.firebaseService.updateDesideratum(desideratum);
-    this.index1stLevel = null;
-    this.index2ndLevel = null;
-    this.index3rdLevel = null;
+    this.desideratumService.updateDesideratum(desideratum).subscribe(data => {
+      this.index1stLevel = null;
+      this.index2ndLevel = null;
+      this.index3rdLevel = null;
+    });
   }
 
   calculateAmountForLocation(id: string, loc: string) {

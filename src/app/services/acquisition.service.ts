@@ -2,18 +2,20 @@ import { Injectable } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {FirebaseService} from './firebase.service';
 import {Acquisition, AcquisitionGroup, Item} from '../models/acquisition';
-import {Sublocation, LocationCoder} from '../models/location_coder';
+import {GeneralService} from './general.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AcquisitionService {
+export class AcquisitionService extends GeneralService{
 
   private acquisition$ = new Subject<Acquisition>();
   acquisitionId: string;
   acquisition: Acquisition = {};
 
-  constructor(private firebaseService: FirebaseService) { }
+  constructor(public firebaseService: FirebaseService) {
+    super(firebaseService);
+  }
 
   getAcquisition(acquisitionId: string) {
     this.acquisitionId = acquisitionId;
@@ -64,28 +66,6 @@ export class AcquisitionService {
         break;
       }
     }
-  }
-
-  getSublocations(): Observable<Sublocation[]> {
-    const sublocations$ = new Subject<Sublocation[]>();
-    this.firebaseService.getSublocations().subscribe(data => {
-      const sublocationList: Sublocation[] = data.map(e => {
-        return e.payload.doc.data() as Sublocation;
-      });
-      sublocations$.next(sublocationList);
-    });
-    return sublocations$.asObservable();
-  }
-
-  getLocations(): Observable<LocationCoder[]> {
-    const locations$ = new Subject<LocationCoder[]>();
-    this.firebaseService.getLocations().subscribe(data => {
-      const locationList: LocationCoder[] = data.map(e => {
-        return e.payload.doc.data() as LocationCoder;
-      });
-      locations$.next(locationList);
-    });
-    return locations$.asObservable();
   }
 
   getAcquisitionList() {

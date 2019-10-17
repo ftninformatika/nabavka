@@ -7,6 +7,7 @@ import {Distributor} from '../models/distributor';
 import {Offer} from '../models/offer';
 import {Acquisition} from '../models/acquisition';
 import {User} from '../models/user';
+import {Observable, Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -21,14 +22,19 @@ export class FirebaseService {
     return this.firestore.collection('Desiderata').add(item);
   }
 
-  updateDesideratum(item: Desideratum) {
+  updateDesideratum(item: Desideratum): Observable<string> {
+    const observable$ = new Subject<string>();
     const id = item.id;
-    this.firestore.collection('Desiderata').doc(id).update(item);
-    this.firestore.collection('Desiderata').doc(id).update({id: firebase.firestore.FieldValue.delete()});
+    this.firestore.collection('Desiderata').doc(id).update(item).then(docRef => {
+      this.firestore.collection('Desiderata').doc(id).update({id: firebase.firestore.FieldValue.delete()}).then( docR => {
+        observable$.next();
+      });
+    });
+    return observable$.asObservable();
   }
 
   deleteDesideratum(id: string) {
-    this.firestore.collection('Desiderata').doc(id).delete();
+    return this.firestore.collection('Desiderata').doc(id).delete();
   }
 
   getDesiderataData() {
