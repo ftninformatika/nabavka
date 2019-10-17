@@ -37,11 +37,19 @@
            data-toggle="tooltip" title="Промени статус">
           <mdb-icon fas icon="forward" ></mdb-icon>
         </a>
-        <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect
-           data-toggle="tooltip" title="Штамапај">
-          <mdb-icon fas icon="file-alt"></mdb-icon>
-        </a>
       </ng-container>
+        <ng-container *ngIf="selectedView == Status.OPEN">
+          <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect
+             data-toggle="tooltip" title="Штамапај" href="assets/pre_nabavke.pdf">
+            <mdb-icon fas icon="file-alt"></mdb-icon>
+          </a>
+        </ng-container>
+        <ng-container *ngIf="selectedView == Status.CLOSED">
+          <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect
+             data-toggle="tooltip" title="Штамапај" href="assets/nabavkaFinal.pdf">
+            <mdb-icon fas icon="file-alt"></mdb-icon>
+          </a>
+        </ng-container>
     </div>
   </div>
 
