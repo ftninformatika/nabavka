@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Actions, ofActionCompleted, Store} from '@ngxs/store';
-import {LoginAction, UserState} from '../../states/user.state';
+import {LoginAction, LogoutAction, UserState} from '../../states/user.state';
 import {NavigationUtilService} from '../../services/navigation-util.service';
 import {ToastService} from 'ng-uikit-pro-standard';
 import {Router} from '@angular/router';
@@ -13,8 +13,8 @@ import {Router} from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   public loginForm = new FormGroup({
-    username: new FormControl('admin@admin'),
-    password: new FormControl(''),
+    username: new FormControl('admin@bgb'),
+    password: new FormControl('samo mi'),
   });
 
   // tslint:disable-next-line:max-line-length
@@ -29,7 +29,12 @@ export class LoginComponent implements OnInit {
               this.toast.error('Погрешно корисничко име или лозинка.', '', {opacity: 1});
             } else {
               const home = this.nav.getHome();
-              this.router.navigate([home]);
+              if (home === undefined) {
+                this.store.dispatch(new LogoutAction());
+                this.toast.warning('Немате право приступа овој апликацији.', '', {opacity: 1});
+              } else {
+                this.router.navigate([home]);
+              }
             }
           }
     });

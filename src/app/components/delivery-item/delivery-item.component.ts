@@ -1,9 +1,11 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {AcquisitionGroup, DeliveryLocation, Price} from '../../models/acquisition';
-import {MdbTableDirective} from 'ng-uikit-pro-standard';
+import {MdbTableDirective, ToastService} from 'ng-uikit-pro-standard';
 import {Sublocation} from '../../models/sublocation';
 import {FirebaseService} from '../../services/firebase.service';
 import {Desideratum} from '../../models/desideratum';
+import {RestApiService} from '../../services/rest-api.service';
+import {BookForDelivery, Delivery} from '../../models/delivery';
 
 @Component({
   selector: 'app-delivery-item',
@@ -13,12 +15,13 @@ import {Desideratum} from '../../models/desideratum';
 export class DeliveryItemComponent implements OnInit {
 
   @Input() acquisitionGroup: AcquisitionGroup;
+  @Input() acquisitionTitle: string;
   @ViewChild(MdbTableDirective, { static: true }) mdbTable: MdbTableDirective;
   hide: boolean[] = [];
   hideInner: boolean[][] = [];
   sublocationList: Sublocation[];
 
-  constructor(private firebaseService: FirebaseService) {
+  constructor(private firebaseService: FirebaseService, private restAPI: RestApiService, private toast: ToastService) {
   }
 
   ngOnInit() {
@@ -106,6 +109,47 @@ export class DeliveryItemComponent implements OnInit {
     } else {
       return code;
     }
+  }
+
+  exportToPDF() {
+    const deliveries = new Map();
+    let books;
+    this.acquisitionGroup.deliveryLocations.forEach(dl => {
+      dl.desideratum.locations.forEach(l =>{
+        const b: BookForDelivery = {};
+        b.amount = l.amount;
+        // izracunati konacnu cenu
+        b.book = {title: dl.desideratum.title, author: dl.desideratum.author, publisher: dl.desideratum.publisher, price: dl.price.price};
+
+        books = deliveries.get(l.sublocation);
+        if (books === undefined) {
+          books = [];
+        }
+        books.push(b);
+        deliveries.set(l.sublocation, books);
+      });
+    });
+    const mapAsc = new Map([...deliveries.entries()].sort());
+    const deliveriesArray = [];
+    for (const [key, value] of mapAsc) {
+      const d: Delivery = {};
+      d.location = key;
+      d.books = value;
+      deliveriesArray.push(d);
+    }
+    this.restAPI.createDeliverySheet(deliveriesArray, this.acquisitionTitle, this.acquisitionGroup.title).subscribe(response => {
+      const pdf = new Blob([response], { type: 'application/octet-stream'});
+      const url = window.URL.createObjectURL(pdf);
+      const anchor = document.createElement('a');
+      anchor.download = this.acquisitionGroup.title + '-' + this.acquisitionGroup.distributor + '.pdf';
+      anchor.href = url;
+      anchor.click();
+     /* const pwa = window.open(url);if (!pwa || pwa.closed || typeof pwa.closed === 'undefined') {
+        this.toast.warning('Искључите Pop-up blocker и покушајте поново да прузмете документ. ')
+      }*/
+
+  });
+
   }
 
 }

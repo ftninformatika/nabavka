@@ -38,7 +38,7 @@
            data-toggle="tooltip" title="Промени статус">
           <mdb-icon fas icon="forward" ></mdb-icon>
         </a>
-        <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect
+        <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect (click)="exportToPDF()"
            data-toggle="tooltip" title="Штамапај">
           <mdb-icon fas icon="file-alt"></mdb-icon>
         </a>
@@ -247,7 +247,7 @@
 <ng-container *ngIf="selectedView == Status.DELIVERY">
   <ng-container *ngIf="acquisition.status == Status.DELIVERY">
     <div *ngFor="let group of createDeliveryLocations()" class="mb-3">
-      <app-delivery-item [acquisitionGroup]="group"></app-delivery-item>
+      <app-delivery-item [acquisitionGroup]="group" [acquisitionTitle]="acquisition.title"></app-delivery-item>
     </div>
   </ng-container>
 </ng-container>

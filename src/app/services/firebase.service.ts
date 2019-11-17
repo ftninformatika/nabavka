@@ -64,43 +64,5 @@ export class FirebaseService {
   deleteAcquisition(id: string) {
     return this.firestore.collection('Acquisition').doc(id).delete();
   }
-  getDistributors() {
-    return this.firestore.collection('Distributor').snapshotChanges();
-  }
-  updateDistributor(distributor: Distributor) {
-      this.firestore.collection('Distributor').doc(distributor.id).update(distributor);
-      this.firestore.collection('Distributor').doc(distributor.id).update({id: firebase.firestore.FieldValue.delete()});
-  }
-  removeDistributor(id: string) {
-    this.firestore.collection('Distributor').doc(id).delete();
-   /// todo dodati da se kaskadno obrisu ponude ovog dobavljaca
-  }
-  addDistributor(item: Distributor) {
-    return this.firestore.collection('Distributor').add(item);
-  }
-  addOffer(item: Offer) {
-    return this.firestore.collection('Offer').add(item);
-  }
-  updateOffer(item: Offer) {
-    this.firestore.collection('Offer').doc(item.id).update(item);
-    this.firestore.collection('Offer').doc(item.id).update({id: firebase.firestore.FieldValue.delete()});
-
-  }
-  removeOffer(id: string) {
-    this.firestore.collection('Offer').doc(id).delete();
-  }
-  getOffers(pib: string) {
-    return this.firestore.collection('Offer', ref =>
-      ref.where('distributer', '==', pib)).snapshotChanges();
-  }
-  getDistributor(pib: string) {
-    return this.firestore.collection('Distributor', ref =>
-      ref.where('pib', '==', pib)).snapshotChanges();
-  }
-
-  getUser(username: string, password: string) {
-    return this.firestore.collection('User', ref =>
-      ref.where('username', '==', username)).get();
-  }
 
 }

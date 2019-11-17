@@ -4,6 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Acquisition, AcquisitionGroup, DeliveryLocation, Status} from '../../models/acquisition';
 import {GroupByPipe} from '../../pipes/group-by.pipe';
 import {ModalDirective} from 'ng-uikit-pro-standard';
+import {RestApiService} from '../../services/rest-api.service';
 
 @Component({
   selector: 'app-acquisition',
@@ -23,7 +24,7 @@ export class AcquisitionComponent implements OnInit {
   selectedView = Status.OPEN;
 
   constructor(private firebaseService: FirebaseService, private route: ActivatedRoute, private router: Router,
-              private groupBy: GroupByPipe) {}
+              private groupBy: GroupByPipe,private restAPI: RestApiService) {}
 
   ngOnInit() {
     this.acquisitionId = this.route.snapshot.paramMap.get('id');
@@ -220,5 +221,18 @@ export class AcquisitionComponent implements OnInit {
         this.selectedView = status;
       }
     }
+  }
+
+  exportToPDF() {
+
+    this.restAPI.createAcquisitionSheet(this.acquisition).subscribe(response => {
+      const pdf = new Blob([response], { type: 'application/octet-stream'});
+      const url = window.URL.createObjectURL(pdf);
+      const anchor = document.createElement('a');
+      anchor.download = this.acquisition.title + '.pdf';
+      anchor.href = url;
+      anchor.click();
+    });
+
   }
 }

@@ -1,9 +1,10 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {FirebaseService} from '../../services/firebase.service';
 import {Distributor} from '../../models/distributor';
 import {ModalDirective, ToastService} from 'ng-uikit-pro-standard';
-import {Offer} from '../../models/offer';
 import {CryptoUtils} from '../../utils/crypto.utils';
+import {RestApiService} from '../../services/rest-api.service';
+import {Store} from '@ngxs/store';
+import {UserState} from '../../states/user.state';
 
 @Component({
   selector: 'app-distributers-list',
@@ -15,7 +16,7 @@ export class DistributorsListComponent implements OnInit {
   distributor: Distributor = {};
   selectedDistributor: Distributor = {};
   rowIndex: number;
-  distributorLink;
+
   @ViewChild('addModal', {static: false})
   addModal: ModalDirective;
 
@@ -23,36 +24,38 @@ export class DistributorsListComponent implements OnInit {
   deleteDistributorModal: ModalDirective;
 
 
-  constructor(private firebaseService: FirebaseService, private toast: ToastService) {
+  constructor(private toast: ToastService, private restApi: RestApiService, private store: Store) {
   }
 
   ngOnInit() {
-    this.firebaseService.getDistributors().subscribe(data => {
-      this.distributorsList = data.map(e => {
-        return {
-          id: e.payload.doc.id,
-          ...e.payload.doc.data()
-        } as Distributor;
-      });
-  });
-
+    this.restApi.getDistributors().subscribe(data => {
+      this.distributorsList = data as Distributor[];
+    });
   }
+
   edit(rowIndex: number) {
     this.rowIndex = rowIndex;
   }
+
   add() {
-    this.firebaseService.addDistributor(this.distributor);
-    const offer: Offer = {};
-    offer.distributer = this.distributor.pib;
-    this.firebaseService.addOffer(offer);
+    this.restApi.addUpdateDistributor(this.distributor).subscribe(data => {
+      this.distributorsList = data as Distributor[];
+    });
     this.addModal.hide();
+    this.rowIndex = -1;
   }
+
   remove() {
-    this.firebaseService.removeDistributor(this.selectedDistributor.id);
+    this.restApi.removeDistributor(this.selectedDistributor._id).subscribe(data => {
+      this.distributorsList = data as Distributor[];
+    });
     this.deleteDistributorModal.hide();
   }
+
   update(distributor: Distributor) {
-    this.firebaseService.updateDistributor(distributor);
+    this.restApi.addUpdateDistributor(distributor).subscribe(data => {
+      this.distributorsList = data as Distributor[];
+    });
     this.rowIndex = -1;
   }
   confirmDelete(distributor: Distributor) {
@@ -61,11 +64,12 @@ export class DistributorsListComponent implements OnInit {
   }
 
   getDistributerCryptoId(pib: string) {
-    return CryptoUtils.encryptData(pib);
+    const library = this.store.selectSnapshot(UserState.getLibrary);
+    return CryptoUtils.encryptData(library + ':' + pib);
   }
 
   getPermLink(pib: string) {
-    return location.origin + '/offers/' + CryptoUtils.encryptData(pib);
+    return location.origin + '/offers/' + this.getDistributerCryptoId(pib);
   }
 
   linkCopied(link: string) {

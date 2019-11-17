@@ -28,6 +28,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { DeliveryItemComponent } from './components/delivery-item/delivery-item.component';
 import { AccessDeniedComponent } from './components/access-denied/access-denied.component';
 import { ClipboardModule } from 'ngx-clipboard';
+import {HTTP_INTERCEPTORS} from '@angular/common/http';
+import {AuthInterceptor} from './utils/auth-interceptor';
 
 @NgModule({
   declarations: [
@@ -60,10 +62,16 @@ import { ClipboardModule } from 'ngx-clipboard';
     ReactiveFormsModule,
     ToastModule.forRoot({opacity: 1}),
     ClipboardModule
+
   ],
   providers: [
     MDBSpinningPreloader,
-    FirebaseService
+    FirebaseService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

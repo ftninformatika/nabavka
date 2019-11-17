@@ -12,7 +12,8 @@ export const environment = {
     storageBucket: 'nabavka-bisis5.appspot.com',
     messagingSenderId: '139995915658',
     appId: '1:139995915658:web:536d0090edaffd1c'
-  }
+  },
+  baseUrl: 'http://localhost:8080/bisis-nabavka'
 };
 
 /*

@@ -1,5 +1,6 @@
 export class Distributor {
-  id?: string;
+  // tslint:disable-next-line:variable-name
+  _id?: string;
   pib?: string;
   name?: string;
   phone?: string;
