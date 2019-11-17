@@ -17,7 +17,6 @@
       </div>
     </div>
     <div class="row pl-3 mt-3">
-
       <ng-container *ngIf="acquisition.status != Status.DELIVERY">
         <ng-container *ngIf="edit; else ok">
           <a mdbBtn floating="true" size="sm" color="info" (click)="toggleEdit()" mdbWavesEffect>
@@ -38,11 +37,19 @@
            data-toggle="tooltip" title="Промени статус">
           <mdb-icon fas icon="forward" ></mdb-icon>
         </a>
-        <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect (click)="exportToPDF()"
-           data-toggle="tooltip" title="Штамапај">
-          <mdb-icon fas icon="file-alt"></mdb-icon>
-        </a>
       </ng-container>
+        <ng-container *ngIf="selectedView == Status.OPEN">
+          <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect
+             data-toggle="tooltip" title="Штамапај" href="assets/pre_nabavke.pdf">
+            <mdb-icon fas icon="file-alt"></mdb-icon>
+          </a>
+        </ng-container>
+        <ng-container *ngIf="selectedView == Status.CLOSED">
+          <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect
+             data-toggle="tooltip" title="Штамапај" href="assets/nabavkaFinal.pdf">
+            <mdb-icon fas icon="file-alt"></mdb-icon>
+          </a>
+        </ng-container>
     </div>
   </div>
 

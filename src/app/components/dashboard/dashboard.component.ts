@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Acquisition, Status} from '../../models/acquisition';
 import {FirebaseService} from '../../services/firebase.service';
 import {Router} from '@angular/router';
+import {AcquisitionService} from '../../services/acquisition.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,16 +14,11 @@ export class DashboardComponent implements OnInit {
   acquisitionList: Acquisition[] = [];
   Status = Status;
 
-  constructor(private firebaseService: FirebaseService, private router: Router) { }
+  constructor(private acquisitionService: AcquisitionService, private router: Router) { }
 
   ngOnInit() {
-    this.firebaseService.getAcquisitionListOnce().subscribe(data => {
-      this.acquisitionList = data.docs.map(e => {
-        return {
-          id: e.id,
-          ...e.data() as any
-        } as Acquisition;
-      });
+    this.acquisitionService.getAcquisitionList().subscribe(data => {
+      this.acquisitionList = data;
     });
   }
 
@@ -56,8 +52,8 @@ export class DashboardComponent implements OnInit {
       desiderataUpdated: false,
       acquisitionGroups: []
     };
-    this.firebaseService.addAcquisition(acquisition).then(docRef => {
-      acquisition.id = docRef.id;
+    this.acquisitionService.addAcquisition(acquisition).subscribe(data => {
+      acquisition.id = data;
       this.router.navigate(['/acquisition/' + acquisition.id]);
     });
     this.acquisitionList.splice(0, 0, acquisition);
