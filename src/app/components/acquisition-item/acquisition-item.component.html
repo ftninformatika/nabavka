@@ -52,7 +52,7 @@
         </ng-template>
 
         <div *ngIf="status==Status.OPEN">
-          <a mdbBtn floating="true" color="primary" size="sm" (click)="modalAddItem.show()" mdbWavesEffect
+          <a mdbBtn floating="true" color="primary" size="sm" (click)="showAddItemModal()" mdbWavesEffect
              data-toggle="tooltip" title="Додај наслов">
             <mdb-icon fas icon="plus"></mdb-icon>
           </a>
@@ -115,11 +115,16 @@
               <i class="far" [ngClass]="{'fa-plus-square': !hide[id], 'fa-minus-square': hide[id]}"></i></a>
           </td>
           <td>
-            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else isbn">
-              <input [(ngModel)]="selectedItem.desideratum.isbn" #ctrl="ngModel" type="text" class="form-control" mdbInput
-                     (keyup.enter)="saveEditedItem()">
+            <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else isbnview">
+              <input [(ngModel)]="selectedItem.desideratum.isbn" #isbn="ngModel" type="text" class="form-control" mdbInput
+                     required appIsbn appIsbnExists (keyup.enter)="saveEditedItem()" (keyup.escape)="cancelEditItem()">
+              <div *ngIf="isbn.invalid && (isbn.dirty || isbn.touched)" class="alert alert-danger">
+                <div *ngIf="isbn.errors.required">ИСБН је обавезан</div>
+                <div *ngIf="isbn.errors.validateIsbn">ИСБН није валидан</div>
+                <div *ngIf="isbn.errors.isbnExists">ИСБН већ постоји</div>
+              </div>
             </ng-container>
-            <ng-template #isbn>
+            <ng-template #isbnview>
               {{item.desideratum.isbn}}
             </ng-template>
           </td>
@@ -247,7 +252,7 @@
               </ng-container>
               <ng-template #ok1>
                 <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        (click)="showEditIcons(id, item.desideratum.isbn)">
+                        (click)="showEditIcons(id, item.desideratum.isbn, item)">
                   <mdb-icon fas icon="pen"></mdb-icon>
                 </button>
                 <div *ngIf="status==Status.OPEN">
@@ -416,7 +421,7 @@
 <!--Modal addLocation-->
 
 <!--Modal addItem-->
-<div mdbModal #modalAddItem class="modal fade top" id="modalAddDesideratum" tabindex="-1"
+<div mdbModal #modalAddItem class="modal fade top" id="modalAddItem" tabindex="-1"
      role="dialog"
      aria-labelledby="modalAdd" aria-hidden="true" style="overflow-y: auto">
   <div class="modal-dialog modal-notify modal-info" role="document">
@@ -431,46 +436,75 @@
         </button>
       </div>
       <div class="modal-body mx-3">
-        <form #addForm>
+        <form #addForm="ngForm">
           <div class="md-form mb-5">
-            <input type="text" id="inputIsbn" class="form-control validate" mdbInput>
+            <input [(ngModel)]="newItem.desideratum.isbn" #inputIsbn="ngModel" type="text" id="inputIsbn" name="inputIsbn" class="form-control" mdbInput
+                    required appIsbn appIsbnExists>
             <label data-error="wrong" data-success="right" for="inputIsbn">ИСБН</label>
+            <div *ngIf="inputIsbn.invalid && (inputIsbn.dirty || inputIsbn.touched)">
+              <mdb-error *ngIf="inputIsbn.errors.required">Обавезно поље</mdb-error>
+              <mdb-error *ngIf="inputIsbn.errors.validateIsbn">ИСБН није валидан</mdb-error>
+              <mdb-error *ngIf="inputIsbn.errors.isbnExists">ИСБН већ постоји</mdb-error>
+            </div>
           </div>
-
           <div class="md-form mb-5">
-            <input type="text" id="inputTitle" class="form-control validate" mdbInput>
+            <input [(ngModel)]="newItem.desideratum.title" #inputTitle="ngModel" type="text" id="inputTitle" name="inputTitle" class="form-control" mdbInput
+                   required>
             <label data-error="wrong" data-success="right" for="inputTitle">Наслов</label>
+            <div *ngIf="inputTitle.invalid && (inputTitle.dirty || inputTitle.touched)">
+              <mdb-error *ngIf="inputTitle.invalid && inputTitle.errors.required">Обавезно поље</mdb-error>
+            </div>
           </div>
 
           <div class="md-form mb-5">
-            <input type="text" id="inputAuthor" class="form-control validate" mdbInput>
+            <input [(ngModel)]="newItem.desideratum.author" #inputAuthor="ngModel" type="text" id="inputAuthor" name="inputAuthor" class="form-control" mdbInput
+                   required>
             <label data-error="wrong" data-success="right" for="inputAuthor">Аутор</label>
+            <div *ngIf="inputAuthor.invalid && (inputAuthor.dirty || inputAuthor.touched)">
+              <mdb-error *ngIf="inputAuthor.errors.required">Обавезно поље</mdb-error>
+            </div>
           </div>
 
           <div class="md-form mb-5">
-            <input type="text" id="inputPublisher" class="form-control validate" mdbInput>
+            <input [(ngModel)]="newItem.desideratum.publisher" #inputPublisher="ngModel" type="text" id="inputPublisher" name="inputPublisher" class="form-control" mdbInput
+                   required>
             <label data-error="wrong" data-success="right" for="inputPublisher">Издавач</label>
+            <div *ngIf="inputPublisher.invalid && (inputPublisher.dirty || inputPublisher.touched)">
+              <mdb-error *ngIf="inputPublisher.errors.required">Обавезно поље</mdb-error>
+            </div>
           </div>
 
           <div class="md-form mb-5">
-            <input type="number" id="inputPrice" class="form-control validate" mdbInput>
+            <input [(ngModel)]="newItem.planedPrice.price" #inputPrice="ngModel" type="number" id="inputPrice" name="inputPrice" class="form-control" mdbInput
+                   required>
             <label data-error="wrong" data-success="right" for="inputPrice">Цена</label>
+            <div *ngIf="inputPrice.invalid && (inputPrice.dirty || inputPrice.touched)">
+              <mdb-error *ngIf="inputPrice.errors.required">Обавезно поље</mdb-error>
+            </div>
           </div>
 
           <div class="md-form mb-5">
-            <input type="text" id="inputRebate" class="form-control validate" mdbInput>
+            <input [(ngModel)]="newItem.planedPrice.rebate" #inputRebate="ngModel" type="text" id="inputRebate" name="inputRebate" class="form-control" mdbInput
+                   required>
             <label data-error="wrong" data-success="right" for="inputRebate">Рабат</label>
+            <div *ngIf="inputRebate.invalid && (inputRebate.dirty || inputRebate.touched)">
+              <mdb-error *ngIf="inputRebate.errors.required">Обавезно поље</mdb-error>
+            </div>
           </div>
 
           <div class="md-form mb-5">
-            <input type="text" id="inputVat" class="form-control validate" mdbInput>
+            <input [(ngModel)]="newItem.planedPrice.vat" #inputVat="ngModel" type="text" id="inputVat" name="inputVat" class="form-control" mdbInput
+                   required>
             <label data-error="wrong" data-success="right" for="inputVat">ПДВ</label>
+            <div *ngIf="inputVat.invalid && (inputVat.dirty || inputVat.touched)">
+              <mdb-error *ngIf="inputVat.errors.required">Обавезно поље</mdb-error>
+            </div>
           </div>
         </form>
       </div>
       <div class="modal-footer justify-content-center">
-        <button type="button" mdbBtn color="info" class="waves-effect" mdbWavesEffect
-                (click)="addItem(addForm, modalAddItem)">Додај
+        <button type="button" mdbBtn color="info" class="waves-effect" mdbWavesEffect [disabled]="addForm.invalid"
+                (click)="addItem()">Додај
         </button>
       </div>
     </div>

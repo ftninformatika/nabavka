@@ -16,6 +16,7 @@ import {AcquisitionService} from '../../services/acquisition.service';
 export class AcquisitionComponent implements OnInit {
   @ViewChild('modalChangeStatus', {static: false}) modalChangeStatus: ModalDirective;
   acquisition: Acquisition = {};
+  acquisitionId: string;
   amount = 0;
   edit = false;
   Status = Status;
@@ -25,9 +26,9 @@ export class AcquisitionComponent implements OnInit {
               private groupBy: GroupByPipe, private acquisitionService: AcquisitionService) {}
 
   ngOnInit() {
-    const acquisitionId = this.route.snapshot.paramMap.get('id');
+    this.acquisitionId = this.route.snapshot.paramMap.get('id');
     // this.acquisitionId = 'w80tqpWSj4X1ndlzhZBb';
-    this.acquisitionService.getAcquisition(acquisitionId).subscribe(acquisition => {
+    this.acquisitionService.getAcquisition(this.acquisitionId).subscribe(acquisition => {
         this.acquisition = acquisition;
         this.calculateAmount();
         this.setStepper();
@@ -57,6 +58,14 @@ export class AcquisitionComponent implements OnInit {
     //   this.firebaseService.addAcquisition(this.acquisition);
     //   console.log(this.acquisition);
     // });
+  }
+
+  reloadAcquisition() {
+    this.acquisitionService.getAcquisition(this.acquisitionId).subscribe(acquisition => {
+      this.acquisition = acquisition;
+      this.calculateAmount();
+      this.setStepper();
+    });
   }
 
   calculateAmount() {

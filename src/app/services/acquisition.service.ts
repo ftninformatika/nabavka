@@ -7,11 +7,12 @@ import {GeneralService} from './general.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AcquisitionService extends GeneralService{
+export class AcquisitionService extends GeneralService {
 
   private acquisition$ = new Subject<Acquisition>();
   acquisitionId: string;
   acquisition: Acquisition = {};
+  private selectedItem: Item;
 
   constructor(public firebaseService: FirebaseService) {
     super(firebaseService);
@@ -80,6 +81,25 @@ export class AcquisitionService extends GeneralService{
       acquisitionList$.next(acquisitionList);
     });
     return acquisitionList$.asObservable();
+  }
+
+  setSelectedItem(selectedItem: Item) {
+      this.selectedItem = selectedItem;
+  }
+
+  getSelectedItem() {
+    return this.selectedItem;
+  }
+
+  isbnNotExists(isbn: string) {
+    for (const group of this.acquisition.acquisitionGroups) {
+      for (const item of group.items) {
+        if (item !== this.selectedItem && item.desideratum.isbn === isbn) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
 }

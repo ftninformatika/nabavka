@@ -28,6 +28,11 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { DeliveryItemComponent } from './components/delivery-item/delivery-item.component';
 import { AccessDeniedComponent } from './components/access-denied/access-denied.component';
 import { ClipboardModule } from 'ngx-clipboard';
+import {IConfig, NgxMaskModule} from 'ngx-mask';
+import { IsbnValidatorDirective } from './validators/isbn.validator.directive';
+import { IsbnExistsValidatorDirective } from './validators/isbn.exists.validator.directive';
+
+export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
 @NgModule({
   declarations: [
@@ -45,7 +50,9 @@ import { ClipboardModule } from 'ngx-clipboard';
     StatusPipe,
     DashboardComponent,
     DeliveryItemComponent,
-    AccessDeniedComponent
+    AccessDeniedComponent,
+    IsbnValidatorDirective,
+    IsbnExistsValidatorDirective
   ],
   imports: [
     NgxsModule.forRoot([UserState]),
@@ -59,7 +66,8 @@ import { ClipboardModule } from 'ngx-clipboard';
     FormsModule,
     ReactiveFormsModule,
     ToastModule.forRoot({opacity: 1}),
-    ClipboardModule
+    ClipboardModule,
+    NgxMaskModule.forRoot(options)
   ],
   providers: [
     MDBSpinningPreloader,
