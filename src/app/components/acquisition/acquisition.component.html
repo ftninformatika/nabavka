@@ -225,13 +225,13 @@
   <ng-container *ngIf="acquisition.status == Status.OPEN; else openNotEdit">
     <div *ngFor="let group of acquisition.acquisitionGroups" class="mb-3">
       <app-acquisition-item [acquisitionGroup]="group" [status]="Status.OPEN" [editMode]="true" (updateAcquisitionGroupEvent)="updateAcquisitionGroup($event)"
-                            (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)"></app-acquisition-item>
+                            (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)" (reloadAcquisitionEvent)="reloadAcquisition()"></app-acquisition-item>
     </div>
   </ng-container>
   <ng-template #openNotEdit>
     <div *ngFor="let group of acquisition.acquisitionGroups" class="mb-3">
       <app-acquisition-item [acquisitionGroup]="group" [status]="Status.OPEN" [editMode]="false" (updateAcquisitionGroupEvent)="updateAcquisitionGroup($event)"
-                            (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)"></app-acquisition-item>
+                            (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)" (reloadAcquisitionEvent)="reloadAcquisition()"></app-acquisition-item>
     </div>
   </ng-template>
 </ng-container>
@@ -240,13 +240,13 @@
   <ng-container *ngIf="acquisition.status == Status.CLOSED; else closedNotEdit">
     <div *ngFor="let group of acquisition.acquisitionGroups" class="mb-3">
       <app-acquisition-item [acquisitionGroup]="group" [status]="Status.CLOSED" [editMode]="true" (updateAcquisitionGroupEvent)="updateAcquisitionGroup($event)"
-                            (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)"></app-acquisition-item>
+                            (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)" (reloadAcquisitionEvent)="reloadAcquisition()"></app-acquisition-item>
     </div>
   </ng-container>
   <ng-template #closedNotEdit>
     <div *ngFor="let group of acquisition.acquisitionGroups" class="mb-3">
       <app-acquisition-item [acquisitionGroup]="group" [status]="Status.CLOSED" [editMode]="false" (updateAcquisitionGroupEvent)="updateAcquisitionGroup($event)"
-                            (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)"></app-acquisition-item>
+                            (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)" (reloadAcquisitionEvent)="reloadAcquisition()"></app-acquisition-item>
     </div>
   </ng-template>
 </ng-container>
@@ -350,11 +350,11 @@
       </div>
       <div class="modal-body mx-3">
         <ng-container *ngIf="acquisition.status == Status.OPEN">
-          <p class="text-center h4">Набавка из стауса У припреми прелази у статус Затворена.</p>
+          <p class="text-center h4">Набавка из стауса У припреми прелази у статус Формирана.</p>
           <p class="text-center h4">Да ли сте сигурни да желите да промените статус?</p>
         </ng-container>
         <ng-container *ngIf="acquisition.status == Status.CLOSED">
-          <p class="text-center h4">Набавка из стауса Затворена прелази у статус Достава.</p>
+          <p class="text-center h4">Набавка из стауса Формирана прелази у статус Испорука.</p>
           <p class="text-center h4">Да ли сте сигурни да желите да промените статус?</p>
         </ng-container>
       </div>

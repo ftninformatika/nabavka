@@ -1,28 +1,33 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
 import {Desideratum} from '../../models/desideratum';
 import {Location} from '../../models/location';
 import {LocationCoder, Sublocation} from '../../models/location_coder';
-import {FirebaseService} from '../../services/firebase.service';
 import {AcquisitionGroup, Item, Price, Status} from '../../models/acquisition';
 import {AcquisitionService} from '../../services/acquisition.service';
+import {FormControl} from '@angular/forms';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-acquisition-item',
   templateUrl: './acquisition-item.component.html',
   styleUrls: ['./acquisition-item.component.scss']
 })
-export class AcquisitionItemComponent implements OnInit {
+export class AcquisitionItemComponent implements OnInit, OnDestroy {
   @Input() acquisitionGroup: AcquisitionGroup;
   @Input() status: Status;
   @Input() editMode: boolean;
   @Output() updateAcquisitionGroupEvent: EventEmitter<AcquisitionGroup> = new EventEmitter<AcquisitionGroup>();
   @Output() deleteAcquisitionGroupEvent: EventEmitter<AcquisitionGroup> = new EventEmitter<AcquisitionGroup>();
+  @Output() reloadAcquisitionEvent: EventEmitter<void> = new EventEmitter<void>();
   @ViewChild('addLocationModal', {static: false}) modalLocation: ModalDirective;
   @ViewChild('modalDeleteItem', {static: false}) modalDelete: ModalDirective;
   @ViewChild('modalDeleteAcquisitionGroup', {static: false}) modalDeleteGroup: ModalDirective;
   @ViewChild('modalAlreadyExists', {static: false}) modalAlreadyExists: ModalDirective;
+  @ViewChild('modalAddItem', {static: false}) modalAddItem: ModalDirective;
   @ViewChild(MdbTableDirective, { static: true }) mdbTable: MdbTableDirective;
+  @ViewChild('isbn', {static: false} ) isbn: FormControl;
+  @ViewChild('inputIsbn', {static: false} ) inputIsbn: FormControl;
   hide: boolean[] = [];
   hideInner: boolean[][] = [];
   location: Location = {};
@@ -31,11 +36,14 @@ export class AcquisitionItemComponent implements OnInit {
   index2ndLevel: number;
   index3rdLevel: number;
   selectedItem: Item;
+  newItem: Item = {desideratum: {}, planedPrice: {}};
   inputAmount: number;
   sublocationList: Sublocation[];
   locationList: LocationCoder[];
   editGroup = false;
   Status = Status;
+  locationSubscription: Subscription;
+  sublocationSubscription: Subscription;
 
   constructor(private acquisitionService: AcquisitionService) {
   }
@@ -43,33 +51,30 @@ export class AcquisitionItemComponent implements OnInit {
   ngOnInit() {
     this.mdbTable.setDataSource(this.acquisitionGroup.items);
     this.resetHideLists();
-    this.acquisitionService.getSublocations().subscribe(data => {
+    this.sublocationSubscription = this.acquisitionService.getSublocations().subscribe(data => {
       this.sublocationList = data;
     });
-    this.acquisitionService.getLocations().subscribe(data => {
+    this.locationSubscription = this.acquisitionService.getLocations().subscribe(data => {
       this.locationList = data;
     });
   }
 
-  addItem(form: any, modalInstance: any) {
-    const desideratum: Desideratum = {
-      isbn: form[0].value,
-      title: form[1].value,
-      author: form[2].value,
-      publisher: form[3].value
-    };
-    const planedPrice: Price = {
-      price: form[4].value,
-      rebate: form[5].value,
-      vat: form[6].value
-    };
-    const item: Item = {desideratum, planedPrice};
-    this.acquisitionGroup.items.splice(0, 0, item);
+  ngOnDestroy() {
+    this.sublocationSubscription.unsubscribe();
+    this.locationSubscription.unsubscribe();
+  }
+
+  addItem() {
+    this.acquisitionGroup.items.splice(0, 0, this.newItem);
     this.hide.splice(0, 0, false);
     this.hideInner.splice(0, 0, []);
-    form.reset();
-    modalInstance.hide();
+    this.modalAddItem.hide();
     this.updateAcquisitionGroupEvent.emit(this.acquisitionGroup);
+  }
+
+  showAddItemModal() {
+    this.newItem = {desideratum: {}, planedPrice: {}};
+    this.modalAddItem.show();
   }
 
   showRemoveItemModal() {
@@ -77,7 +82,7 @@ export class AcquisitionItemComponent implements OnInit {
   }
 
   removeSelectedItem() {
-    const index = this.acquisitionGroup.items.findIndex(x => x.desideratum.isbn === this.selectedItem.desideratum.isbn);
+    const index = this.acquisitionGroup.items.findIndex(x => x === this.selectedItem);
     this.acquisitionGroup.items.splice(index, 1);
     this.hide.splice(index, 1);
     this.hideInner.splice(index, 1);
@@ -85,21 +90,41 @@ export class AcquisitionItemComponent implements OnInit {
     this.index1stLevel = null;
     this.index2ndLevel = null;
     this.index3rdLevel = null;
+    this.acquisitionService.setSelectedItem(undefined);
+    this.selectedItem = undefined;
     this.updateAcquisitionGroupEvent.emit(this.acquisitionGroup);
   }
 
-  showEditIcons(index: number, isbn: string) {
-    this.index1stLevel = index;
-    this.index2ndLevel = null;
-    this.index3rdLevel = null;
-    this.selectedItem = this.acquisitionGroup.items.find(x => x.desideratum.isbn === isbn);
+  showEditIcons(index: number, isbn: string, item: Item) {
+    if (this.acquisitionService.getSelectedItem() === undefined) {
+      this.index1stLevel = index;
+      this.index2ndLevel = null;
+      this.index3rdLevel = null;
+      // this.selectedItem = this.acquisitionGroup.items.find(x => x.desideratum.isbn === isbn);
+      this.selectedItem = item;
+      this.acquisitionService.setSelectedItem(item);
+    }
   }
 
   saveEditedItem() {
+    if (this.isbn.invalid && (this.isbn.touched || this.isbn.dirty)) {
+      return;
+    }
     this.index1stLevel = null;
     this.index2ndLevel = null;
     this.index3rdLevel = null;
     this.updateAcquisitionGroupEvent.emit(this.acquisitionGroup);
+    this.acquisitionService.setSelectedItem(undefined);
+    this.selectedItem = undefined;
+  }
+
+  cancelEditItem() {
+    this.index1stLevel = null;
+    this.index2ndLevel = null;
+    this.index3rdLevel = null;
+    this.reloadAcquisitionEvent.emit();
+    this.acquisitionService.setSelectedItem(undefined);
+    this.selectedItem = undefined;
   }
 
   calculateAmountForItem(isbn: string) {
@@ -122,9 +147,9 @@ export class AcquisitionItemComponent implements OnInit {
       }
     }
     if (this.status === Status.OPEN) {
-      return amount * item.planedPrice.price;
+      return amount * this.acquisitionService.calculatePriceWithVAT(item.planedPrice);
     } else {
-      return amount * item.realPrice.price;
+      return amount * this.acquisitionService.calculatePriceWithVAT(item.realPrice);
     }
   }
 
@@ -138,9 +163,9 @@ export class AcquisitionItemComponent implements OnInit {
         }
       }
       if (this.status === Status.OPEN) {
-        amount = amount + locNo * item.planedPrice.price;
+        amount = amount + locNo * this.acquisitionService.calculatePriceWithVAT(item.planedPrice);
       } else {
-        amount = amount + locNo * item.realPrice.price;
+        amount = amount + locNo * this.acquisitionService.calculatePriceWithVAT(item.realPrice);
       }
     });
     return amount;
@@ -171,10 +196,12 @@ export class AcquisitionItemComponent implements OnInit {
   }
 
   showEditIconsForLocation(index1: number, index2: number, index3: number, amount: number) {
-    this.index1stLevel = index1;
-    this.index2ndLevel = index2;
-    this.index3rdLevel = index3;
-    this.inputAmount = amount;
+    if (this.acquisitionService.getSelectedItem() === undefined) {
+      this.index1stLevel = index1;
+      this.index2ndLevel = index2;
+      this.index3rdLevel = index3;
+      this.inputAmount = amount;
+    }
   }
 
   updateAmount(isbn: string, sublocation: string) {
@@ -272,7 +299,10 @@ export class AcquisitionItemComponent implements OnInit {
   }
 
   moveToAcquisitionGroup(name: string) {
-    const index = this.acquisitionGroup.items.findIndex(x => x.desideratum.isbn === this.selectedItem.desideratum.isbn);
+    if (this.isbn.invalid && (this.isbn.touched || this.isbn.dirty)) {
+      return;
+    }
+    const index = this.acquisitionGroup.items.findIndex(x => x === this.selectedItem);
     this.acquisitionGroup.items.splice(index, 1);
     this.hide.splice(index, 1);
     this.hideInner.splice(index, 1);
@@ -280,6 +310,16 @@ export class AcquisitionItemComponent implements OnInit {
     this.index2ndLevel = null;
     this.index3rdLevel = null;
     this.acquisitionService.moveItemToGroup(this.selectedItem, name);
+    this.acquisitionService.setSelectedItem(undefined);
+    this.selectedItem = undefined;
+  }
+
+  calculatePriceWithoutVAT(price: Price) {
+    return this.acquisitionService.calculatePriceWithoutVAT(price);
+  }
+
+  calculatePriceWithVAT(price: Price) {
+    return this.acquisitionService.calculatePriceWithVAT(price);
   }
 
 }

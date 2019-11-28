@@ -30,6 +30,12 @@ import { AccessDeniedComponent } from './components/access-denied/access-denied.
 import { ClipboardModule } from 'ngx-clipboard';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {AuthInterceptor} from './utils/auth-interceptor';
+import {IConfig, NgxMaskModule} from 'ngx-mask';
+import { IsbnValidatorDirective } from './validators/isbn.validator.directive';
+import { IsbnExistsValidatorDirective } from './validators/isbn.exists.validator.directive';
+import { DistributionItemComponent } from './components/distribution-item/distribution-item.component';
+
+export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
 @NgModule({
   declarations: [
@@ -47,7 +53,10 @@ import {AuthInterceptor} from './utils/auth-interceptor';
     StatusPipe,
     DashboardComponent,
     DeliveryItemComponent,
-    AccessDeniedComponent
+    AccessDeniedComponent,
+    IsbnValidatorDirective,
+    IsbnExistsValidatorDirective,
+    DistributionItemComponent
   ],
   imports: [
     NgxsModule.forRoot([UserState]),
@@ -61,8 +70,8 @@ import {AuthInterceptor} from './utils/auth-interceptor';
     FormsModule,
     ReactiveFormsModule,
     ToastModule.forRoot({opacity: 1}),
-    ClipboardModule
-
+    ClipboardModule,
+    NgxMaskModule.forRoot(options)
   ],
   providers: [
     MDBSpinningPreloader,
@@ -71,7 +80,8 @@ import {AuthInterceptor} from './utils/auth-interceptor';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    GroupByPipe
   ],
   bootstrap: [AppComponent]
 })

@@ -19,15 +19,15 @@ export class AcquisitionGroup {
 }
 
 export class Item {
-  desideratum: Desideratum;
-  planedPrice: Price;
+  desideratum?: Desideratum;
+  planedPrice?: Price;
   realPrice?: Price;
 }
 
 export class Price {
-  price: number;
-  rebate: number;
-  vat: number;
+  price?: number;
+  rebate?: number;
+  vat?: number;
 }
 
 export enum Status {

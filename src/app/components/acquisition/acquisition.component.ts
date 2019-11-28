@@ -1,10 +1,10 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Acquisition, AcquisitionGroup, DeliveryLocation, Status} from '../../models/acquisition';
+import {Acquisition, AcquisitionGroup, DeliveryLocation, Item, Status} from '../../models/acquisition';
 import {GroupByPipe} from '../../pipes/group-by.pipe';
 import {ModalDirective} from 'ng-uikit-pro-standard';
 import {AcquisitionService} from '../../services/acquisition.service';
-import {RestApiService} from '../../services/rest-api.service';
+import {Distribution} from '../../models/distribution';
 
 @Component({
   selector: 'app-acquisition',
@@ -17,18 +17,20 @@ import {RestApiService} from '../../services/rest-api.service';
 export class AcquisitionComponent implements OnInit {
   @ViewChild('modalChangeStatus', {static: false}) modalChangeStatus: ModalDirective;
   acquisition: Acquisition = {};
+  acquisitionId: string;
   amount = 0;
   edit = false;
   Status = Status;
   selectedView = Status.OPEN;
+  distributions: Distribution[];
 
   constructor(private route: ActivatedRoute, private router: Router,
               private groupBy: GroupByPipe, private acquisitionService: AcquisitionService) {}
 
   ngOnInit() {
-    const acquisitionId = this.route.snapshot.paramMap.get('id');
+    this.acquisitionId = this.route.snapshot.paramMap.get('id');
     // this.acquisitionId = 'w80tqpWSj4X1ndlzhZBb';
-    this.acquisitionService.getAcquisition(acquisitionId).subscribe(acquisition => {
+    this.acquisitionService.getAcquisition(this.acquisitionId).subscribe(acquisition => {
         this.acquisition = acquisition;
         this.calculateAmount();
         this.setStepper();
@@ -60,6 +62,14 @@ export class AcquisitionComponent implements OnInit {
     // });
   }
 
+  reloadAcquisition() {
+    this.acquisitionService.getAcquisition(this.acquisitionId).subscribe(acquisition => {
+      this.acquisition = acquisition;
+      this.calculateAmount();
+      this.setStepper();
+    });
+  }
+
   calculateAmount() {
     if (this.acquisition) {
       this.amount = 0;
@@ -72,9 +82,9 @@ export class AcquisitionComponent implements OnInit {
             }
           }
           if (this.acquisition.status === Status.OPEN) {
-            this.amount = this.amount + locNo * item.planedPrice.price;
+            this.amount = this.amount + locNo * this.acquisitionService.calculatePriceWithVAT(item.planedPrice);
           } else {
-            this.amount = this.amount + locNo * item.realPrice.price;
+            this.amount = this.amount + locNo * this.acquisitionService.calculatePriceWithVAT(item.realPrice);
           }
         });
       });
@@ -218,18 +228,5 @@ export class AcquisitionComponent implements OnInit {
         this.selectedView = status;
       }
     }
-  }
-
-  exportToPDF() {
-
-    this.restAPI.createAcquisitionSheet(this.acquisition).subscribe(response => {
-      const pdf = new Blob([response], { type: 'application/octet-stream'});
-      const url = window.URL.createObjectURL(pdf);
-      const anchor = document.createElement('a');
-      anchor.download = this.acquisition.title + '.pdf';
-      anchor.href = url;
-      anchor.click();
-    });
-
   }
 }

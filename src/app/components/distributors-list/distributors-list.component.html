@@ -17,7 +17,7 @@
           <th>ПИБ</th>
           <th>Назив</th>
           <th>Телефон</th>
-          <th>Емаил</th>
+          <th>E-mail адреса</th>
           <th>Контакт особа</th>
           <th></th>
         </tr>
@@ -70,7 +70,7 @@
                 <div class="d-flex justify-content-end">
                 <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" data-toggle="tooltip" title="Измени" mdbWavesEffect
                         (click)="edit(id)">
-                  <mdb-icon fas icon="pen"></mdb-icon>
+                  <mdb-icon far icon="edit"></mdb-icon>
                 </button>
                 <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
                         [routerLink]="['/offers/'+getDistributerCryptoId(distributor.pib)]" data-toggle="tooltip" title="Прикажи понуду">
@@ -84,12 +84,12 @@
             </ng-container>
             <ng-container *ngIf="id == rowIndex">
               <div class="d-flex justify-content-end">
-                <button mdbBtn color="success" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="update(distributor)">
-                  <mdb-icon fas icon="check-circle"></mdb-icon>
+                <button mdbBtn color="info" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="update(distributor)">
+                  <mdb-icon fas icon="check"></mdb-icon>
                 </button>
 
                 <button mdbBtn color="danger" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="confirmDelete(distributor)">
-                  <mdb-icon fas icon="trash-alt"></mdb-icon>
+                  <mdb-icon far icon="trash-alt"></mdb-icon>
                 </button>
 
               </div>
