@@ -1,9 +1,10 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Acquisition, AcquisitionGroup, DeliveryLocation, Status} from '../../models/acquisition';
+import {Acquisition, AcquisitionGroup, DeliveryLocation, Item, Status} from '../../models/acquisition';
 import {GroupByPipe} from '../../pipes/group-by.pipe';
 import {ModalDirective} from 'ng-uikit-pro-standard';
 import {AcquisitionService} from '../../services/acquisition.service';
+import {Distribution} from '../../models/distribution';
 
 @Component({
   selector: 'app-acquisition',
@@ -21,6 +22,7 @@ export class AcquisitionComponent implements OnInit {
   edit = false;
   Status = Status;
   selectedView = Status.OPEN;
+  distributions: Distribution[];
 
   constructor(private route: ActivatedRoute, private router: Router,
               private groupBy: GroupByPipe, private acquisitionService: AcquisitionService) {}
@@ -80,9 +82,9 @@ export class AcquisitionComponent implements OnInit {
             }
           }
           if (this.acquisition.status === Status.OPEN) {
-            this.amount = this.amount + locNo * item.planedPrice.price;
+            this.amount = this.amount + locNo * this.acquisitionService.calculatePriceWithVAT(item.planedPrice);
           } else {
-            this.amount = this.amount + locNo * item.realPrice.price;
+            this.amount = this.amount + locNo * this.acquisitionService.calculatePriceWithVAT(item.realPrice);
           }
         });
       });

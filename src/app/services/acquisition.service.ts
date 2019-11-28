@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {FirebaseService} from './firebase.service';
-import {Acquisition, AcquisitionGroup, Item} from '../models/acquisition';
+import {Acquisition, AcquisitionGroup, Item, Price} from '../models/acquisition';
 import {GeneralService} from './general.service';
+import {Distribution} from '../models/distribution';
+import {GroupByPipe} from '../pipes/group-by.pipe';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +15,9 @@ export class AcquisitionService extends GeneralService {
   acquisitionId: string;
   acquisition: Acquisition = {};
   private selectedItem: Item;
+  distributions: Distribution[];
 
-  constructor(public firebaseService: FirebaseService) {
+  constructor(private groupBy: GroupByPipe, public firebaseService: FirebaseService) {
     super(firebaseService);
   }
 
@@ -100,6 +103,57 @@ export class AcquisitionService extends GeneralService {
       }
     }
     return true;
+  }
+
+  calculatePriceWithoutVAT(price: Price) {
+    return (price.price - ((price.rebate / 100) * price.price));
+  }
+
+  calculatePriceWithVAT(price: Price) {
+    const priceWithoutVAT = this.calculatePriceWithoutVAT(price);
+    return (priceWithoutVAT + ((price.vat / 100) * priceWithoutVAT));
+  }
+
+  createDistributions(): Distribution[] {
+    const distributions: Distribution[] = [];
+    if (this.acquisition) {
+      this.acquisition.acquisitionGroups.forEach(group => {
+        if (group.items) {
+          group.items.forEach(item => {
+            const locationGroups = this.groupBy.transform(item.desideratum.locations, 'location');
+            if (locationGroups) {
+              locationGroups.forEach(locationGroup => {
+                let distribution = distributions.find(x => x.location === locationGroup.key);
+                if (!distribution) {
+                  distribution = new Distribution();
+                  distribution.location = locationGroup.key;
+                  distribution.acquisitionGroup = [];
+                  distributions.push(distribution);
+                }
+                let newGroup = distribution.acquisitionGroup.find(x => x.title === group.title);
+                if (!newGroup) {
+                  newGroup = {...group};
+                  distribution.acquisitionGroup.push(newGroup);
+                  newGroup.items = [];
+                }
+                const newItem: Item = {... item, desideratum: {...item.desideratum}};
+                newGroup.items.push(newItem);
+                newItem.desideratum.locations = [];
+                newItem.desideratum.locations = locationGroup.value;
+              });
+            }
+          });
+        }
+      });
+    }
+    return distributions;
+  }
+
+  getDistributions() {
+    if (!this.distributions) {
+      this.distributions = this.createDistributions();
+    }
+    return this.distributions;
   }
 
 }

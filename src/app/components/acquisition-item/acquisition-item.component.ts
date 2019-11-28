@@ -147,9 +147,9 @@ export class AcquisitionItemComponent implements OnInit, OnDestroy {
       }
     }
     if (this.status === Status.OPEN) {
-      return amount * item.planedPrice.price;
+      return amount * this.acquisitionService.calculatePriceWithVAT(item.planedPrice);
     } else {
-      return amount * item.realPrice.price;
+      return amount * this.acquisitionService.calculatePriceWithVAT(item.realPrice);
     }
   }
 
@@ -163,9 +163,9 @@ export class AcquisitionItemComponent implements OnInit, OnDestroy {
         }
       }
       if (this.status === Status.OPEN) {
-        amount = amount + locNo * item.planedPrice.price;
+        amount = amount + locNo * this.acquisitionService.calculatePriceWithVAT(item.planedPrice);
       } else {
-        amount = amount + locNo * item.realPrice.price;
+        amount = amount + locNo * this.acquisitionService.calculatePriceWithVAT(item.realPrice);
       }
     });
     return amount;
@@ -312,6 +312,14 @@ export class AcquisitionItemComponent implements OnInit, OnDestroy {
     this.acquisitionService.moveItemToGroup(this.selectedItem, name);
     this.acquisitionService.setSelectedItem(undefined);
     this.selectedItem = undefined;
+  }
+
+  calculatePriceWithoutVAT(price: Price) {
+    return this.acquisitionService.calculatePriceWithoutVAT(price);
+  }
+
+  calculatePriceWithVAT(price: Price) {
+    return this.acquisitionService.calculatePriceWithVAT(price);
   }
 
 }

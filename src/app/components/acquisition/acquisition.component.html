@@ -350,11 +350,11 @@
       </div>
       <div class="modal-body mx-3">
         <ng-container *ngIf="acquisition.status == Status.OPEN">
-          <p class="text-center h4">Набавка из стауса У припреми прелази у статус Затворена.</p>
+          <p class="text-center h4">Набавка из стауса У припреми прелази у статус Формирана.</p>
           <p class="text-center h4">Да ли сте сигурни да желите да промените статус?</p>
         </ng-container>
         <ng-container *ngIf="acquisition.status == Status.CLOSED">
-          <p class="text-center h4">Набавка из стауса Затворена прелази у статус Достава.</p>
+          <p class="text-center h4">Набавка из стауса Формирана прелази у статус Испорука.</p>
           <p class="text-center h4">Да ли сте сигурни да желите да промените статус?</p>
         </ng-container>
       </div>

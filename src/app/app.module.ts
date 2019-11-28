@@ -31,6 +31,7 @@ import { ClipboardModule } from 'ngx-clipboard';
 import {IConfig, NgxMaskModule} from 'ngx-mask';
 import { IsbnValidatorDirective } from './validators/isbn.validator.directive';
 import { IsbnExistsValidatorDirective } from './validators/isbn.exists.validator.directive';
+import { DistributionItemComponent } from './components/distribution-item/distribution-item.component';
 
 export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -52,7 +53,8 @@ export let options: Partial<IConfig> | (() => Partial<IConfig>);
     DeliveryItemComponent,
     AccessDeniedComponent,
     IsbnValidatorDirective,
-    IsbnExistsValidatorDirective
+    IsbnExistsValidatorDirective,
+    DistributionItemComponent
   ],
   imports: [
     NgxsModule.forRoot([UserState]),
@@ -71,7 +73,8 @@ export let options: Partial<IConfig> | (() => Partial<IConfig>);
   ],
   providers: [
     MDBSpinningPreloader,
-    FirebaseService
+    FirebaseService,
+    GroupByPipe
   ],
   bootstrap: [AppComponent]
 })

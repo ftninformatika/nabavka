@@ -16,7 +16,7 @@
                        (keyup.enter)="toggleEditGroup()">
               </ng-container>
               <ng-template #title>
-                <h4 class="py-3 mb-0">{{acquisitionGroup.title}}</h4>
+                <h4 class="py-3 mb-0">{{acquisitionGroup.title}} - {{acquisitionGroup.distributor}}</h4>
               </ng-template>
             </ng-template>
 
@@ -85,13 +85,19 @@
             Издавач
           </th>
           <th>
-            Цена
+            Бруто цена
           </th>
           <th>
-            Рабат
+            Рабат %
           </th>
           <th>
-            ПДВ
+            Цена без ПДВ
+          </th>
+          <th>
+            ПДВ %
+          </th>
+          <th>
+            Цена са ПДВ
           </th>
           <th>
             Локација
@@ -179,6 +185,9 @@
               </ng-template>
             </td>
             <td>
+                {{calculatePriceWithoutVAT(item.planedPrice)|number:'1.2-2'}}
+            </td>
+            <td>
               <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else vat">
                 <input [(ngModel)]="selectedItem.planedPrice.vat" #ctrl="ngModel" type="number" class="form-control" mdbInput
                        (keyup.enter)="saveEditedItem()">
@@ -186,6 +195,9 @@
               <ng-template #vat>
                 {{item.planedPrice.vat|number:'1.2-2'}}
               </ng-template>
+            </td>
+            <td>
+              {{calculatePriceWithVAT(item.planedPrice)|number:'1.2-2'}}
             </td>
           </ng-template>
 
@@ -209,6 +221,9 @@
               </ng-template>
             </td>
             <td>
+              {{calculatePriceWithoutVAT(item.realPrice)|number:'1.2-2'}}
+            </td>
+            <td>
               <ng-container *ngIf="id == index1stLevel && index2ndLevel == null && index3rdLevel == null; else vat">
                 <input [(ngModel)]="selectedItem.realPrice.vat" #ctrl="ngModel" type="number" class="form-control" mdbInput
                        (keyup.enter)="saveEditedItem()">
@@ -216,6 +231,9 @@
               <ng-template #vat>
                 {{item.realPrice.vat|number:'1.2-2'}}
               </ng-template>
+            </td>
+            <td>
+              {{calculatePriceWithVAT(item.realPrice)|number:'1.2-2'}}
             </td>
           </ng-template>
 
@@ -291,6 +309,8 @@
               <td></td>
               <td></td>
               <td></td>
+              <td></td>
+              <td></td>
               <td class="font-italic">{{getLocation(l.key)}}</td>
               <td class="font-italic">{{calculateAmountForLocation(item.desideratum.isbn, l.key)}}</td>
               <td></td>
@@ -300,6 +320,8 @@
             </tr>
             <ng-container *ngIf="hideInner[id][locId]">
               <tr *ngFor="let v of l.value; let sublocId = index">
+                <td></td>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -349,6 +371,8 @@
         </ng-container>
         </tbody>
         <tr>
+          <td></td>
+          <td></td>
           <td></td>
           <td></td>
           <td></td>

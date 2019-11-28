@@ -33,10 +33,10 @@ export class DashboardComponent implements OnInit {
           }
         }
         if (acquisition.status === Status.OPEN) {
-          amount = amount + locNo * item.planedPrice.price;
+          amount = amount + locNo * this.acquisitionService.calculatePriceWithVAT(item.planedPrice);
         } else {
          // amount = amount + locNo * item.realPrice.price;
-          amount = amount + locNo * item.planedPrice.price;
+          amount = amount + locNo * this.acquisitionService.calculatePriceWithVAT(item.realPrice);
         }
       });
     });

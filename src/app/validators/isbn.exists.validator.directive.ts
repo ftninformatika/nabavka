@@ -1,7 +1,6 @@
 import {Directive, forwardRef} from '@angular/core';
 import {AbstractControl, NG_VALIDATORS} from '@angular/forms';
 import {AcquisitionService} from '../services/acquisition.service';
-import {Acquisition} from '../models/acquisition';
 
 function isbnExists(acquisitionService: AcquisitionService) {
   return (c: AbstractControl) => {

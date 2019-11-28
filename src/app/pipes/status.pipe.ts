@@ -11,10 +11,10 @@ export class StatusPipe implements PipeTransform {
         return 'У припреми';
       }
       case 'closed': {
-        return 'Затворена';
+        return 'Формирана';
       }
       case 'delivery': {
-        return 'Достава';
+        return 'Испорука';
       }
       default: {
         return '';
