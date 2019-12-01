@@ -169,6 +169,8 @@ export class AcquisitionComponent implements OnInit {
         });
       });
     } else if (this.acquisition.status === Status.CLOSED) {
+      this.acquisition.status = Status.DISTRIBUTION;
+    } else if (this.acquisition.status === Status.DISTRIBUTION) {
       this.acquisition.status = Status.DELIVERY;
     }
     this.modalChangeStatus.hide();
@@ -183,6 +185,8 @@ export class AcquisitionComponent implements OnInit {
       }
       if (this.acquisition.status === Status.CLOSED) {
         this.selectedView = Status.CLOSED;
+      } else if (this.acquisition.status === Status.DISTRIBUTION) {
+        this.selectedView = Status.DISTRIBUTION;
       } else if (this.acquisition.status === Status.DELIVERY) {
         this.selectedView = Status.DELIVERY;
       }
@@ -219,7 +223,12 @@ export class AcquisitionComponent implements OnInit {
       this.selectedView = status;
     }
     if (status === Status.CLOSED) {
-      if (this.acquisition.status === Status.CLOSED || this.acquisition.status === Status.DELIVERY) {
+      if (this.acquisition.status === Status.CLOSED || this.acquisition.status === Status.DISTRIBUTION || this.acquisition.status === Status.DELIVERY) {
+        this.selectedView = status;
+      }
+    }
+    if (status === Status.DISTRIBUTION || status === Status.DELIVERY) {
+      if (this.acquisition.status === Status.DISTRIBUTION) {
         this.selectedView = status;
       }
     }
@@ -228,5 +237,9 @@ export class AcquisitionComponent implements OnInit {
         this.selectedView = status;
       }
     }
+  }
+
+  getDistributions(): Distribution[] {
+    return this.acquisitionService.getDistributions();
   }
 }

@@ -13,6 +13,9 @@ export class StatusPipe implements PipeTransform {
       case 'closed': {
         return 'Формирана';
       }
+      case 'distribution': {
+        return 'Расподела';
+      }
       case 'delivery': {
         return 'Испорука';
       }

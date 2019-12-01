@@ -163,7 +163,7 @@
 </div>
 
 <div class="row justify-content-between mb-2">
-  <div class="col-8 col-lg-6 d-flex flex-row align-items-center acquisition-stepper">
+  <div class="col-10 col-lg-8 d-flex flex-row align-items-center acquisition-stepper">
 
     <div class="view overlay" mdbWavesEffect (click)="selectView(Status.OPEN)">
       <div class="d-flex flex-row p-3 flex-center">
@@ -184,6 +184,19 @@
           <mdb-icon fas icon="lock" class="white-text" size="lg"></mdb-icon>
         </span>
         <div class="pl-2" [ngClass]="selectedView==Status.CLOSED? 'active':'disabled'">{{Status.CLOSED | statusPipe}}</div>
+      </div>
+      <div class="mask flex-center rgba-grey-slight"></div>
+    </div>
+
+    <div class="flex-grow-1" style="height: 1px; background-color: lightgrey">
+    </div>
+
+    <div class="view overlay" mdbWavesEffect (click)="selectView(Status.DISTRIBUTION)">
+      <div class="d-flex flex-row p-3 flex-center">
+        <span class="badge rounded-circle p-0 d-flex justify-content-center align-items-center" [ngClass]="selectedView==Status.DISTRIBUTION? 'active':'disabled'">
+          <mdb-icon fas icon="box-open" class="white-text" size="lg"></mdb-icon>
+        </span>
+        <div class="pl-2" [ngClass]="selectedView==Status.DISTRIBUTION? 'active':'disabled'">{{Status.DISTRIBUTION | statusPipe}}</div>
       </div>
       <div class="mask flex-center rgba-grey-slight"></div>
     </div>
@@ -249,6 +262,14 @@
                             (deleteAcquisitionGroupEvent)="deleteAcquisitionGroup($event)" (reloadAcquisitionEvent)="reloadAcquisition()"></app-acquisition-item>
     </div>
   </ng-template>
+</ng-container>
+
+<ng-container *ngIf="selectedView == Status.DISTRIBUTION">
+  <ng-container *ngIf="acquisition.status == Status.DISTRIBUTION">
+    <div *ngFor="let distribution of getDistributions()" class="mb-3">
+      <app-distribution-item [distribution]="distribution"></app-distribution-item>
+    </div>
+  </ng-container>
 </ng-container>
 
 <ng-container *ngIf="selectedView == Status.DELIVERY">

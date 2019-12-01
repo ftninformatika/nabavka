@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import {Injectable, OnInit} from '@angular/core';
+import {Observable, Subject, Subscription} from 'rxjs';
 import {FirebaseService} from './firebase.service';
 import {Acquisition, AcquisitionGroup, Item, Price} from '../models/acquisition';
 import {GeneralService} from './general.service';
 import {Distribution} from '../models/distribution';
 import {GroupByPipe} from '../pipes/group-by.pipe';
+import {Location} from '../models/location';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,9 @@ export class AcquisitionService extends GeneralService {
   acquisition: Acquisition = {};
   private selectedItem: Item;
   distributions: Distribution[];
+  distributionLocations = new Subject<Location[]>();
+  distributionLocations$ = this.distributionLocations.asObservable();
+
 
   constructor(private groupBy: GroupByPipe, public firebaseService: FirebaseService) {
     super(firebaseService);
@@ -154,6 +158,10 @@ export class AcquisitionService extends GeneralService {
       this.distributions = this.createDistributions();
     }
     return this.distributions;
+  }
+
+  setDistributionLocations(locations: Location[]) {
+    this.distributionLocations.next(locations);
   }
 
 }

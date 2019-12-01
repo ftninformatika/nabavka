@@ -13,7 +13,7 @@ import {Subscription} from 'rxjs';
   templateUrl: './acquisition-item.component.html',
   styleUrls: ['./acquisition-item.component.scss']
 })
-export class AcquisitionItemComponent implements OnInit, OnDestroy {
+export class AcquisitionItemComponent implements OnInit {
   @Input() acquisitionGroup: AcquisitionGroup;
   @Input() status: Status;
   @Input() editMode: boolean;
@@ -38,12 +38,8 @@ export class AcquisitionItemComponent implements OnInit, OnDestroy {
   selectedItem: Item;
   newItem: Item = {desideratum: {}, planedPrice: {}};
   inputAmount: number;
-  sublocationList: Sublocation[];
-  locationList: LocationCoder[];
   editGroup = false;
   Status = Status;
-  locationSubscription: Subscription;
-  sublocationSubscription: Subscription;
 
   constructor(private acquisitionService: AcquisitionService) {
   }
@@ -51,17 +47,6 @@ export class AcquisitionItemComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.mdbTable.setDataSource(this.acquisitionGroup.items);
     this.resetHideLists();
-    this.sublocationSubscription = this.acquisitionService.getSublocations().subscribe(data => {
-      this.sublocationList = data;
-    });
-    this.locationSubscription = this.acquisitionService.getLocations().subscribe(data => {
-      this.locationList = data;
-    });
-  }
-
-  ngOnDestroy() {
-    this.sublocationSubscription.unsubscribe();
-    this.locationSubscription.unsubscribe();
   }
 
   addItem() {
@@ -259,21 +244,11 @@ export class AcquisitionItemComponent implements OnInit, OnDestroy {
   }
 
   getSublocation(code: string) {
-    const sublocation = this.sublocationList.find(x => x.code === code);
-    if (sublocation) {
-      return sublocation.code + ' - ' + sublocation.name;
-    } else {
-      return code;
-    }
+    return this.acquisitionService.getSublocation(code);
   }
 
   getLocation(code: string) {
-    const location = this.locationList.find(x => x.code === code);
-    if (location) {
-      return location.code + ' - ' + location.name;
-    } else {
-      return code;
-    }
+    return this.acquisitionService.getLocation(code);
   }
 
   toggleEditGroup() {
