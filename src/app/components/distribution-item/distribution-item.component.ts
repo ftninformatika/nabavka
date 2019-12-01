@@ -1,9 +1,11 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {AcquisitionGroup, DeliveryLocation, Price} from '../../models/acquisition';
-import {MdbTableDirective} from 'ng-uikit-pro-standard';
+import {AcquisitionGroup, DeliveryLocation, Item, Price, Status} from '../../models/acquisition';
+import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
 import {LocationCoder, Sublocation} from '../../models/location_coder';
 import {AcquisitionService} from '../../services/acquisition.service';
 import {Desideratum} from '../../models/desideratum';
+import {Distribution} from '../../models/distribution';
+import {Location} from '../../models/location';
 
 @Component({
   selector: 'app-distribution-item',
@@ -12,57 +14,53 @@ import {Desideratum} from '../../models/desideratum';
 })
 export class DistributionItemComponent implements OnInit {
 
-  @Input() acquisitionGroup: AcquisitionGroup;
+  @Input() distribution: Distribution;
   @ViewChild(MdbTableDirective, { static: true }) mdbTable: MdbTableDirective;
+  @ViewChild('modalDistributionForm', {static: false}) modalDistributionForm: ModalDirective;
   hide: boolean[] = [];
   hideInner: boolean[][] = [];
-  sublocationList: Sublocation[] = [];
-  locationList: LocationCoder[] = [];
+  distributionLocations: Location[];
+  showForm: boolean;
 
   constructor(private acquisitionService: AcquisitionService) {
   }
 
   ngOnInit() {
-    this.mdbTable.setDataSource(this.acquisitionGroup.items);
+    this.mdbTable.setDataSource(this.distribution);
     this.resetHideLists();
-    this.acquisitionService.getSublocations().subscribe(data => {
-      this.sublocationList = data;
-    });
-    this.acquisitionService.getLocations().subscribe(data => {
-      this.locationList = data;
-    });
+    console.log(this.distribution);
   }
 
-  calculateAmountForLibrary(deliveryLocations: DeliveryLocation[]) {
+  calculateAmountForGroup(acquisitionGroup: AcquisitionGroup) {
     let amount = 0;
-    deliveryLocations.forEach(deliveryLocation => {
-      deliveryLocation.desideratum.locations.forEach(location => {
-        amount = amount + location.amount;
-      });
+    acquisitionGroup.items.forEach(item => {
+      if (item.desideratum.locations) {
+        for (const location of item.desideratum.locations) {
+          amount = amount + location.amount;
+        }
+      }
     });
     return amount;
   }
 
-  calculatePriceForLibrary(deliveryLocations: DeliveryLocation[]) {
+  calculatePriceForGroup(acquisitionGroup: AcquisitionGroup) {
     let amount = 0;
-    deliveryLocations.forEach(deliveryLocation => {
-      let num = 0;
-      deliveryLocation.desideratum.locations.forEach(location => {
-        num = num + location.amount;
-      });
-      amount = amount + num * deliveryLocation.price.price;
+    acquisitionGroup.items.forEach(item => {
+      let locNo = 0;
+      if (item.desideratum.locations) {
+        for (const location of item.desideratum.locations) {
+          locNo = locNo + location.amount;
+        }
+      }
+      amount = amount + locNo * this.acquisitionService.calculatePriceWithVAT(item.realPrice);
     });
     return amount;
   }
 
-  calculatePriceForGroup() {
+  calculatePrice() {
     let amount = 0;
-    this.acquisitionGroup.deliveryLocations.forEach(deliveryLocation => {
-      let num = 0;
-      deliveryLocation.desideratum.locations.forEach(location => {
-        num = num + location.amount;
-      });
-      amount = amount + num * deliveryLocation.price.price;
+    this.distribution.acquisitionGroup.forEach(gruop => {
+      amount = amount + this.calculatePriceForGroup(gruop);
     });
     return amount;
   }
@@ -80,7 +78,11 @@ export class DistributionItemComponent implements OnInit {
     desideratum.locations.forEach(location => {
       amount = amount + location.amount;
     });
-    return amount * price.price;
+    return amount * this.acquisitionService.calculatePriceWithVAT(price);
+  }
+
+  calculatePriceWithVAT(price: Price) {
+    return this.acquisitionService.calculatePriceWithVAT(price);
   }
 
   toggle(row) {
@@ -95,28 +97,24 @@ export class DistributionItemComponent implements OnInit {
   }
 
   resetHideLists() {
-    for (const i of Object.keys(this.acquisitionGroup.items)) {
+    for (const i of Object.keys(this.distribution.acquisitionGroup)) {
       this.hide[i] = false;
       this.hideInner[i] = [];
     }
   }
 
   getSublocation(code: string) {
-    const sublocation = this.sublocationList.find(x => x.code === code);
-    if (sublocation) {
-      return sublocation.code + ' - ' + sublocation.name;
-    } else {
-      return code;
-    }
+    return this.acquisitionService.getSublocation(code);
   }
 
   getLocation(code: string) {
-    const location = this.locationList.find(x => x.code === code);
-    if (location) {
-      return location.code + ' - ' + location.name;
-    } else {
-      return code;
-    }
+    return this.acquisitionService.getLocation(code);
+  }
+
+  showDistributionForm(desideratum: Desideratum) {
+    this.acquisitionService.setDistributionLocations(desideratum.locations);
+    this.showForm = true;
+    this.modalDistributionForm.show();
   }
 
 }

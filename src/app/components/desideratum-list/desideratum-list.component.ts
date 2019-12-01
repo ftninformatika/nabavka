@@ -2,7 +2,7 @@ import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {Desideratum} from '../../models/desideratum';
 import {Location} from '../../models/location';
 import {FirebaseService} from '../../services/firebase.service';
-import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
+import {IOption, MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
 import {LocationCoder, Sublocation} from '../../models/location_coder';
 import {DesideratumService} from '../../services/desideratum.service';
 
@@ -29,8 +29,6 @@ export class DesideratumListComponent implements OnInit {
   searchText: string;
   previous: string;
   inputAmount: number;
-  sublocationList: Sublocation[];
-  locationList: LocationCoder[];
 
   constructor(private desideratumService: DesideratumService) {
   }
@@ -59,12 +57,12 @@ export class DesideratumListComponent implements OnInit {
       this.previous = this.mdbTable.getDataSource();
       this.resetHideLists();
     });
-    this.desideratumService.getSublocations().subscribe(data => {
-      this.sublocationList = data;
-    });
-    this.desideratumService.getLocations().subscribe(data => {
-      this.locationList = data;
-    });
+    // this.desideratumService.getSublocations().subscribe(data => {
+    //   this.sublocationList = data;
+    // });
+    // this.desideratumService.getLocations().subscribe(data => {
+    //   this.locationList = data;
+    // });
   }
 
   addDesideratum(form: any, modalInstance: any) {
@@ -230,21 +228,11 @@ export class DesideratumListComponent implements OnInit {
   }
 
   getSublocation(code: string) {
-    const sublocation = this.sublocationList.find(x => x.code === code);
-    if (sublocation) {
-      return sublocation.code + ' - ' + sublocation.name;
-    } else {
-      return code;
-    }
+    return this.desideratumService.getSublocation(code);
   }
 
   getLocation(code: string) {
-    const location = this.locationList.find(x => x.code === code);
-    if (location) {
-      return location.code + ' - ' + location.name;
-    } else {
-      return code;
-    }
+    return this.desideratumService.getLocation(code);
   }
 
 }

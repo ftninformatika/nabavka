@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FirebaseService} from '../../services/firebase.service';
 import {Desideratum} from '../../models/desideratum';
 import {Sublocation} from '../../models/location_coder';
+import {GeneralService} from '../../services/general.service';
 
 @Component({
   selector: 'app-select-location',
@@ -15,12 +16,11 @@ export class SelectLocationComponent implements OnInit {
 
   values = [];
 
-  constructor(private firebaseService: FirebaseService) { }
+  constructor(private generalService: GeneralService) { }
 
   ngOnInit() {
-    this.firebaseService.getSublocations().subscribe(data => {
-      this.values = data.map(e => {
-        const s = e.payload.doc.data() as Sublocation;
+    this.generalService.getSublocations().subscribe(data => {
+      this.values = data.map(s => {
         return {
           value: s.code,
           label: s.code + ' - ' + s.name

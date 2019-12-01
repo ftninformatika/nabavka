@@ -33,6 +33,7 @@ export class Price {
 export enum Status {
   OPEN = 'open',
   CLOSED = 'closed',
+  DISTRIBUTION = 'distribution',
   DELIVERY = 'delivery'
 }
 

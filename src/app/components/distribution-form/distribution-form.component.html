@@ -1,0 +1,37 @@
+
+<div class="row">
+  <div class="col-10">
+    <p>Број примерака за расподелу: {{copies}}</p>
+    <p [ngClass]="notValid() ? 'red-text font-weight-bolder' : 'text'">Тренутно: {{calculateAmount()}}</p>
+  </div>
+  <div class="col-2">
+    <a mdbBtn floating="true" size="sm" color="primary" mdbWavesEffect
+       data-toggle="tooltip" title="Додај локацију">
+      <mdb-icon fas color="white" icon="plus"></mdb-icon>
+    </a>
+    <button mdbBtn color="primary" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
+            (click)="notValid()"
+            data-toggle="tooltip" title="Додај локацију">
+      <mdb-icon color="white-text" fas icon="plus"></mdb-icon>
+    </button>
+  </div>
+</div>
+<!--<form  #distributionForm="ngForm"class="text-center" style="color: #757575;">-->
+
+
+  <ng-container *ngFor="let subloc of sublocations; let locId = index">
+    <div class="row mt-3">
+      <div class="col-8">
+        <mdb-select [(ngModel)]="subloc.sublocation" [options]="options"  placeholder="Изаберите локацију"></mdb-select>
+      </div>
+      <div class="col-4 md-form my-0">
+        <input [(ngModel)]="subloc.amount" type="number" id="amount" name="amount" class="form-control" mdbInput style="padding-top: 0.4rem; padding-bottom: 0.4rem">
+        <label for="amount"></label>
+      </div>
+    </div>
+  </ng-container>
+
+
+  <button mdbBtn color="info" class="my-4 waves-effect" mdbWavesEffect [disabled]="notValid()">Сачувај</button>
+
+<!--</form>-->

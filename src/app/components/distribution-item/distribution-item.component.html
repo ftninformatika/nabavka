@@ -6,7 +6,7 @@
       <div class="d-flex flex-grow-1">
         <div class="row">
           <div class="col-auto text-left">
-            <h4 class="py-3 mb-0">{{acquisitionGroup.title}} - {{acquisitionGroup.distributor}}</h4>
+            <h4 class="py-3 mb-0">{{getLocation(distribution.location)}}</h4>
           </div>
         </div>
       </div>
@@ -26,21 +26,18 @@
         <thead>
         <tr>
           <th></th>
-          <th [mdbTableSort]="acquisitionGroup.deliveryLocations" sortBy="location" (click)="resetHideLists()">
-            Библиотека
+          <th [mdbTableSort]="distribution.acquisitionGroup" sortBy="title" (click)="resetHideLists()">
+            Партија
             <mdb-icon fas icon="sort"></mdb-icon>
           </th>
-          <th [mdbTableSort]="acquisitionGroup.deliveryLocations" sortBy="desideratum.isbn" (click)="resetHideLists()">
+          <th>
             ИСБН
-            <mdb-icon fas icon="sort"></mdb-icon>
           </th>
-          <th [mdbTableSort]="acquisitionGroup.deliveryLocations" sortBy="desideratum.title" (click)="resetHideLists()">
+          <th>
             Наслов
-            <mdb-icon fas icon="sort"></mdb-icon>
           </th>
-          <th [mdbTableSort]="acquisitionGroup.deliveryLocations" sortBy="desideratum.author" (click)="resetHideLists()">
+          <th>
             Аутор
-            <mdb-icon fas icon="sort"></mdb-icon>
           </th>
           <th>
             Издавач
@@ -57,43 +54,51 @@
           <th>
             Укупно
           </th>
+          <th></th>
         </tr>
         </thead>
 
-        <tbody *ngFor="let deliveryLocationGroup of acquisitionGroup.deliveryLocations|groupBy:'location'; let id = index;">
+        <tbody *ngFor="let acquisitionGroup of distribution.acquisitionGroup; let id = index;">
         <tr>
           <td>
             <a (click)="toggle(id)">
               <i class="far" [ngClass]="{'fa-plus-square': !hide[id], 'fa-minus-square': hide[id]}"></i></a>
           </td>
-          <td>{{getLocation(deliveryLocationGroup.key)}}</td>
+          <td>{{acquisitionGroup.title}}</td>
           <td></td>
           <td></td>
           <td></td>
           <td></td>
           <td></td>
           <td></td>
-          <td class="font-italic font-weight-bold">{{calculateAmountForLibrary(deliveryLocationGroup.value)}}</td>
-          <td class="font-italic font-weight-bold">{{calculatePriceForLibrary(deliveryLocationGroup.value) | number:'1.2-2'}}</td>
+          <td class="font-italic font-weight-bold">{{calculateAmountForGroup(acquisitionGroup)}}</td>
+          <td class="font-italic font-weight-bold">{{calculatePriceForGroup(acquisitionGroup) | number:'1.2-2'}}</td>
+          <td></td>
         </tr>
         <ng-container *ngIf="hide[id]">
-          <ng-container *ngFor="let deliveryLocation of deliveryLocationGroup.value; let locId = index">
+          <ng-container *ngFor="let item of acquisitionGroup.items; let locId = index">
             <tr>
               <td></td>
               <td><a (click)="toggleInner(id, locId)">
                 <i class="far" [ngClass]="{'fa-plus-square': !hideInner[id][locId], 'fa-minus-square': hideInner[id][locId]}"></i></a>
               </td>
-              <td>{{deliveryLocation.desideratum.isbn}}</td>
-              <td>{{deliveryLocation.desideratum.title}}</td>
-              <td>{{deliveryLocation.desideratum.author}}</td>
-              <td>{{deliveryLocation.desideratum.publisher}}</td>
-              <td>{{deliveryLocation.price.price|number:'1.2-2'}}</td>
+              <td>{{item.desideratum.isbn}}</td>
+              <td>{{item.desideratum.title}}</td>
+              <td>{{item.desideratum.author}}</td>
+              <td>{{item.desideratum.publisher}}</td>
+              <td>{{calculatePriceWithVAT(item.realPrice)|number:'1.2-2'}}</td>
               <td></td>
-              <td class="font-italic">{{calculateAmountForDesideratum(deliveryLocation.desideratum)}}</td>
-              <td class="font-italic">{{calculatePriceForDesideratum(deliveryLocation.desideratum, deliveryLocation.price) | number:'1.2-2'}}</td>
+              <td class="font-italic">{{calculateAmountForDesideratum(item.desideratum)}}</td>
+              <td class="font-italic">{{calculatePriceForDesideratum(item.desideratum, item.realPrice) | number:'1.2-2'}}</td>
+              <td>
+                <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
+                        (click)="showDistributionForm(item.desideratum)">
+                  <mdb-icon fas icon="pen"></mdb-icon>
+                </button>
+              </td>
             </tr>
             <ng-container *ngIf="hideInner[id][locId]">
-              <tr *ngFor="let location of deliveryLocation.desideratum.locations; let sublocId = index">
+              <tr *ngFor="let location of item.desideratum.locations; let sublocId = index">
                 <td></td>
                 <td></td>
                 <td></td>
@@ -105,6 +110,7 @@
                 <td>
                   {{location.amount}}
                 </td>
+                <td></td>
                 <td></td>
               </tr>
             </ng-container>
@@ -121,10 +127,31 @@
           <td></td>
           <td></td>
           <td></td>
-          <td class="font-italic teal-text">{{calculatePriceForGroup()|number:'1.2-2'}}</td>
+          <td class="font-italic teal-text">{{calculatePrice()|number:'1.2-2'}}</td>
+          <td></td>
         </tr>
       </table>
     </div>
   </div>
 </mdb-card>
 
+<div mdbModal #modalDistributionForm class="modal fade top" id="modalDistributionForm" tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalAdd" aria-hidden="true" style="overflow-y: auto">
+  <div class="modal-dialog modal-notify modal-info" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Расподела
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modalDistributionForm.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+          <app-distribution-form [location]="distribution.location"></app-distribution-form>
+      </div>
+    </div>
+  </div>
+</div>

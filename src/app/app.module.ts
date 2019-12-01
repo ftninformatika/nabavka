@@ -34,6 +34,7 @@ import {IConfig, NgxMaskModule} from 'ngx-mask';
 import { IsbnValidatorDirective } from './validators/isbn.validator.directive';
 import { IsbnExistsValidatorDirective } from './validators/isbn.exists.validator.directive';
 import { DistributionItemComponent } from './components/distribution-item/distribution-item.component';
+import { DistributionFormComponent } from './components/distribution-form/distribution-form.component';
 
 export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -56,7 +57,8 @@ export let options: Partial<IConfig> | (() => Partial<IConfig>);
     AccessDeniedComponent,
     IsbnValidatorDirective,
     IsbnExistsValidatorDirective,
-    DistributionItemComponent
+    DistributionItemComponent,
+    DistributionFormComponent
   ],
   imports: [
     NgxsModule.forRoot([UserState]),

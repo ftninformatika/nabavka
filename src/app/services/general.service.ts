@@ -1,14 +1,25 @@
 import { Injectable } from '@angular/core';
 import {FirebaseService} from './firebase.service';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
 import {LocationCoder, Sublocation} from '../models/location_coder';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GeneralService {
+  sublocationList: Sublocation[] = [];
+  locationList: LocationCoder[];
+  locationSubscription: Subscription;
+  sublocationSubscription: Subscription;
 
-  constructor(public firebaseService: FirebaseService) { }
+  constructor(public firebaseService: FirebaseService) {
+    this.sublocationSubscription = this.getSublocations().subscribe(data => {
+      this.sublocationList = data;
+    });
+    this.locationSubscription = this.getLocations().subscribe(data => {
+      this.locationList = data;
+    });
+  }
 
   getSublocations(): Observable<Sublocation[]> {
     const sublocations$ = new Subject<Sublocation[]>();
@@ -30,5 +41,27 @@ export class GeneralService {
       locations$.next(locationList);
     });
     return locations$.asObservable();
+  }
+
+  getSublocation(code: string) {
+    const sublocation = this.sublocationList.find(x => x.code === code);
+    if (sublocation) {
+      return sublocation.code + ' - ' + sublocation.name;
+    } else {
+      return code;
+    }
+  }
+
+  getSublocationList() {
+    return this.sublocationList;
+  }
+
+  getLocation(code: string) {
+    const location = this.locationList.find(x => x.code === code);
+    if (location) {
+      return location.code + ' - ' + location.name;
+    } else {
+      return code;
+    }
   }
 }
