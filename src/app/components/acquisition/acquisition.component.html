@@ -396,7 +396,11 @@
           <p class="text-center h4">Да ли сте сигурни да желите да промените статус?</p>
         </ng-container>
         <ng-container *ngIf="acquisition.status == Status.CLOSED">
-          <p class="text-center h4">Набавка из стауса Формирана прелази у статус Испорука.</p>
+          <p class="text-center h4">Набавка из стауса Формирана прелази у статус Расподела.</p>
+          <p class="text-center h4">Да ли сте сигурни да желите да промените статус?</p>
+        </ng-container>
+        <ng-container *ngIf="acquisition.status == Status.DISTRIBUTION">
+          <p class="text-center h4">Набавка из стауса Расподела прелази у статус Испорука.</p>
           <p class="text-center h4">Да ли сте сигурни да желите да промените статус?</p>
         </ng-container>
       </div>
