@@ -9,13 +9,13 @@ export class Acquisition {
   status?: Status;
   desiderataUpdated?: boolean;
   acquisitionGroups?: AcquisitionGroup[];
+  deliveries?: Delivery[];
 }
 
 export class AcquisitionGroup {
   title: string;
   distributor?: string;
   items?: Item[];
-  deliveryLocations?: DeliveryLocation[];
 }
 
 export class Item {
@@ -37,8 +37,8 @@ export enum Status {
   DELIVERY = 'delivery'
 }
 
-export class DeliveryLocation {
-  location: string;
-  desideratum: Desideratum;
-  price?: Price;
+export class Delivery {
+  title?: string;
+  createDate?: Date;
+  acquisitionGroups?: string[];
 }

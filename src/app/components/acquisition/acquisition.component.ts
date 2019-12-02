@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Acquisition, AcquisitionGroup, DeliveryLocation, Item, Status} from '../../models/acquisition';
+import {Acquisition, AcquisitionGroup, Delivery, Status} from '../../models/acquisition';
 import {GroupByPipe} from '../../pipes/group-by.pipe';
 import {ModalDirective} from 'ng-uikit-pro-standard';
 import {AcquisitionService} from '../../services/acquisition.service';
@@ -16,13 +16,16 @@ import {Distribution} from '../../models/distribution';
 
 export class AcquisitionComponent implements OnInit {
   @ViewChild('modalChangeStatus', {static: false}) modalChangeStatus: ModalDirective;
+  @ViewChild('modalAddDelivery', {static: false}) modalAddDelivery: ModalDirective;
   acquisition: Acquisition = {};
   acquisitionId: string;
   amount = 0;
   edit = false;
   Status = Status;
   selectedView = Status.OPEN;
-  distributions: Distribution[];
+  delivery: Delivery = {};
+  acquisitionGroups = [];
+
 
   constructor(private route: ActivatedRoute, private router: Router,
               private groupBy: GroupByPipe, private acquisitionService: AcquisitionService) {}
@@ -34,6 +37,7 @@ export class AcquisitionComponent implements OnInit {
         this.acquisition = acquisition;
         this.calculateAmount();
         this.setStepper();
+        this.getAcquisitionGroups();
     });
 
 
@@ -196,31 +200,6 @@ export class AcquisitionComponent implements OnInit {
     }
   }
 
-  createDeliveryLocations() {
-    if (this.acquisition) {
-      this.acquisition.acquisitionGroups.forEach(group => {
-        group.deliveryLocations = [];
-        if (group.items) {
-          group.items.forEach(item => {
-            const locationGroups = this.groupBy.transform(item.desideratum.locations, 'location');
-            if (locationGroups) {
-              locationGroups.forEach(locationGroup => {
-                const deliveryLocation: DeliveryLocation = new DeliveryLocation();
-                deliveryLocation.location = locationGroup.key;
-                const deliveryDesideratum = {...item.desideratum};
-                deliveryDesideratum.locations = locationGroup.value;
-                deliveryLocation.desideratum = deliveryDesideratum;
-                deliveryLocation.price = {...item.realPrice};
-                group.deliveryLocations.push(deliveryLocation);
-              });
-            }
-          });
-        }
-      });
-      return this.acquisition.acquisitionGroups;
-    }
-  }
-
   selectView(status: Status) {
     if (status === Status.OPEN) {
       this.selectedView = status;
@@ -230,8 +209,8 @@ export class AcquisitionComponent implements OnInit {
         this.selectedView = status;
       }
     }
-    if (status === Status.DISTRIBUTION || status === Status.DELIVERY) {
-      if (this.acquisition.status === Status.DISTRIBUTION) {
+    if (status === Status.DISTRIBUTION) {
+      if (this.acquisition.status === Status.DISTRIBUTION || this.acquisition.status === Status.DELIVERY) {
         this.selectedView = status;
       }
     }
@@ -244,5 +223,37 @@ export class AcquisitionComponent implements OnInit {
 
   getDistributions(): Distribution[] {
     return this.acquisitionService.getDistributions();
+  }
+
+  getAcquisitionGroups() {
+    if (this.acquisition.acquisitionGroups) {
+      const list = [];
+      this.acquisition.acquisitionGroups.forEach(g => {
+        list.push({
+            value: g.title,
+            label: g.title
+          }
+        );
+      });
+      this.acquisitionGroups = list;
+    }
+  }
+
+  createDelivery() {
+    this.delivery = {};
+    this.modalAddDelivery.show();
+  }
+
+  addDeliveryGroup(event: any) {
+    this.delivery.acquisitionGroups = event;
+  }
+
+  saveDelivery() {
+    if (!this.acquisition.deliveries) {
+      this.acquisition.deliveries = [];
+    }
+    this.acquisition.deliveries.push(this.delivery);
+    this.acquisitionService.saveAcquisition();
+    this.modalAddDelivery.hide();
   }
 }
