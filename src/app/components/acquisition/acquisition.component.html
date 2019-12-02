@@ -267,7 +267,7 @@
 <ng-container *ngIf="selectedView == Status.DISTRIBUTION">
   <ng-container *ngIf="acquisition.status == Status.DISTRIBUTION">
     <div *ngFor="let distribution of getDistributions()" class="mb-3">
-      <app-distribution-item [distribution]="distribution"></app-distribution-item>
+      <app-distribution-item [distribution]="distribution" (reloadAcquisitionEvent)="reloadAcquisition()"></app-distribution-item>
     </div>
   </ng-container>
 </ng-container>
