@@ -1,27 +1,27 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {AcquisitionGroup, DeliveryLocation, Item, Price, Status} from '../../models/acquisition';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+import {AcquisitionGroup, Price, Status} from '../../models/acquisition';
 import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
-import {LocationCoder, Sublocation} from '../../models/location_coder';
 import {AcquisitionService} from '../../services/acquisition.service';
 import {Desideratum} from '../../models/desideratum';
 import {Distribution} from '../../models/distribution';
-import {Location} from '../../models/location';
 
 @Component({
   selector: 'app-distribution-item',
   templateUrl: './distribution-item.component.html',
-  styleUrls: ['./distribution-item.component.scss']
+  styleUrls: ['./distribution-item.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class DistributionItemComponent implements OnInit {
 
   @Input() distribution: Distribution;
+  @Input() selectedView: string;
   @Output() reloadAcquisitionEvent: EventEmitter<void> = new EventEmitter<void>();
   @ViewChild(MdbTableDirective, { static: true }) mdbTable: MdbTableDirective;
   @ViewChild('modalDistributionForm', {static: false}) modalDistributionForm: ModalDirective;
   hide: boolean[] = [];
   hideInner: boolean[][] = [];
-  distributionLocations: Location[];
   showForm: boolean;
+  Status = Status;
 
   constructor(private acquisitionService: AcquisitionService) {
   }
@@ -29,7 +29,6 @@ export class DistributionItemComponent implements OnInit {
   ngOnInit() {
     this.mdbTable.setDataSource(this.distribution);
     this.resetHideLists();
-    console.log(this.distribution);
   }
 
   calculateAmountForGroup(acquisitionGroup: AcquisitionGroup) {

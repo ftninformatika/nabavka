@@ -10,11 +10,12 @@
           </div>
         </div>
       </div>
-
-      <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect
-         data-toggle="tooltip" title="Штамапај"href="assets/dostavnica.pdf" >
-        <mdb-icon fas icon="file-alt"></mdb-icon>
-      </a>
+      <div *ngIf="selectedView == Status.DELIVERY">
+        <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect
+           data-toggle="tooltip" title="Штамапај"href="assets/dostavnica.pdf" >
+          <mdb-icon fas icon="file-alt"></mdb-icon>
+        </a>
+      </div>
 
     </div>
   </div>
@@ -91,10 +92,12 @@
               <td class="font-italic">{{calculateAmountForDesideratum(item.desideratum)}}</td>
               <td class="font-italic">{{calculatePriceForDesideratum(item.desideratum, item.realPrice) | number:'1.2-2'}}</td>
               <td>
-                <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
-                        (click)="showDistributionForm(item.desideratum)">
-                  <mdb-icon fas icon="pen"></mdb-icon>
-                </button>
+                <ng-container *ngIf="selectedView == Status.DISTRIBUTION">
+                  <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect
+                          (click)="showDistributionForm(item.desideratum)">
+                    <mdb-icon fas icon="pen"></mdb-icon>
+                  </button>
+                </ng-container>
               </td>
             </tr>
             <ng-container *ngIf="hideInner[id][locId]">

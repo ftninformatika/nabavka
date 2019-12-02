@@ -25,7 +25,6 @@ import {NgxsModule} from '@ngxs/store';
 import {UserState} from './states/user.state';
 import { StatusPipe } from './pipes/status.pipe';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { DeliveryItemComponent } from './components/delivery-item/delivery-item.component';
 import { AccessDeniedComponent } from './components/access-denied/access-denied.component';
 import { ClipboardModule } from 'ngx-clipboard';
 import {IConfig, NgxMaskModule} from 'ngx-mask';
@@ -33,6 +32,7 @@ import { IsbnValidatorDirective } from './validators/isbn.validator.directive';
 import { IsbnExistsValidatorDirective } from './validators/isbn.exists.validator.directive';
 import { DistributionItemComponent } from './components/distribution-item/distribution-item.component';
 import { DistributionFormComponent } from './components/distribution-form/distribution-form.component';
+import { DeliveryItemComponent } from './components/delivery-item/delivery-item.component';
 
 export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -51,12 +51,12 @@ export let options: Partial<IConfig> | (() => Partial<IConfig>);
     AcquisitionItemComponent,
     StatusPipe,
     DashboardComponent,
-    DeliveryItemComponent,
     AccessDeniedComponent,
     IsbnValidatorDirective,
     IsbnExistsValidatorDirective,
     DistributionItemComponent,
-    DistributionFormComponent
+    DistributionFormComponent,
+    DeliveryItemComponent
   ],
   imports: [
     NgxsModule.forRoot([UserState]),

@@ -410,25 +410,11 @@
       <!--Body-->
       <div class="modal-body mx-3">
         <div class="md-form mb-5">
-          <!--         <mdb-icon fas icon="map-marker-alt"></mdb-icon>-->
-          <!--          <input [(ngModel)]="location.sublocation" #ctrl="ngModel"-->
-          <!--                 type="text"-->
-          <!--                 class="form-control"-->
-          <!--                 id="sublocation"-->
-          <!--                 mdbInput-->
-          <!--          />-->
-          <!--          <label for="sublocation">Локација</label>-->
           <app-select-location [value]="location.sublocation" (selectedLocationEvent)="selectSublocation($event)"></app-select-location>
         </div>
 
         <div class="md-form">
-          <!--          <mdb-icon fas icon="layer-group"></mdb-icon>-->
-          <input [(ngModel)]="location.amount"
-                 type="number"
-                 class="form-control"
-                 id="amount"
-                 mdbInput
-          />
+          <input [(ngModel)]="location.amount" type="number" class="form-control" id="amount" mdbInput />
           <label for="amount">Количина</label>
         </div>
       </div>

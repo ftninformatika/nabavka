@@ -227,14 +227,23 @@
     </div>
   </div>
 
-  <div *ngIf="acquisition.status == Status.DELIVERY && !acquisition.desiderataUpdated">
+  <div *ngIf="acquisition.status == Status.DELIVERY && selectedView == Status.DELIVERY">
     <div class="col-auto align-self-center">
-      <a mdbBtn floating="true" size="sm" color="green" (click)="updateDesiderata()" mdbWavesEffect
-         data-toggle="tooltip" title="Ажурирај дезидерате">
-        <mdb-icon fas icon="sync-alt"></mdb-icon>
+      <a mdbBtn floating="true" size="sm" color="primary" (click)="createDelivery()" mdbWavesEffect
+         data-toggle="tooltip" title="Креирај доставницу">
+        <mdb-icon fas icon="plus"></mdb-icon>
       </a>
     </div>
   </div>
+
+<!--  <div *ngIf="acquisition.status == Status.DELIVERY && !acquisition.desiderataUpdated">-->
+<!--    <div class="col-auto align-self-center">-->
+<!--      <a mdbBtn floating="true" size="sm" color="green" (click)="updateDesiderata()" mdbWavesEffect-->
+<!--         data-toggle="tooltip" title="Ажурирај дезидерате">-->
+<!--        <mdb-icon fas icon="sync-alt"></mdb-icon>-->
+<!--      </a>-->
+<!--    </div>-->
+<!--  </div>-->
 </div>
 
 <ng-container *ngIf="selectedView == Status.OPEN">
@@ -268,18 +277,27 @@
 </ng-container>
 
 <ng-container *ngIf="selectedView == Status.DISTRIBUTION">
-  <ng-container *ngIf="acquisition.status == Status.DISTRIBUTION">
+  <ng-container *ngIf="acquisition.status == Status.DISTRIBUTION || acquisition.status == Status.DELIVERY">
     <div *ngFor="let distribution of getDistributions()" class="mb-3">
-      <app-distribution-item [distribution]="distribution" (reloadAcquisitionEvent)="reloadAcquisition()"></app-distribution-item>
+      <app-distribution-item [distribution]="distribution" [selectedView]="selectedView" (reloadAcquisitionEvent)="reloadAcquisition()"></app-distribution-item>
     </div>
   </ng-container>
 </ng-container>
 
 <ng-container *ngIf="selectedView == Status.DELIVERY">
   <ng-container *ngIf="acquisition.status == Status.DELIVERY">
-    <div *ngFor="let group of createDeliveryLocations()" class="mb-3">
-      <app-delivery-item [acquisitionGroup]="group"></app-delivery-item>
-    </div>
+    <ng-container *ngFor="let delivery of acquisition.deliveries">
+
+      <div class="view overlay p-3 mb-2 d-inline-flex" mdbWavesEffect (click)="collapse.toggle()">
+        <h5 class="mb-0">{{delivery.title}}</h5>
+        <div class="mask flex-center rgba-grey-slight"></div>
+      </div>
+
+      <div [isCollapsed]="true" mdbCollapse #collapse="bs-collapse">
+        <app-delivery-item [delivery]="delivery" [selectedView]="selectedView"></app-delivery-item>
+      </div>
+
+    </ng-container>
   </ng-container>
 </ng-container>
 
@@ -396,3 +414,44 @@
   </div>
 </div>
 <!--Modal changeStatus-->
+
+<!--Modal addDelivery -->
+<div mdbModal #modalAddDelivery class="modal fade top" id="modalAddDelivery" tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalAdd" aria-hidden="true" style="overflow-y: auto">
+  <div class="modal-dialog modal-notify modal-info" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title white-text w-100 font-weight-bold py-2">
+          Нова доставница
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                (click)="modalAddDelivery.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <mdb-select (ngModelChange)="addDeliveryGroup($event)" [(ngModel)]="delivery.acquisitionGroups" [options]="acquisitionGroups" placeholder="Изаберите партије"
+                      [multiple]="true" required  #deliverygroups='ngModel'></mdb-select>
+          <div *ngIf="deliverygroups.invalid && (deliverygroups.dirty || deliverygroups.touched)">
+            <mdb-error *ngIf="deliverygroups.errors.required">Обавезно поље</mdb-error>
+          </div>
+        </div>
+        <div class="md-form mb-5">
+          <input [(ngModel)]="delivery.title" type="text" #deliverytitle='ngModel' id="deliverytitle" class="form-control" required mdbInput>
+          <label data-error="wrong" data-success="right" for="deliverytitle">Назив</label>
+          <div *ngIf="deliverytitle.invalid && (deliverytitle.dirty || deliverytitle.touched)">
+            <mdb-error *ngIf="deliverytitle.errors.required">Обавезно поље</mdb-error>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" mdbBtn color="info" class="waves-effect" mdbWavesEffect
+                (click)="saveDelivery()" [disabled]="deliverytitle.invalid || deliverygroups.invalid">Додај
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Modal addDelivery -->
