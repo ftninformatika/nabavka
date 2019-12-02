@@ -145,12 +145,12 @@
           Расподела
         </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                (click)="modalDistributionForm.hide()">
+                (click)="cancelEdit()">
           <span aria-hidden="true" class="white-text">&times;</span>
         </button>
       </div>
       <div class="modal-body mx-3">
-          <app-distribution-form [location]="distribution.location"></app-distribution-form>
+          <app-distribution-form [location]="distribution.location" (modalHideEvent)="modalHide()"></app-distribution-form>
       </div>
     </div>
   </div>

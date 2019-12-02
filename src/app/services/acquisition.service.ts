@@ -1,11 +1,12 @@
-import {Injectable, OnInit} from '@angular/core';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {Injectable} from '@angular/core';
+import {Observable, Subject} from 'rxjs';
 import {FirebaseService} from './firebase.service';
-import {Acquisition, AcquisitionGroup, Item, Price} from '../models/acquisition';
+import {Acquisition, AcquisitionGroup, Item, Price, Status} from '../models/acquisition';
 import {GeneralService} from './general.service';
 import {Distribution} from '../models/distribution';
 import {GroupByPipe} from '../pipes/group-by.pipe';
 import {Location} from '../models/location';
+import {Desideratum} from '../models/desideratum';
 
 @Injectable({
   providedIn: 'root'
@@ -17,9 +18,8 @@ export class AcquisitionService extends GeneralService {
   acquisition: Acquisition = {};
   private selectedItem: Item;
   distributions: Distribution[];
-  distributionLocations = new Subject<Location[]>();
+  distributionLocations = new Subject<Desideratum>();
   distributionLocations$ = this.distributionLocations.asObservable();
-
 
   constructor(private groupBy: GroupByPipe, public firebaseService: FirebaseService) {
     super(firebaseService);
@@ -31,6 +31,9 @@ export class AcquisitionService extends GeneralService {
       if (doc.exists) {
         this.acquisition = doc.data() as Acquisition;
         this.acquisition$.next(this.acquisition);
+        if (this.acquisition.status === Status.DISTRIBUTION) {
+          this.distributions = this.createDistributions();
+        }
       }
     });
     return this.acquisition$.asObservable();
@@ -160,8 +163,33 @@ export class AcquisitionService extends GeneralService {
     return this.distributions;
   }
 
-  setDistributionLocations(locations: Location[]) {
-    this.distributionLocations.next(locations);
+  setDistributionLocations(desideratum: Desideratum) {
+    this.distributionLocations.next(desideratum);
+  }
+
+  addNewLocation(isbn: string, location: Location) {
+    let desideratum: Desideratum;
+    this.acquisition.acquisitionGroups.forEach(group => {
+      group.items.forEach(item => {
+        if (item.desideratum.isbn === isbn) {
+          desideratum = item.desideratum;
+        }
+      });
+    });
+    desideratum.locations.push(location);
+  }
+
+  deleteLocation(isbn: string, location: Location) {
+    for (const group of this.acquisition.acquisitionGroups) {
+      const item = group.items.find(x => x.desideratum.isbn === isbn);
+      if (item) {
+        const locationIndex = item.desideratum.locations.findIndex(x => x === location);
+        if (locationIndex !== -1) {
+          item.desideratum.locations.splice(locationIndex, 1);
+          return;
+        }
+      }
+    }
   }
 
 }

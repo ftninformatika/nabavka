@@ -67,6 +67,9 @@ export class AcquisitionComponent implements OnInit {
       this.acquisition = acquisition;
       this.calculateAmount();
       this.setStepper();
+      if (this.selectedView === Status.DISTRIBUTION) {
+
+      }
     });
   }
 

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {AcquisitionGroup, DeliveryLocation, Item, Price, Status} from '../../models/acquisition';
 import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
 import {LocationCoder, Sublocation} from '../../models/location_coder';
@@ -15,6 +15,7 @@ import {Location} from '../../models/location';
 export class DistributionItemComponent implements OnInit {
 
   @Input() distribution: Distribution;
+  @Output() reloadAcquisitionEvent: EventEmitter<void> = new EventEmitter<void>();
   @ViewChild(MdbTableDirective, { static: true }) mdbTable: MdbTableDirective;
   @ViewChild('modalDistributionForm', {static: false}) modalDistributionForm: ModalDirective;
   hide: boolean[] = [];
@@ -112,9 +113,18 @@ export class DistributionItemComponent implements OnInit {
   }
 
   showDistributionForm(desideratum: Desideratum) {
-    this.acquisitionService.setDistributionLocations(desideratum.locations);
+    this.acquisitionService.setDistributionLocations(desideratum);
     this.showForm = true;
     this.modalDistributionForm.show();
+  }
+
+  cancelEdit() {
+    this.modalDistributionForm.hide();
+    this.reloadAcquisitionEvent.emit();
+  }
+
+  modalHide() {
+    this.modalDistributionForm.hide();
   }
 
 }
