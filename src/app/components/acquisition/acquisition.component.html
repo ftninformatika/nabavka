@@ -97,6 +97,9 @@
           <ng-container *ngIf="acquisition.status == Status.CLOSED">
             <mdb-icon fas icon="lock" size="lg" class="fa-lg blue-text"></mdb-icon>
           </ng-container>
+          <ng-container *ngIf="acquisition.status == Status.DISTRIBUTION">
+            <mdb-icon fas icon="box-open" size="lg" class="fa-lg blue-text"></mdb-icon>
+          </ng-container>
           <ng-container *ngIf="acquisition.status == Status.DELIVERY">
             <mdb-icon fas icon="dolly" size="lg" class="fa-lg blue-text"></mdb-icon>
           </ng-container>
