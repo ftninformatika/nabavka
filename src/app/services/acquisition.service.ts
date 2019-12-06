@@ -31,7 +31,7 @@ export class AcquisitionService extends GeneralService {
       if (doc.exists) {
         this.acquisition = doc.data() as Acquisition;
         this.acquisition$.next(this.acquisition);
-        if (this.acquisition.status === Status.DISTRIBUTION) {
+        if (this.acquisition.status === Status.DISTRIBUTION || this.acquisition.status === Status.DELIVERY) {
           this.distributions = this.createDistributions();
         }
       }
