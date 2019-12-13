@@ -3,6 +3,7 @@ import {Observable, Subject} from 'rxjs';
 import {FirebaseService} from './firebase.service';
 import {Acquisition, AcquisitionGroup, Item, Price, Status} from '../models/acquisition';
 import {GeneralService} from './general.service';
+import {RestApiService} from './rest-api.service';
 import {Distribution} from '../models/distribution';
 import {GroupByPipe} from '../pipes/group-by.pipe';
 import {Location} from '../models/location';
@@ -21,15 +22,14 @@ export class AcquisitionService extends GeneralService {
   distributionLocations = new Subject<Desideratum>();
   distributionLocations$ = this.distributionLocations.asObservable();
 
-  constructor(private groupBy: GroupByPipe, public firebaseService: FirebaseService) {
-    super(firebaseService);
+  constructor(private groupBy: GroupByPipe, public firebaseService: FirebaseService, public restApi: RestApiService) {
+    super(firebaseService, restApi);
   }
-
   getAcquisition(acquisitionId: string) {
     this.acquisitionId = acquisitionId;
-    this.firebaseService.getAcquisitionOnce(this.acquisitionId).subscribe(doc => {
-      if (doc.exists) {
-        this.acquisition = doc.data() as Acquisition;
+    this.restAPI.getAcquisitionOnce(this.acquisitionId).subscribe(doc => {
+      if (doc != null) {
+        this.acquisition = doc as Acquisition;
         this.acquisition$.next(this.acquisition);
         if (this.acquisition.status === Status.DISTRIBUTION || this.acquisition.status === Status.DELIVERY) {
           this.distributions = this.createDistributions();
@@ -39,24 +39,18 @@ export class AcquisitionService extends GeneralService {
     return this.acquisition$.asObservable();
   }
 
-  saveAcquisition() {
-    this.firebaseService.updateAcquisition(this.acquisitionId, this.acquisition);
+  saveOrUpdateAcquisition() {
+   this.restAPI.addOrUpdate(this.acquisition).subscribe(a => {
+     console.log('TODO: obraditi snimanje');
+     });
   }
 
-  deleteAcquisition(): Observable<string> {
-    const observable$ = new Subject<string>();
-    this.firebaseService.deleteAcquisition(this.acquisitionId).then(docRef => {
-      observable$.next();
-    });
-    return observable$.asObservable();
+  deleteAcquisition() {
+    return this.restAPI.deleteAcquisition(this.acquisitionId);
   }
 
-  addAcquisition(acquisition: Acquisition): Observable<string> {
-    const acquisitionId$ = new Subject<string>();
-    this.firebaseService.addAcquisition(acquisition).then(docRef => {
-      acquisitionId$.next(docRef.id);
-    });
-    return acquisitionId$.asObservable();
+  addAcquisition(acquisition: Acquisition): Observable<Acquisition> {
+    return this.restAPI.addOrUpdate(acquisition);
   }
 
   getOtherAcquisitionGroups(group: AcquisitionGroup) {
@@ -73,24 +67,27 @@ export class AcquisitionService extends GeneralService {
     for (const group of this.acquisition.acquisitionGroups) {
       if (group.title === groupname) {
         group.items.push(item);
-        this.saveAcquisition();
+        this.saveOrUpdateAcquisition();
         break;
       }
     }
   }
 
-  getAcquisitionList() {
-    const acquisitionList$ = new Subject<Acquisition[]>();
-    this.firebaseService.getAcquisitionListOnce().subscribe(data => {
-      const acquisitionList = data.docs.map(e => {
-        return {
-          id: e.id,
-          ...e.data() as any
-        } as Acquisition;
-      });
-      acquisitionList$.next(acquisitionList);
-    });
-    return acquisitionList$.asObservable();
+ getAcquisitionList() {
+   return this.restAPI.getAcquisitionList();
+ }
+
+  createDeliverySheet(deliveriesArray, deliveryLocation) {
+    return this.restAPI.createDeliverySheet(deliveriesArray, deliveryLocation);
+  }
+  createProcruimentSheet(id: string): Observable <Blob> {
+    return this.restAPI.createProcruimentSheet(id);
+  }
+  createAcquisitionSheet(id: string): Observable <Blob> {
+    return this.restAPI.createAcquisitionSheet(id);
+  }
+  createFinalReport(year): Observable <Blob> {
+    return this.restAPI.createFinalReport(year);
   }
 
   setSelectedItem(selectedItem: Item) {

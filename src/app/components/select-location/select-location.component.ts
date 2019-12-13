@@ -22,8 +22,8 @@ export class SelectLocationComponent implements OnInit {
     this.generalService.getSublocations().subscribe(data => {
       this.values = data.map(s => {
         return {
-          value: s.code,
-          label: s.code + ' - ' + s.name
+          value: s.coder_id,
+          label: s.coder_id + ' - ' + s.description
         };
       });
     });

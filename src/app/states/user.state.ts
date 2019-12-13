@@ -2,7 +2,7 @@ import {User} from '../models/user';
 import {Action, Selector, State, StateContext} from '@ngxs/store';
 import {FirebaseService} from '../services/firebase.service';
 import {tap} from 'rxjs/operators';
-import {RestApiService} from "../services/rest-api.service";
+import {RestApiService} from '../services/rest-api.service';
 
 export class LoginAction {
   static readonly type = '[Login Page] getUser';
@@ -17,12 +17,14 @@ export class LoginAction {
 export class LogoutAction {
   static readonly type = '[Auth] Logout';
 }
-export class LibrarySetupAction {
+export class DistributorSetupAction {
   static readonly type = '[Distributor] LibrarySetup';
   public library: string;
+  public role: string;
 
-  public constructor(library: string) {
+  public constructor(library: string, role: string) {
     this.library = library;
+    this.role = role;
   }
 }
 
@@ -85,12 +87,12 @@ export class UserState {
     ctx.patchState({user: undefined});
   }
 
-  @Action([LibrarySetupAction])
-  public addLibrary(ctx: StateContext<IAuthUser>, action: LibrarySetupAction) {
-    const library = action.library;
-    const userLibrary: User = {};
-    userLibrary.library = library;
-    ctx.patchState({user: userLibrary});
+  @Action([DistributorSetupAction])
+  public addLibrary(ctx: StateContext<IAuthUser>, action: DistributorSetupAction) {
+    const distributor: User = {};
+    distributor.library = action.library;
+    distributor.role = action.role;
+    ctx.patchState({user: distributor});
   }
 
 }

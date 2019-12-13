@@ -1,24 +1,46 @@
 <mdb-card>
 <!-- Editable table -->
   <div class="card-header">
-    <h3 class="py-2">Дистрибутери</h3>
+    <h3 class="py-2">Добављачи</h3>
   </div>
   <div class="card-body">
     <div id="table" class="table-editable">
+      <div class="d-flex">
+      <div class="d-flex flex-grow-1">
+        <div class="md-form mt-0">
+          <input mdbInput type="text" class="form-control ml-0" [(ngModel)]="searchText" id="search-input">
+          <label for="search-input">Претражи</label>
+        </div>
+      </div>
       <span class="table-add float-right mb-3 mr-2">
-       <a mdbBtn floating="true" color="primary" size="sm" (click)="addModal.show();" data-toggle="tooltip" title="Додај дистрибутера">
+       <a mdbBtn floating="true" color="primary" size="sm" (click)="addModal.show();addForm.reset()" data-toggle="tooltip" title="Додај добављача">
           <mdb-icon fas icon="plus"></mdb-icon>
         </a>
       </span>
-
+      </div>
       <table mdbTable small="true" class="table table-bordered table-responsive-md table-striped text-left">
         <thead>
         <tr>
-          <th>ПИБ</th>
-          <th>Назив</th>
-          <th>Телефон</th>
-          <th>E-mail адреса</th>
-          <th>Контакт особа</th>
+          <th [mdbTableSort]="distributorsList" sortBy="pib">
+            ПИБ
+            <mdb-icon fas icon="sort"></mdb-icon>
+          </th>
+          <th [mdbTableSort]="distributorsList" sortBy="name">
+            Назив
+            <mdb-icon fas icon="sort"></mdb-icon>
+          </th>
+          <th [mdbTableSort]="distributorsList" sortBy="phone">
+            Телефон
+            <mdb-icon fas icon="sort"></mdb-icon>
+          </th>
+          <th [mdbTableSort]="distributorsList" sortBy="email">
+            Емаил
+            <mdb-icon fas icon="sort"></mdb-icon>
+          </th>
+          <th [mdbTableSort]="distributorsList" sortBy="contactPerson">
+            Контакт особа
+            <mdb-icon fas icon="sort"></mdb-icon>
+          </th>
           <th></th>
         </tr>
         </thead>
@@ -115,6 +137,7 @@
   aria-labelledby="myModalLabel"
   aria-hidden="true"
   style="overflow-y: auto"
+
 >
   <!--Dialog-->
   <div class="modal-dialog modal-notify modal-info" role="document">
@@ -123,7 +146,7 @@
       <!--Header-->
       <div class="modal-header text-center">
         <h4 class="modal-title white-text w-100 font-weight-bold py-2">
-          Нови дистрибутер
+          Нови добављач
         </h4>
         <button
           type="button"
@@ -137,69 +160,95 @@
       </div>
 
       <!--Body-->
-      <div class="modal-body">
+      <form  class="modal-body" #addForm="ngForm" >
         <div class="md-form mb-5">
           <input [(ngModel)]="distributor.pib"
                  type="text"
                  class="form-control"
                  id="pib"
+                 name="pib"
                  mdbInput
+                 mdbValidate
+                 required
+                 #pib="ngModel"
           />
           <label for="pib">ПИБ</label>
+          <mdb-error *ngIf="pib.invalid && (pib.dirty || pib.touched)">Ово је обавезно поље.</mdb-error>
         </div>
         <div class="md-form mb-5">
           <input [(ngModel)]="distributor.name"
                  type="text"
                  class="form-control"
                  id="name"
+                 name="name"
                  mdbInput
+                 mdbValidate
+                 required
+                 #name="ngModel"
           />
           <label for="name">Назив</label>
+          <mdb-error *ngIf="name.invalid && (name.dirty || name.touched)">Ово је обавезно поље.</mdb-error>
         </div>
         <div class="md-form mb-5">
           <input [(ngModel)]="distributor.phone"
                  type="text"
                  class="form-control"
                  id="phone"
+                 name="phone"
                  mdbInput
+                 mdbValidate
+                 required
+                 #phone=ngModel
           />
           <label for="phone">Телефон</label>
+          <mdb-error *ngIf="phone.invalid && (phone.dirty || phone.touched)">Ово је обавезно поље.</mdb-error>
         </div>
         <div class="md-form mb-5">
           <input [(ngModel)]="distributor.email"
-                 type="text"
+                 type="email"
                  class="form-control"
                  id="email"
+                 name="email"
                  mdbInput
+                 mdbValidate
+                 required
+                 #email=ngModel
           />
           <label for="email">Емаил</label>
-        </div>
+          <mdb-error *ngIf="email.invalid && (email.dirty || email.touched)">Ово је обавезно поље.</mdb-error>
+           </div>
         <div class="md-form mb-5">
           <input [(ngModel)]="distributor.contactPerson"
                  type="text"
                  class="form-control"
                  id="contactPerson"
+                 name="contactPerson"
                  mdbInput
+                 mdbValidate
+                 required
+                 #contactPerson=ngModel
           />
           <label for="contactPerson">Контакт особа</label>
+          <mdb-error *ngIf="contactPerson.invalid && (contactPerson.dirty || contactPerson.touched)">Ово је обавезно поље.</mdb-error>
         </div>
 
-      </div>
       <!--/.Body-->
 
       <!--Footer-->
       <div class="modal-footer justify-content-center">
         <button
-          type="button"
+          type="submit"
           mdbBtn
           color="info"
           class="waves-effect"
-          (click)="add()"
+          [disabled]="!addForm.valid"
+          (click)="add();addForm.reset()"
           mdbWavesEffect
         >
           Dodaj
         </button>
       </div>
+      </form>
       <!--Footer-->
     </div>
     <!--/.Content-->
@@ -217,7 +266,7 @@
     <div class="modal-content">
       <div class="modal-header text-center">
         <h4 class="modal-title white-text w-100 font-weight-bold py-2">
-          Брисање дистрибутера
+          Брисање добављача
         </h4>
         <button type="button" class="close" data-dismiss="deleteDistributorModal" aria-label="Close"
                 (click)="deleteDistributorModal.hide()">
@@ -225,7 +274,7 @@
         </button>
       </div>
       <div class="modal-body mx-3">
-        <p class="text-center h4">Да ли сте сигурни да желите да обришете дистрибутера и све његове понуђене књиге?</p>
+        <p class="text-center h4">Да ли сте сигурни да желите да обришете добављача и све његове понуђене књиге?</p>
       </div>
       <div class="modal-footer d-flex justify-content-center deleteButtonsWrapper">
         <button mdbBtn color="danger" type="button" class="btnYesClass" data-dismiss="deleteDistributorModal" mdbWavesEffect

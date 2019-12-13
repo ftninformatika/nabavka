@@ -1,9 +1,15 @@
 export class Sublocation {
-  code: string;
-  name: string;
+  // tslint:disable-next-line:variable-name
+  _id: string;
+  // tslint:disable-next-line:variable-name
+  coder_id: string;
+  description: string;
 }
 
 export class LocationCoder {
-  code: string;
-  name: string;
+  // tslint:disable-next-line:variable-name
+  _id: string;
+  // tslint:disable-next-line:variable-name
+  coder_id: string;
+  description: string;
 }

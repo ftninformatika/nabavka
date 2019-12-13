@@ -13,8 +13,8 @@ import {Router} from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   public loginForm = new FormGroup({
-    username: new FormControl('admin@bgb'),
-    password: new FormControl('samo mi'),
+    username: new FormControl(),
+    password: new FormControl(),
   });
 
   // tslint:disable-next-line:max-line-length

@@ -4,6 +4,8 @@ import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
 import {AcquisitionService} from '../../services/acquisition.service';
 import {Desideratum} from '../../models/desideratum';
 import {Distribution} from '../../models/distribution';
+import {Location} from '../../models/location';
+import {BookForDelivery, Delivery} from '../../models/delivery';
 
 @Component({
   selector: 'app-distribution-item',
@@ -126,4 +128,44 @@ export class DistributionItemComponent implements OnInit {
     this.modalDistributionForm.hide();
   }
 
+  exportToPDF(distribution: Distribution) {
+    const deliveries = new Map<string, BookForDelivery[]>();
+    let books;
+    distribution.acquisitionGroup.forEach(dl => {
+      dl.items.forEach(i => {
+        i.desideratum.locations.forEach(l => {
+          const b: BookForDelivery = {};
+          b.amount = l.amount;
+          const finalPrice = this.acquisitionService.calculatePriceWithVAT(i.realPrice);
+          b.book = {title: i.desideratum.title, author: i.desideratum.author, publisher: i.desideratum.publisher, price: finalPrice};
+          books = deliveries.get(l.sublocation);
+          if (books === undefined) {
+            books = [];
+          }
+          books.push(b);
+          deliveries.set(l.sublocation, books);
+        });
+      });
+    });
+    const mapAsc = new Map([...deliveries.entries()].sort());
+    const deliveriesArray = [];
+    for (const [key, value] of mapAsc) {
+      const d: Delivery = {};
+      d.location = this.getSublocation(key);
+      d.books = value;
+      deliveriesArray.push(d);
+    }
+    const deliveryLocation = this.getLocation(distribution.location);
+    this.acquisitionService.createDeliverySheet(deliveriesArray, deliveryLocation).subscribe(pdf => {
+      const url = window.URL.createObjectURL(pdf);
+      const anchor = document.createElement('a');
+      anchor.download = 'Dostavnica_' + deliveryLocation + '.pdf';
+      anchor.href = url;
+      anchor.click();
+    });
+
+    /* const pwa = window.open(url);if (!pwa || pwa.closed || typeof pwa.closed === 'undefined') {
+       this.toast.warning('Искључите Pop-up blocker и покушајте поново да прузмете документ. ')
+     }*/
+  }
 }

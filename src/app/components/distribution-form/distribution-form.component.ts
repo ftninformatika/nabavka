@@ -19,11 +19,11 @@ export class DistributionFormComponent implements OnInit {
 
   ngOnInit() {
     this.acquisitionService.getSublocationList().forEach(s => {
-      if (s.code.startsWith(this.location)) {
+      if (s.coder_id.startsWith(this.location)) {
         this.options.push(
         {
-          value: s.code,
-          label: s.code + ' - ' + s.name
+          value: s.coder_id,
+          label: s.coder_id + ' - ' + s.description
         });
       }
     });
@@ -94,7 +94,7 @@ export class DistributionFormComponent implements OnInit {
     this.desideratum.locations.forEach( s => {
       s.location = s.sublocation.substring(0, 2);
     });
-    this.acquisitionService.saveAcquisition();
+    this.acquisitionService.saveOrUpdateAcquisition();
     this.modalHideEvent.emit();
   }
 }

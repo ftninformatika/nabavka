@@ -73,7 +73,7 @@ export class DesideratumListComponent implements OnInit {
       publisher: form[3].value
     };
     this.desideratumService.addDesideratum(desideratum).subscribe(data => {
-      desideratum.id = data;
+      desideratum._id = (data as Desideratum)._id;
     });
     this.desiderataList.splice(0, 0, desideratum);
     this.hide.splice(0, 0, false);
@@ -87,8 +87,8 @@ export class DesideratumListComponent implements OnInit {
   }
 
   removeSelectedDesideratum() {
-    this.desideratumService.deleteDesideratum(this.selectedDesideratum.id).subscribe(data => {
-      const index = this.desiderataList.findIndex(x => x.id === this.selectedDesideratum.id);
+    this.desideratumService.deleteDesideratum(this.selectedDesideratum._id).subscribe(data => {
+      const index = this.desiderataList.findIndex(x => x._id === this.selectedDesideratum._id);
       this.desiderataList.splice(index, 1);
       this.hide.splice(index, 1);
       this.hideInner.splice(index, 1);
@@ -103,7 +103,7 @@ export class DesideratumListComponent implements OnInit {
     this.index1stLevel = index;
     this.index2ndLevel = null;
     this.index3rdLevel = null;
-    this.selectedDesideratum = this.desiderataList.find(x => x.id === id);
+    this.selectedDesideratum = this.desiderataList.find(x => x._id === id);
   }
 
   saveEditedDesideratum() {
@@ -115,7 +115,7 @@ export class DesideratumListComponent implements OnInit {
   }
 
   calculateAmountForDesideratum(id: string) {
-    const desideratum = this.desiderataList.find(x => x.id === id);
+    const desideratum = this.desiderataList.find(x => x._id === id);
     let amount = 0;
     if (desideratum.locations) {
       for (const location of desideratum.locations) {
@@ -132,7 +132,7 @@ export class DesideratumListComponent implements OnInit {
   }
 
   addLocation() {
-    const desideratum = this.desiderataList.find(x => x.id === this.selectedId);
+    const desideratum = this.desiderataList.find(x => x._id === this.selectedId);
     if (!desideratum.locations) {
       desideratum.locations = [];
     }
@@ -158,7 +158,7 @@ export class DesideratumListComponent implements OnInit {
   }
 
   updateAmount(id: string, sublocation: string) {
-    const desideratum = this.desiderataList.find(x => x.id === id);
+    const desideratum = this.desiderataList.find(x => x._id === id);
     const location = desideratum.locations.find(x => x.sublocation === sublocation);
     location.amount = this.inputAmount;
     this.desideratumService.updateDesideratum(desideratum).subscribe(data => {
@@ -169,7 +169,7 @@ export class DesideratumListComponent implements OnInit {
   }
 
   deleteLocation(id: string, sublocation: string) {
-    const desideratum = this.desiderataList.find(x => x.id === id);
+    const desideratum = this.desiderataList.find(x => x._id === id);
     const locationIndex = desideratum.locations.findIndex(x => x.sublocation === sublocation);
     desideratum.locations.splice(locationIndex, 1);
     const renderFix = [...desideratum.locations];
@@ -182,7 +182,7 @@ export class DesideratumListComponent implements OnInit {
   }
 
   calculateAmountForLocation(id: string, loc: string) {
-    const desideratum = this.desiderataList.find(x => x.id === id);
+    const desideratum = this.desiderataList.find(x => x._id === id);
     const locations = desideratum.locations.filter(x => x.location === loc);
     let amount = 0;
     for (const location of locations) {

@@ -1,6 +1,6 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {Distributor} from '../../models/distributor';
-import {ModalDirective, ToastService} from 'ng-uikit-pro-standard';
+import {MdbTableDirective, ModalDirective, ToastService} from 'ng-uikit-pro-standard';
 import {CryptoUtils} from '../../utils/crypto.utils';
 import {RestApiService} from '../../services/rest-api.service';
 import {Store} from '@ngxs/store';
@@ -16,20 +16,27 @@ export class DistributorsListComponent implements OnInit {
   distributor: Distributor = {};
   selectedDistributor: Distributor = {};
   rowIndex: number;
-
+  searchText: string;
+  previous: string;
   @ViewChild('addModal', {static: false})
   addModal: ModalDirective;
-
   @ViewChild('deleteDistributorModal', {static: false})
   deleteDistributorModal: ModalDirective;
+  @ViewChild(MdbTableDirective, { static: true })
+  mdbTable: MdbTableDirective;
 
 
   constructor(private toast: ToastService, private restApi: RestApiService, private store: Store) {
   }
-
+  @HostListener('input') oninput() {
+    this.searchItems();
+  }
   ngOnInit() {
     this.restApi.getDistributors().subscribe(data => {
       this.distributorsList = data as Distributor[];
+      this.mdbTable.setDataSource(this.distributorsList);
+      this.distributorsList = this.mdbTable.getDataSource();
+      this.previous = this.mdbTable.getDataSource();
     });
   }
 
@@ -38,6 +45,7 @@ export class DistributorsListComponent implements OnInit {
   }
 
   add() {
+
     this.restApi.addUpdateDistributor(this.distributor).subscribe(data => {
       this.distributorsList = data as Distributor[];
     });
@@ -74,5 +82,18 @@ export class DistributorsListComponent implements OnInit {
 
   linkCopied(link: string) {
     this.toast.info('Линк за унос понуда је копиран у привремену меморију. <hr> <a>' + link + '</a>', '', { enableHtml: true});
+  }
+  searchItems() {
+    const prev = this.mdbTable.getDataSource();
+
+    if (!this.searchText) {
+      this.mdbTable.setDataSource(this.previous);
+      this.distributorsList = this.mdbTable.getDataSource();
+    }
+
+    if (this.searchText) {
+      this.distributorsList = this.mdbTable.searchLocalDataBy(this.searchText);
+      this.mdbTable.setDataSource(prev);
+    }
   }
 }

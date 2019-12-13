@@ -1,7 +1,8 @@
 import {Desideratum} from './desideratum';
 
 export class Acquisition {
-  id?: string;
+  // tslint:disable-next-line:variable-name
+  _id?: string;
   title?: string;
   startDate?: Date;
   acquisitionDate?: Date;

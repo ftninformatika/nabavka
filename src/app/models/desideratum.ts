@@ -1,7 +1,8 @@
 import { Location } from './location';
 
 export class Desideratum {
-  id?: string;
+  // tslint:disable-next-line:variable-name
+  _id?: string;
   isbn?: string;
   author?: string;
   title?: string;

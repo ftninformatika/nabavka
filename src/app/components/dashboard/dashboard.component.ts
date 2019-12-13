@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {Acquisition, Status} from '../../models/acquisition';
-import {FirebaseService} from '../../services/firebase.service';
 import {Router} from '@angular/router';
 import {AcquisitionService} from '../../services/acquisition.service';
 
@@ -18,7 +17,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.acquisitionService.getAcquisitionList().subscribe(data => {
-      this.acquisitionList = data;
+      this.acquisitionList = data as Acquisition[];
     });
   }
 
@@ -53,8 +52,8 @@ export class DashboardComponent implements OnInit {
       acquisitionGroups: []
     };
     this.acquisitionService.addAcquisition(acquisition).subscribe(data => {
-      acquisition.id = data;
-      this.router.navigate(['/acquisition/' + acquisition.id]);
+      acquisition._id = data._id;
+      this.router.navigate(['/acquisition/' + acquisition._id]);
     });
     this.acquisitionList.splice(0, 0, acquisition);
     form.reset();

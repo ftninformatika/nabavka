@@ -1,10 +1,13 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import { Router } from '@angular/router';
 import {LogoutAction, UserState} from './states/user.state';
 import {Store} from '@ngxs/store';
 import {Roles} from './configs/app.config';
 import {User} from './models/user';
 import {Observable} from 'rxjs';
+import {ModalDirective} from 'ng-uikit-pro-standard';
+import {Desideratum} from './models/desideratum';
+import {AcquisitionService} from './services/acquisition.service';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +17,9 @@ import {Observable} from 'rxjs';
 export class AppComponent  implements OnInit {
   public Roles = Roles;
   public loggeduser: Observable<User> = this.store.select(UserState.userDetails);
-  constructor(private router: Router, private store: Store) {
+  private year = 2019;
+  @ViewChild('modalReportForm', {static: false}) modalReportForm: ModalDirective;
+  constructor(private router: Router, private store: Store, public acquisitionService: AcquisitionService) {
   }
   logout() {
     this.store.dispatch(new LogoutAction());
@@ -24,4 +29,14 @@ export class AppComponent  implements OnInit {
   ngOnInit(): void {
   }
 
+  showReport() {
+    this.acquisitionService.createFinalReport(this.year).subscribe(pdf => {
+      const anchor = document.createElement('a');
+      anchor.download = 'Izvestaj-' + this.year + '.pdf';
+      const url = window.URL.createObjectURL(pdf);
+      anchor.href = url;
+      anchor.click();
+    });
+  }
 }
+

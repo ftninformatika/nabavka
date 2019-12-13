@@ -118,8 +118,10 @@ export class AcquisitionComponent implements OnInit {
   }
 
   saveAcquisition() {
-    this.acquisitionService.saveAcquisition();
-    // this.firebaseService.updateAcquisition(this.acquisitionId, this.acquisition);
+   this.acquisitionService.saveOrUpdateAcquisition();
+   /*.subscribe(a => {
+     this.acquisition = a;
+   });*/
   }
 
   getRemain() {
@@ -253,7 +255,27 @@ export class AcquisitionComponent implements OnInit {
       this.acquisition.deliveries = [];
     }
     this.acquisition.deliveries.push(this.delivery);
-    this.acquisitionService.saveAcquisition();
+    this.acquisitionService.saveOrUpdateAcquisition();
     this.modalAddDelivery.hide();
+  }
+
+  exportToPDF() {
+    const anchor = document.createElement('a');
+    if (this.selectedView === Status.OPEN) {
+      this.acquisitionService.createAcquisitionSheet(this.acquisition._id).subscribe(pdf => {
+        anchor.download = this.acquisition.title + '.pdf';
+        const url = window.URL.createObjectURL(pdf);
+        anchor.href = url;
+        anchor.click();
+      });
+    }
+    if (this.selectedView === Status.CLOSED) {
+          this.acquisitionService.createProcruimentSheet(this.acquisition._id).subscribe(pdf => {
+          anchor.download = this.acquisition.title + '.xls';
+          const url = window.URL.createObjectURL(pdf);
+          anchor.href = url;
+          anchor.click();
+        });
+    }
   }
 }

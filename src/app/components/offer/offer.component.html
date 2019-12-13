@@ -1,4 +1,4 @@
-<div *ngIf="distributer; else notExist">
+
 <mdb-card>
 <!-- Editable table -->
 <div class="card-header">
@@ -7,23 +7,34 @@
 
   <div class="card-body">
     <div id="table" class="table-editable">
+      <div class="d-flex">
+        <div class="d-flex flex-grow-1">
+          <div class="md-form mt-0">
+            <input mdbInput type="text" class="form-control ml-0" [(ngModel)]="searchText" id="search-input">
+            <label for="search-input">Претражи</label>
+          </div>
+        </div>
       <span class="table-add float-right mb-3 mr-2">
-        <a mdbBtn floating="true" color="primary" size="sm" (click)="addNewOffer()" data-toggle="tooltip" title="Додај књигу">
+        <a *ngIf="isDistributer" mdbBtn floating="true" color="primary" size="sm" (click)="addNewOffer();addForm.reset()" data-toggle="tooltip" title="Додај књигу">
           <mdb-icon fas icon="plus"></mdb-icon>
         </a>
+         <a mdbBtn floating="true" size="sm" color="blue-grey" mdbWavesEffect
+            data-toggle="tooltip" title="Штамапај" (click)="exportToPDF()">
+            <mdb-icon fas icon="file-alt"></mdb-icon>
+          </a>
       </span>
-
-      <table mdbTable small="true" class="text-left">
+      </div>
+      <table  mdbTable small="true" class="table table-bordered table-responsive-md table-striped text-left">
         <thead>
         <tr>
-          <th>ИСБН</th>
-          <th>Наслов</th>
-          <th>Аутор</th>
-          <th>Издавач</th>
-          <th>Цена</th>
-          <th>Рабат</th>
-          <th>ПДВ</th>
-          <th></th>
+          <th [mdbTableSort]="offeredBooks" sortBy="offer.isbn">ИСБН <mdb-icon fas icon="sort"></mdb-icon></th>
+          <th [mdbTableSort]="offeredBooks" sortBy="offer.title">Наслов <mdb-icon fas icon="sort"></mdb-icon></th>
+          <th [mdbTableSort]="offeredBooks" sortBy="offer.author">Аутор <mdb-icon fas icon="sort"></mdb-icon></th>
+          <th [mdbTableSort]="offeredBooks" sortBy="offer.publisher">Издавач <mdb-icon fas icon="sort"></mdb-icon></th>
+          <th [mdbTableSort]="offeredBooks" sortBy="offer.price">Бруто цена <mdb-icon fas icon="sort"></mdb-icon></th>
+          <th [mdbTableSort]="offeredBooks" sortBy="offer.rebate">Рабат (%) <mdb-icon fas icon="sort"></mdb-icon></th>
+          <th [mdbTableSort]="offeredBooks" sortBy="offer.vat">ПДВ (%) <mdb-icon fas icon="sort"></mdb-icon></th>
+          <th *ngIf="isDistributer"></th>
         </tr>
         </thead>
         <tbody *ngFor="let offer of offeredBooks; let id = index">
@@ -84,7 +95,7 @@
               {{offer.vat}}
             </ng-template>
           </td>
-          <td>
+          <td *ngIf="isDistributer">
             <ng-container *ngIf="id !== rowIndex">
               <div class="d-flex justify-content-end">
                 <button mdbBtn color="amber" size="sm" rounded="true" outline="true" type="button" class="px-2" mdbWavesEffect (click)="edit(id)">
@@ -111,22 +122,21 @@
   </div>
 </mdb-card>
 <!-- Editable table -->
-</div>
+<!--</div>
 <ng-template #notExist>
   {{message}}
-</ng-template>
+</ng-template>-->
   <!--Modal-->
 <div
   mdbModal
   #addModal
   class="modal fade top"
-  id="frameModalTop"
+  id="addModal"
   tabindex="-1"
   role="dialog"
   aria-labelledby="myModalLabel"
   aria-hidden="true"
   style="overflow-y: auto"
-  (closed)="onClosed($event)"
 >
   <!--Dialog-->
   <div class="modal-dialog modal-notify modal-info" role="document">
@@ -147,17 +157,24 @@
           <span aria-hidden="true" class="white-text">&times;</span>
         </button>
       </div>
-
+      <form  class="modal-body" #addForm="ngForm" >
       <!--Body-->
-      <div class="modal-body">
         <div class="md-form mb-5">
           <input [(ngModel)]="book.isbn"
                  type="text"
                  class="form-control"
                  id="isbn"
                  mdbInput
+                 name="isbn"
+                 required
+                 appIsbn
+                 #isbn="ngModel"
           />
           <label for="isbn">ИСБН</label>
+          <div *ngIf="isbn.invalid && (isbn.dirty || isbn.touched)">
+            <mdb-error *ngIf="isbn.errors.required">Ово је обавезно поље.</mdb-error>
+            <mdb-error *ngIf="isbn.errors.validateIsbn">ИСБН није валидан.</mdb-error>
+          </div>
         </div>
         <div class="md-form mb-5">
           <input [(ngModel)]="book.title"
@@ -165,8 +182,12 @@
                  class="form-control"
                  id="title"
                  mdbInput
+                 name="title"
+                 required
+                 #title="ngModel"
           />
           <label for="title">Наслов</label>
+          <mdb-error *ngIf="title.invalid && (title.dirty || title.touched)">Ово је обавезно поље.</mdb-error>
         </div>
         <div class="md-form mb-5">
           <input [(ngModel)]="book.author"
@@ -174,8 +195,12 @@
                  class="form-control"
                  id="author"
                  mdbInput
+                 name="author"
+                 required
+                 #author="ngModel"
           />
           <label for="author">Аутор</label>
+          <mdb-error *ngIf="author.invalid && (author.dirty || author.touched)">Ово је обавезно поље.</mdb-error>
         </div>
         <div class="md-form mb-5">
           <input [(ngModel)]="book.publisher"
@@ -183,8 +208,12 @@
                  class="form-control"
                  id="publisher"
                  mdbInput
+                 name="publisher"
+                 required
+                 #publisher="ngModel"
           />
           <label for="publisher">Издавач</label>
+          <mdb-error *ngIf="publisher.invalid && (publisher.dirty || publisher.touched)">Ово је обавезно поље.</mdb-error>
         </div>
         <div class="md-form mb-5">
           <input [(ngModel)]="book.price"
@@ -192,8 +221,12 @@
                  class="form-control"
                  id="price"
                  mdbInput
+                 name="price"
+                 required
+                 #price="ngModel"
           />
-          <label for="price">Цена</label>
+          <label for="price">Бруто цена</label>
+          <mdb-error *ngIf="price.invalid && (price.dirty || price.touched)">Ово је обавезно поље.</mdb-error>
         </div>
         <div class="md-form mb-5">
           <input [(ngModel)]="book.rebate"
@@ -201,8 +234,13 @@
                  class="form-control"
                  id="rebate"
                  mdbInput
+                 name="rebate"
+                 required
+                 pattern="^$|^([0-9]|[1-9][0-9]|[1][0][0])?"
+                 #rebate="ngModel"
           />
-          <label for="rebate">Рабат</label>
+          <label for="rebate">Рабат (%)</label>
+          <mdb-error *ngIf="rebate.invalid && (rebate.dirty || rebate.touched)">Ово је обавезно поље.Број мора бити између 0 и 100.</mdb-error>
         </div>
         <div class="md-form mb-5">
           <input [(ngModel)]="book.vat"
@@ -210,26 +248,33 @@
                  class="form-control"
                  id="vat"
                  mdbInput
+                 name="vat"
+                 required
+                 pattern="^$|^([0-9]|[1-9][0-9]|[1][0][0])?"
+                 #vat="ngModel"
           />
-          <label for="vat">ПДВ</label>
+          <label for="vat">ПДВ (%)</label>
+          <mdb-error *ngIf=" vat.invalid &&(vat.dirty || vat.touched)">
+            Ово је обавезно поље.Број мора бити између 0 и 100.
+          </mdb-error>
         </div>
-
-      </div>
       <!--/.Body-->
 
       <!--Footer-->
       <div class="modal-footer justify-content-center">
         <button
-          type="button"
+          type="submit"
           mdbBtn
           color="info"
           class="waves-effect"
-          (click)="add()"
+          [disabled]="!addForm.valid"
+          (click)="add();addForm.reset()"
           mdbWavesEffect
         >
           Додај
         </button>
       </div>
+    </form>
       <!--Footer-->
     </div>
     <!--/.Content-->

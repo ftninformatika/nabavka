@@ -22,7 +22,7 @@ export class FirebaseService {
     return this.firestore.collection('Desiderata').add(item);
   }
 
-  updateDesideratum(item: Desideratum): Observable<string> {
+  /*updateDesideratum(item: Desideratum): Observable<string> {
     const observable$ = new Subject<string>();
     const id = item.id;
     this.firestore.collection('Desiderata').doc(id).update(item).then(docRef => {
@@ -31,7 +31,7 @@ export class FirebaseService {
       });
     });
     return observable$.asObservable();
-  }
+  }*/
 
   deleteDesideratum(id: string) {
     return this.firestore.collection('Desiderata').doc(id).delete();
