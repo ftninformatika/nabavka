@@ -64,6 +64,13 @@ export class UserState {
     return state.user;
   }
 
+  @Selector()
+  public static getLocation(state: IAuthUser) {
+    if (state.user && state.user.location) {
+      return state.user.location;
+    }
+    return null;
+  }
   constructor(private restApi: RestApiService) {}
 
 

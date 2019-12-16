@@ -30,7 +30,16 @@
             <mdb-icon fas icon="file-contract"></mdb-icon>Извештаји<span class="caret"></span></a>
         </li>
       </ul>
-
+      <ul class="navbar-nav" *ngIf="(loggeduser | async)?.role === Roles.DESIDERATUM_MANAGER" >
+        <li class="nav-item">
+          <a mdbWavesEffect type="button" class="nav-link waves-light" [routerLink]="['/desiderata']">
+            <mdb-icon fas icon="heart"></mdb-icon>Дезидерати<span class="caret"></span></a>
+        </li>
+        <li class="nav-item">
+          <a mdbWavesEffect type="button" class="nav-link waves-light" [routerLink]="['/distribution']">
+            <mdb-icon fas icon="heart"></mdb-icon>Расподела<span class="caret"></span></a>
+        </li>
+      </ul>
       <ul class="navbar-nav ml-auto"   >
         <li class="nav-item" *ngIf="((loggeduser | async)?.token!== null)">
             <a mdbWavesEffect type="button" class="nav-link waves-light" (click)="logout()">

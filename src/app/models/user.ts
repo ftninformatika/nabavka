@@ -3,5 +3,6 @@ export class User {
   token?: string;
   role?: string;
   library?: string;
+  location?: string;
 
 }

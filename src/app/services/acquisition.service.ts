@@ -21,8 +21,8 @@ export class AcquisitionService extends GeneralService {
   distributionLocations = new Subject<Desideratum>();
   distributionLocations$ = this.distributionLocations.asObservable();
 
-  constructor(private groupBy: GroupByPipe, public restApi: RestApiService) {
-    super(restApi);
+  constructor(private groupBy: GroupByPipe, public restAPI: RestApiService) {
+    super(restAPI);
   }
 
   getAcquisition(acquisitionId: string) {
@@ -102,11 +102,6 @@ export class AcquisitionService extends GeneralService {
   createAcquisitionSheet(id: string): Observable<Blob> {
     return this.restAPI.createAcquisitionSheet(id);
   }
-
-  createFinalReport(year): Observable<Blob> {
-    return this.restAPI.createFinalReport(year);
-  }
-
   setSelectedItem(selectedItem: Item) {
     this.selectedItem = selectedItem;
   }

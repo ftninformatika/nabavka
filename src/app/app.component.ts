@@ -8,6 +8,7 @@ import {Observable} from 'rxjs';
 import {ModalDirective} from 'ng-uikit-pro-standard';
 import {Desideratum} from './models/desideratum';
 import {AcquisitionService} from './services/acquisition.service';
+import {ReportService} from "./services/report.service";
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,7 @@ export class AppComponent  implements OnInit {
   public loggeduser: Observable<User> = this.store.select(UserState.userDetails);
   private year = 2019;
   @ViewChild('modalReportForm', {static: false}) modalReportForm: ModalDirective;
-  constructor(private router: Router, private store: Store, public acquisitionService: AcquisitionService) {
+  constructor(private router: Router, private store: Store, public reportService: ReportService) {
   }
   logout() {
     this.store.dispatch(new LogoutAction());
@@ -30,7 +31,7 @@ export class AppComponent  implements OnInit {
   }
 
   showReport() {
-    this.acquisitionService.createFinalReport(this.year).subscribe(pdf => {
+    this.reportService.createFinalReport(this.year).subscribe(pdf => {
       const anchor = document.createElement('a');
       anchor.download = 'Izvestaj-' + this.year + '.pdf';
       const url = window.URL.createObjectURL(pdf);

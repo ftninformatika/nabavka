@@ -42,8 +42,7 @@ export class RestApiService {
   }
 
   public getLastAcquisitionForDistribution() {
-    return this.httpClient.get(environment.baseUrl + '/acquisition/5de394ed8da2b661b91a1173');
-    // TODO create rest service
+    return this.httpClient.get(environment.baseUrl + '/acquisition/getLast');
   }
 
   // deziderati

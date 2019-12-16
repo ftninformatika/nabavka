@@ -19,7 +19,7 @@ const routes: Routes = [
   {path: 'distributors', component: DistributorsListComponent, canActivate: [AcquisitionGuard]},
   {path: 'offers/:pib', component: OfferComponent},
   {path: 'desiderata', component: DesideratumListComponent, canActivate: [DesiderataGuard]},
-  {path: 'distribution', component: DistributionLibraryComponent, canActivate: [AcquisitionGuard]},
+  {path: 'distribution', component: DistributionLibraryComponent, canActivate: [DesiderataGuard]},
   {path: 'access-denied', component: AccessDeniedComponent},
   {path: '**', redirectTo: ''}
 ];
