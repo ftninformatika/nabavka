@@ -26,8 +26,14 @@
             <mdb-icon fas icon="users"></mdb-icon>Понуде<span class="caret"></span></a>
         </li>
         <li class="nav-item">
-          <a mdbWavesEffect type="button" class="nav-link waves-light" (click)="modalReportForm.show()" target="_blank">
-            <mdb-icon fas icon="file-contract"></mdb-icon>Извештаји<span class="caret"></span></a>
+          <div class="dropdown" mdbDropdown>
+            <a mdbWavesEffect mdbDropdownToggle type="button"  class="nav-link dropdown-toggle waves-light">
+              <mdb-icon fas icon="file-contract"></mdb-icon>Извештаји<span class="caret"></span>
+            </a>
+            <div class="dropdown-menu dropdown-primary">
+              <button class="dropdown-item" (click)="modalReportForm.show()">Годишњи финансијски извештај</button>
+            </div>
+          </div>
         </li>
       </ul>
       <ul class="navbar-nav" *ngIf="(loggeduser | async)?.role === Roles.DESIDERATUM_MANAGER" >
@@ -64,7 +70,7 @@
     <div class="modal-content">
       <div class="modal-header text-center">
         <h4 class="modal-title white-text w-100 font-weight-bold py-2">
-          Извештаји
+          Финансијски извештај
         </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalReportForm.hide()">
           <span aria-hidden="true" class="white-text">&times;</span>
