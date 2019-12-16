@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {AcquisitionService} from '../../services/acquisition.service';
 import {Desideratum} from '../../models/desideratum';
 
@@ -7,7 +7,7 @@ import {Desideratum} from '../../models/desideratum';
   templateUrl: './distribution-form.component.html',
   styleUrls: ['./distribution-form.component.scss']
 })
-export class DistributionFormComponent implements OnInit {
+export class DistributionFormComponent implements OnInit, OnChanges {
 
   @Input() location;
   @Output() modalHideEvent: EventEmitter<void> = new EventEmitter<void>();
@@ -18,18 +18,28 @@ export class DistributionFormComponent implements OnInit {
   constructor(private acquisitionService: AcquisitionService) { }
 
   ngOnInit() {
-    this.acquisitionService.getSublocationList().forEach(s => {
-      if (s.coder_id.startsWith(this.location)) {
-        this.options.push(
-        {
-          value: s.coder_id,
-          label: s.coder_id + ' - ' + s.description
-        });
-      }
-    });
+    this.createOptions();
     this.acquisitionService.distributionLocations$.subscribe(desideratum => {
       this.desideratum = desideratum;
       this.copies = this.calculateAmount();
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.location.currentValue) {
+      this.createOptions();
+    }
+  }
+
+  createOptions() {
+    this.acquisitionService.getSublocationList().forEach(s => {
+      if (s.coder_id.startsWith(this.location)) {
+        this.options.push(
+          {
+            value: s.coder_id,
+            label: s.coder_id + ' - ' + s.description
+          });
+      }
     });
   }
 

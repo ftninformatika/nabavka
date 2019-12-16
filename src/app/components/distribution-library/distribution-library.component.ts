@@ -11,7 +11,7 @@ import {Distribution} from '../../models/distribution';
 export class DistributionLibraryComponent implements OnInit {
 
   Status = Status;
-  distribution: Distribution = {};
+  distribution: Distribution = {acquisitionGroup: []};
   location = '01';
 
   constructor(private acquisitionService: AcquisitionService) { }

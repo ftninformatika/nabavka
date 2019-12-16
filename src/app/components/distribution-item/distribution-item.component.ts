@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewEncapsulation} from '@angular/core';
 import {AcquisitionGroup, Price, Status} from '../../models/acquisition';
 import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
 import {AcquisitionService} from '../../services/acquisition.service';
@@ -13,7 +13,7 @@ import {BookForDelivery, Delivery} from '../../models/delivery';
   styleUrls: ['./distribution-item.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class DistributionItemComponent implements OnInit {
+export class DistributionItemComponent implements OnInit, OnChanges {
 
   @Input() distribution: Distribution;
   @Input() selectedView: string;
@@ -30,7 +30,12 @@ export class DistributionItemComponent implements OnInit {
 
   ngOnInit() {
     this.mdbTable.setDataSource(this.distribution);
-    this.resetHideLists();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.distribution.currentValue) {
+      this.resetHideLists();
+    }
   }
 
   calculateAmountForGroup(acquisitionGroup: AcquisitionGroup) {
@@ -101,7 +106,7 @@ export class DistributionItemComponent implements OnInit {
   }
 
   resetHideLists() {
-    if (this.distribution.acquisitionGroup) {
+    if (this.distribution && this.distribution.acquisitionGroup) {
       for (const i of Object.keys(this.distribution.acquisitionGroup)) {
         this.hide[i] = false;
         this.hideInner[i] = [];
