@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
-import {FirebaseService} from './firebase.service';
 import {Acquisition, AcquisitionGroup, Item, Price, Status} from '../models/acquisition';
 import {GeneralService} from './general.service';
 import {RestApiService} from './rest-api.service';
@@ -22,12 +21,13 @@ export class AcquisitionService extends GeneralService {
   distributionLocations = new Subject<Desideratum>();
   distributionLocations$ = this.distributionLocations.asObservable();
 
-  constructor(private groupBy: GroupByPipe, public firebaseService: FirebaseService, public restApi: RestApiService) {
-    super(firebaseService, restApi);
+  constructor(private groupBy: GroupByPipe, public restApi: RestApiService) {
+    super(restApi);
   }
+
   getAcquisition(acquisitionId: string) {
     this.acquisitionId = acquisitionId;
-    this.restAPI.getAcquisitionOnce(this.acquisitionId).subscribe(doc => {
+    this.restAPI.getAcquisition(this.acquisitionId).subscribe(doc => {
       if (doc != null) {
         this.acquisition = doc as Acquisition;
         this.acquisition$.next(this.acquisition);
@@ -39,10 +39,24 @@ export class AcquisitionService extends GeneralService {
     return this.acquisition$.asObservable();
   }
 
+  getLastAcquisitionForDistribution() {
+    this.restAPI.getLastAcquisitionForDistribution().subscribe(doc => {
+      if (doc != null) {
+        this.acquisition = doc as Acquisition;
+        this.acquisitionId = this.acquisition._id;
+        this.acquisition$.next(this.acquisition);
+        if (this.acquisition.status === Status.DISTRIBUTION || this.acquisition.status === Status.DELIVERY) {
+          this.distributions = this.createDistributions();
+        }
+      }
+    });
+    return this.acquisition$.asObservable();
+  }
+
   saveOrUpdateAcquisition() {
-   this.restAPI.addOrUpdate(this.acquisition).subscribe(a => {
-     console.log('TODO: obraditi snimanje');
-     });
+    this.restAPI.addOrUpdate(this.acquisition).subscribe(a => {
+      console.log('TODO: obraditi snimanje');
+    });
   }
 
   deleteAcquisition() {
@@ -73,25 +87,28 @@ export class AcquisitionService extends GeneralService {
     }
   }
 
- getAcquisitionList() {
-   return this.restAPI.getAcquisitionList();
- }
+  getAcquisitionList() {
+    return this.restAPI.getAcquisitionList();
+  }
 
   createDeliverySheet(deliveriesArray, deliveryLocation) {
     return this.restAPI.createDeliverySheet(deliveriesArray, deliveryLocation);
   }
-  createProcruimentSheet(id: string): Observable <Blob> {
+
+  createProcruimentSheet(id: string): Observable<Blob> {
     return this.restAPI.createProcruimentSheet(id);
   }
-  createAcquisitionSheet(id: string): Observable <Blob> {
+
+  createAcquisitionSheet(id: string): Observable<Blob> {
     return this.restAPI.createAcquisitionSheet(id);
   }
-  createFinalReport(year): Observable <Blob> {
+
+  createFinalReport(year): Observable<Blob> {
     return this.restAPI.createFinalReport(year);
   }
 
   setSelectedItem(selectedItem: Item) {
-      this.selectedItem = selectedItem;
+    this.selectedItem = selectedItem;
   }
 
   getSelectedItem() {
@@ -140,7 +157,7 @@ export class AcquisitionService extends GeneralService {
                   distribution.acquisitionGroup.push(newGroup);
                   newGroup.items = [];
                 }
-                const newItem: Item = {... item, desideratum: {...item.desideratum}};
+                const newItem: Item = {...item, desideratum: {...item.desideratum}};
                 newGroup.items.push(newItem);
                 newItem.desideratum.locations = [];
                 newItem.desideratum.locations = locationGroup.value;

@@ -10,6 +10,7 @@ import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {AccessDeniedComponent} from './components/access-denied/access-denied.component';
 import {AcquisitionGuard} from './guards/acquisition.guard';
 import {DesiderataGuard} from './guards/desiderata.guard';
+import {DistributionLibraryComponent} from './components/distribution-library/distribution-library.component';
 
 const routes: Routes = [
   {path: '', component: LoginComponent, canActivate: [AuthGuard], pathMatch: 'full'},
@@ -18,6 +19,7 @@ const routes: Routes = [
   {path: 'distributors', component: DistributorsListComponent, canActivate: [AcquisitionGuard]},
   {path: 'offers/:pib', component: OfferComponent},
   {path: 'desiderata', component: DesideratumListComponent, canActivate: [DesiderataGuard]},
+  {path: 'distribution', component: DistributionLibraryComponent, canActivate: [AcquisitionGuard]},
   {path: 'access-denied', component: AccessDeniedComponent},
   {path: '**', redirectTo: ''}
 ];

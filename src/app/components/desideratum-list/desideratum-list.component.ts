@@ -1,9 +1,7 @@
 import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {Desideratum} from '../../models/desideratum';
 import {Location} from '../../models/location';
-import {FirebaseService} from '../../services/firebase.service';
-import {IOption, MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
-import {LocationCoder, Sublocation} from '../../models/location_coder';
+import {MdbTableDirective, ModalDirective} from 'ng-uikit-pro-standard';
 import {DesideratumService} from '../../services/desideratum.service';
 
 @Component({

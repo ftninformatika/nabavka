@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import {FirebaseService} from './firebase.service';
-import {Observable, Subject, Subscription} from 'rxjs';
 import {LocationCoder, Sublocation} from '../models/location_coder';
 import {RestApiService} from './rest-api.service';
 
@@ -9,15 +7,13 @@ import {RestApiService} from './rest-api.service';
 })
 export class GeneralService {
   sublocationList: Sublocation[] = [];
-  locationList: LocationCoder[];
-  locationSubscription: Subscription;
-  sublocationSubscription: Subscription;
+  locationList: LocationCoder[] = [];
 
-  constructor(public firebaseService: FirebaseService, public restAPI: RestApiService) {
-    this.sublocationSubscription = this.getSublocations().subscribe(data => {
+  constructor(public restAPI: RestApiService) {
+    this.restAPI.getSubLocations().subscribe(data => {
       this.sublocationList = data;
     });
-    this.locationSubscription = this.getLocations().subscribe(data => {
+    this.restAPI.getLocations().subscribe(data => {
       this.locationList = data;
     });
   }

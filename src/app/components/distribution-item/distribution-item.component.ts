@@ -61,9 +61,11 @@ export class DistributionItemComponent implements OnInit {
 
   calculatePrice() {
     let amount = 0;
-    this.distribution.acquisitionGroup.forEach(gruop => {
-      amount = amount + this.calculatePriceForGroup(gruop);
-    });
+    if (this.distribution.acquisitionGroup) {
+      this.distribution.acquisitionGroup.forEach(gruop => {
+        amount = amount + this.calculatePriceForGroup(gruop);
+      });
+    }
     return amount;
   }
 
@@ -99,9 +101,11 @@ export class DistributionItemComponent implements OnInit {
   }
 
   resetHideLists() {
-    for (const i of Object.keys(this.distribution.acquisitionGroup)) {
-      this.hide[i] = false;
-      this.hideInner[i] = [];
+    if (this.distribution.acquisitionGroup) {
+      for (const i of Object.keys(this.distribution.acquisitionGroup)) {
+        this.hide[i] = false;
+        this.hideInner[i] = [];
+      }
     }
   }
 

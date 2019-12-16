@@ -6,7 +6,6 @@ import { MDBSpinningPreloader } from 'ng-uikit-pro-standard';
 import { environment } from '../environments/environment';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { FirebaseService } from './services/firebase.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -35,6 +34,7 @@ import { IsbnExistsValidatorDirective } from './validators/isbn.exists.validator
 import { DistributionItemComponent } from './components/distribution-item/distribution-item.component';
 import { DistributionFormComponent } from './components/distribution-form/distribution-form.component';
 import { DeliveryItemComponent } from './components/delivery-item/delivery-item.component';
+import { DistributionLibraryComponent } from './components/distribution-library/distribution-library.component';
 
 export let options: Partial<IConfig> | (() => Partial<IConfig>);
 
@@ -58,7 +58,8 @@ export let options: Partial<IConfig> | (() => Partial<IConfig>);
     IsbnExistsValidatorDirective,
     DistributionItemComponent,
     DistributionFormComponent,
-    DeliveryItemComponent
+    DeliveryItemComponent,
+    DistributionLibraryComponent
   ],
   imports: [
     NgxsModule.forRoot([UserState]),
@@ -77,7 +78,6 @@ export let options: Partial<IConfig> | (() => Partial<IConfig>);
   ],
   providers: [
     MDBSpinningPreloader,
-    FirebaseService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

@@ -32,38 +32,12 @@ export class AcquisitionComponent implements OnInit {
 
   ngOnInit() {
     this.acquisitionId = this.route.snapshot.paramMap.get('id');
-    // this.acquisitionId = 'w80tqpWSj4X1ndlzhZBb';
     this.acquisitionService.getAcquisition(this.acquisitionId).subscribe(acquisition => {
         this.acquisition = acquisition;
         this.calculateAmount();
         this.setStepper();
         this.getAcquisitionGroups();
     });
-
-
-    // let desiderataList: Desideratum[];
-    // this.firebaseService.getDesiderataDataOnce().subscribe(data => {
-    //   desiderataList = data.docs.map(e => {
-    //     return e.data() as Desideratum;
-    //   });
-    //   const desiderataGroups = this.groupBy.transform(desiderataList, 'publisher');
-    //   this.acquisition = {title: '2017 - I deo', startDate: new Date(2017, 3, 1), budget: 100000,
-    //     status: Status.OPEN, desiderataUpdated: false};
-    //   const acquisitionGroups: AcquisitionGroup[] = [];
-    //   desiderataGroups.forEach((desiderataGroup, index) => {
-    //     const acquisitionGroup: AcquisitionGroup = {title: 'Partija ' + (index + 1), distributor: desiderataGroup.key};
-    //     const items: Item[] = [];
-    //     desiderataGroup.value.forEach(desideratum => {
-    //       const item: Item = {desideratum, planedPrice: {price: 900, rebate: 10, vat: 10}};
-    //       items.push(item);
-    //     });
-    //     acquisitionGroup.items = items;
-    //     acquisitionGroups.push(acquisitionGroup);
-    //   });
-    //   this.acquisition.acquisitionGroups = acquisitionGroups;
-    //   this.firebaseService.addAcquisition(this.acquisition);
-    //   console.log(this.acquisition);
-    // });
   }
 
   reloadAcquisition() {
@@ -71,9 +45,6 @@ export class AcquisitionComponent implements OnInit {
       this.acquisition = acquisition;
       this.calculateAmount();
       this.setStepper();
-      if (this.selectedView === Status.DISTRIBUTION) {
-
-      }
     });
   }
 
@@ -119,9 +90,6 @@ export class AcquisitionComponent implements OnInit {
 
   saveAcquisition() {
    this.acquisitionService.saveOrUpdateAcquisition();
-   /*.subscribe(a => {
-     this.acquisition = a;
-   });*/
   }
 
   getRemain() {

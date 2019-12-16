@@ -1,6 +1,5 @@
 import {User} from '../models/user';
 import {Action, Selector, State, StateContext} from '@ngxs/store';
-import {FirebaseService} from '../services/firebase.service';
 import {tap} from 'rxjs/operators';
 import {RestApiService} from '../services/rest-api.service';
 
@@ -65,7 +64,7 @@ export class UserState {
     return state.user;
   }
 
-  constructor(private firebaseService: FirebaseService, private restApi: RestApiService) {}
+  constructor(private restApi: RestApiService) {}
 
 
   @Action(LoginAction)
